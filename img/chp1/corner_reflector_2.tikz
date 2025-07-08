@@ -1,0 +1,35 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            axis equal image,
+            axis lines=none,
+        ]
+        \addplot[thick] coordinates {
+                (-1, 1) (0, 0) (-1, -1)
+            };
+        \foreach \i in {1, ..., 9} {
+                \addplot[] coordinates {
+                        (-1 + \i/10, 1 - \i/10) (-1 + \i/10, 1 - \i/10 + 0.1)
+                    };
+            }
+        \foreach \i in {1, ..., 9} {
+                \addplot[] coordinates {
+                        (-\i/10, -\i/10) (-\i/10, -\i/10 - 0.1)
+                    };
+            }
+        \addplot[thick, -latex] coordinates {
+                (-2, 0.5) (-1, 0.4)
+            };
+        \addplot[thick] coordinates {
+                (-2, 0.5) (-0.34, 0.334)
+            };
+        \addplot[thick] coordinates {
+                (-0.34, 0.334) (-0.34 - 0.075, 0.334 - 0.75)
+            };
+        \addplot[thick] coordinates {
+                (-0.34 - 0.075, 0.334 - 0.75) (-0.34 - 0.075 - 1.66, 0.334 - 0.75 + 0.166)
+            };
+        \addplot[thick,-latex] coordinates {
+                (-0.34 - 0.075, 0.334 - 0.75) (-0.34 - 0.075 - 0.7, 0.334 - 0.75 + 0.07)
+            };
+    \end{axis}
+\end{tikzpicture}

@@ -1,0 +1,30 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xlabel=$ x $, ylabel=$ y $,
+            ticklabel style={font=\small},
+            label style={font=\small},
+            grid, axis equal image,
+            axis lines=none,
+            clip=false,
+            legend cell align=left,
+            legend style={
+                    anchor=north east,
+                    font=\tiny,
+                    draw=none,
+                    fill=none
+                }
+        ]
+
+        \addplot[domain=50:130, samples=100, thick, parametric] ({cos(x)}, {sin(x)}) node [midway, below] {\scriptsize 地球};
+        \addplot[thick] coordinates {(-0.5, {sqrt(3)/2}) ({-0.5*1.1}, {sqrt(3)/2*1.1})} node[above] {\scriptsize 雷达};
+        \addplot[thick, mark=*, mark options={scale=1}, draw=c1, fill=c1!60] coordinates {({-0.5*1.1}, {sqrt(3)/2*1.1})};
+        \addplot[thick, dashed] coordinates {({-0.5*1.1}, {sqrt(3)/2*1.1}) (0.5, 1.05)};
+        \addplot[smooth, thick] coordinates {
+                ({-0.5*1.1}, {sqrt(3)/2*1.1})
+                (-0.3, 1.005)
+                (0,1.02)
+                (0.22, 0.98)
+                (0.38, 0.925)
+            };
+    \end{axis}
+\end{tikzpicture}

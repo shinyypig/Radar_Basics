@@ -1,0 +1,25 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            view={120}{30},
+            axis equal image,
+            axis lines=none,
+            clip=false,
+            ticklabel style={font=\tiny},
+        ]
+        % 绘制 XY 平面
+        \addplot3[fill=c3!20] coordinates {
+                (0, 0, 0) (1, 0, 0) (1, 1, 0) (0, 1, 0) (0, 0, 0)
+            };
+        % 绘制 YZ 平面
+        \addplot3[fill=c3!20] coordinates {
+                (0, 0, 0) (0, 1, 0) (0, 1, 1) (0, 0, 1) (0, 0, 0)
+            };
+        % 绘制 ZX 平面
+        \addplot3[fill=c3!20] coordinates {
+                (0, 0, 0) (1, 0, 0) (1, 0, 1) (0, 0, 1) (0, 0, 0)
+            };
+        \addplot3[thick] coordinates {
+                (1, 0, 0) (1, 1, 0) (0, 1, 0) ( 0, 1, 1) (0, 0, 1) (1, 0, 1) (1, 0, 0)
+            };
+    \end{axis}
+\end{tikzpicture}

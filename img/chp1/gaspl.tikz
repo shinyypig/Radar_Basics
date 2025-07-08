@@ -1,0 +1,29 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xlabel=频率（GHz）, ylabel=损耗（dB）,
+            ticklabel style={font=\small},
+            label style={font=\small},
+            grid,
+            xmin=0, xmax=1000,
+            ymax=60,
+            legend cell align=left,
+            legend style={
+                    anchor=north east,
+                    font=\small,
+                    draw=none,
+                    fill=none
+                }
+        ]
+        \addplot[
+            c1,
+            thick,
+            smooth,
+        ] table[x=f, y=l, col sep=comma] {img/chp1/gaspl.csv};
+        \addplot[
+            c2,
+            thick,
+            smooth,
+        ] table[x=f, y=l0, col sep=comma] {img/chp1/gaspl.csv};
+        \legend{湿空气, 干空气}
+    \end{axis}
+\end{tikzpicture}

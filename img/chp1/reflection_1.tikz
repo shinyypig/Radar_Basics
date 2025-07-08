@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+    \draw[thick] (-3, 0) -- (1, 0); % Ground line
+    \foreach \i in {-3, -2.6, ..., 0.5} {
+            \draw[] (\i, -0.5) -- (\i+0.5, 0); % Vertical lines
+        }
+    \foreach \i in {-2.5, -2.2, -1.9, -1.6} {
+            \draw[thick, -latex] (\i, 3) -- (\i +0.8, 0.6);
+            \draw[thick] (\i, 3) -- (\i+1, 0);
+        }
+    \foreach \i in {-2.5, -2.2, -1.9, -1.6} {
+            \draw[thick, -latex] (\i+1, 0) -- (\i+1.8, 2.4);
+            \draw[thick] (\i+1, 0) -- (\i+2, 3);
+        }
+\end{tikzpicture}
