@@ -53,8 +53,9 @@
     \item \textbf{发射}：发射机将生成的电磁波信号放大，并通过天线向外发射。
     \item \textbf{接收}：当电磁波遇到目标物体时，会发生反射，反射信号被天线接收并传输到接收机，接收机将接收到的信号进行放大和滤波，以提高信噪比。
     \item \textbf{信号处理}：信号处理单元对接收到的信号进行分析和处理，以提取目标信息，如距离、速度和方位等。
-    \item \textbf{显示与控制}：处理后的目标信息可以通过显示器或其他输出设备进行显示，同时可以根据需要进行控制和调整。
 \end{enumerate}
+
+最后，处理后的目标信息可以通过显示器或其他输出设备进行显示，同时可以根据需要进行控制和调整。
 
 \subsection{工作频率}
 
@@ -99,12 +100,92 @@
     \end{tabular}
 \end{table}
 
-\subsection{目标探测}
+不同的雷达工作频率具有不同的特点和应用场景。低频段（如HF、VHF）适用于超远程监视和通信，但分辨率较低；中频段（如L、S、C）适用于中远程监视和跟踪；高频段（如X、Ku、K、Ka、V、W、mm）则适用于近程精密监视和自动驾驶等应用。
 
+\subsection{目标探测}
+这里以最简单的脉冲雷达为例，介绍雷达进行目标探测的基本原理。脉冲雷达通过发射短脉冲的电磁波信号，并测量接收到的回波信号的时间延迟来确定目标的距离。如\cref{fig_chp1_radar_pulse}所示，雷达发射的脉冲信号经过目标的反射后，由接收机接收则可以获得回波信号，并且回波信号与发射信号之间存在一个时延 $\tau$。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.8\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel=$ x $, ylabel=$ y $,
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    axis equal image,
+                    axis lines=none,
+                    legend cell align=left,
+                    legend style={
+                            anchor=north east,
+                            font=\tiny,
+                            draw=none,
+                            fill=none
+                        }
+                ]
+                \addplot graphics [xmin=-0.5, xmax=0.5, ymin=-0.5, ymax=0.5] {img/radar.png};
+                \addplot graphics [xmin=2.5, xmax=3.5, ymin=0.5, ymax=1.5] {img/target.png};
+                % light from radar to target and back
+                \addplot[thick, -latex, c1] coordinates {(0.5, 0.3) (2.5, 0.9)} node[midway, above, black] {\tiny 发射脉冲};
+                \addplot[thick, -latex, c2] coordinates {(2.5, 0.8) (0.5, 0.2)} node[midway, below, black] {\tiny 目标回波};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{}
+        \label{fig_chp1_radar_pulse_1}
+    \end{subfigure}
+    \begin{subfigure}{.8\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel=\tiny 时间,
+                    % ylabel=$ y $,
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    axis equal image,
+                    axis lines=middle,
+                    xmin=-1.5, xmax=3.5,
+                    ytick=\empty,
+                    xtick=\empty,
+                    y axis line style={draw=none},
+                    legend cell align=left,
+                    clip=false,
+                    legend style={
+                            % anchor=north east,
+                            at={(1.03, 1.5)},
+                            font=\tiny,
+                            draw=none,
+                            fill=none
+                        }
+                ]
+                % draw a pulse
+                \addplot[domain=-0.2:0.2, samples=200, thick, color=c1, smooth] {0.5 * (abs(x) < 0.2) * sin(deg(20 * pi * x))};
+                \addlegendentry{发射脉冲};
+                \addplot[domain=1.8:2.2, samples=200, thick, color=c2, smooth] {0.3 * (abs(x -2) < 0.2) * sin(deg(20 * pi * (x - 2)))};
+                \addlegendentry{目标回波};
+                % 绘制一个大括号，标明两个信号之间的时延
+                \draw[decorate, decoration={brace, amplitude=4pt, mirror}] (axis cs:-0.2, -0.5) -- (axis cs:1.8, -0.5) node[midway, below=10pt] {$\tau$};
+                \draw[dashed] (axis cs:-0.2, 0) -- (axis cs:-0.2, -0.5);
+                \draw[dashed] (axis cs:1.8, 0) -- (axis cs:1.8, -0.5);
+            \end{axis}
+        \end{tikzpicture}
+        \caption{}
+        \label{fig_chp1_radar_pulse_2}
+    \end{subfigure}
+    \caption{雷达脉冲信号示意图 (a) 传播路径 (b) 信号时延}
+    \label{fig_chp1_radar_pulse}
+\end{figure}
+
+假设目标与雷达之间的距离为 $R$，那么不难得出，其与回波信号的时延 $\tau$ 之间的关系为
+\begin{equation}
+    R = \frac{c \tau}{2},
+    \label{eq:radar_time_delay}
+\end{equation}
+其中 $c$ 是光速。
 
 \section{电磁波传播特性}
 
-电磁波在自由空间中以光速 $c$ 传播，具有许多典型特性，如直线传播、反射、折射、衍射、散射和吸收等。这些特性直接决定了雷达信号的传播路径与能量分布。
+在上一节中，我们简要介绍了雷达的基本工作原理，这些原理通常基于电磁波在自由空间中沿直线传播的理想假设。然而在实际环境中，电磁波的传播往往会受到多种物理效应的影响，导致其偏离理想路径或信号发生畸变。主要包括遇到不同介质界面时发生的反射，由大气折射率变化引起的折射及大气波导现象，以及由于介质色散和多径传输导致的信号失真与干涉。为了更全面理解这些现象对雷达探测性能的影响，下面将依次介绍电磁波在传播过程中所表现出的反射、折射、大气波导、色散以及多径效应。
 
 \subsection{电磁波的反射}
 
@@ -292,8 +373,34 @@
 电磁波在大气中传播除了会产生传输损耗（衰减）之外，还可能会产生失真。一般来说，产生失真的原因有两个，介质的色散现象和随机多径传输导致的干涉效应。
 
 对于同一个介质，不同频率的电磁波在该介质中的传播速度有可能是不同的。这就会导致在传播的过程中，雷达发射的信号波形产生畸变，这种现象称为色散现象（Dispersion）。色散现象的一个典型例子是光在玻璃中的传播。当白光通过棱镜时，不同波长的光会以不同的速度传播，从而导致光线分散成彩虹色谱。如果我们将传播介质看作是一个线性系统，那么该系统的频率响应是非线性相位的。而对于一个非线性相位的系统，其输出信号的波形相较于输入信号波形会发生畸变。
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/chp1/filter1.tikz}
+        \includegraphics[width=.9\textwidth]{./img/chp1/filter4.tikz}
+        \caption{}
+        \label{fig_chp1_filter_1}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/chp1/filter2.tikz}
+        \includegraphics[width=.9\textwidth]{./img/chp1/filter4.tikz}
+        \caption{}
+        \label{fig_chp1_filter_2}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/chp1/filter3.tikz}
+        \includegraphics[width=.9\textwidth]{./img/chp1/filter4.tikz}
+        \caption{}
+        \label{fig_chp1_filter_3}
+    \end{subfigure}
+    \caption{色散现象示意图 (a) 原始信号及频谱 (b) 无色散滤波器输出 (c) 有色散滤波器输出}
+    \label{fig_chp1_filter}
+\end{figure}
 
-不过好在大气对常见的雷达工作频率的色散效应并不明显，通常可以忽略不计。比如最靠近地表的对流层，其对20GHz以下的电磁波基本上是无色散的。
+如\cref{fig_chp1_filter}所示，可以看到，对于一个全通滤波器，如果相位响应是线性的，那么输出信号的波形与输入信号的波形相同，仅存在时延；反之，如果滤波器的相位响应是非线性的，那么输出信号的波形会发生畸变，但频谱仍然保持不变。不过大气对常见的雷达工作频率的色散效应并不明显，通常可以忽略不计。比如最靠近地表的对流层，其对20GHz以下的电磁波基本上是无色散的。
 
 此外，多径效应（Multipath Effect），则是指电磁波在传播过程中，由于遇到障碍物或地形的反射、折射和散射等作用，导致同一信号在不同路径上到达接收天线的现象，如\cref{fig_chp1_multipath}所示。多径效应会导致接收信号的相位和幅度发生变化，从而引起信号的干扰和失真。严重时，不同路径上的信号可能会相互抵消，导致接收信号的强度显著降低。
 
@@ -303,3 +410,8 @@
     \caption{多径效应示意图}
     \label{fig_chp1_multipath}
 \end{figure}
+
+\section{小结}
+
+本章主要介绍了雷达及其相关的基本概念、组成原理与工作特性。首先，回顾了雷达的起源，阐述了雷达利用电磁波反射实现目标探测的基本思想，并简要介绍了赫兹实验证实电磁波存在的过程。随后，系统地讲解了现代雷达的基本组成及其工作流程，包括波形产生、发射、接收及信号处理等环节，重点分析了不同工作频率雷达的应用特点。在此基础上，进一步探讨了电磁波在传播过程中的几种典型物理现象：反射、折射、大气波导、色散以及多径效应，并说明了这些现象对雷达探测的影响。
+
