@@ -1,0 +1,32 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xlabel=$ x $, ylabel=$ y $,
+            xmin=-2, xmax=2,
+            ymin=-2, ymax=2,
+            ticklabel style={font=\tiny},
+            label style={font=\tiny},
+            axis equal image,
+            axis lines=middle,
+            legend cell align=left,
+            legend style={
+                    anchor=north east,
+                    font=\tiny,
+                    draw=none,
+                    fill=none
+                }
+        ]
+
+        \addplot[very thick, c1, domain=0:pi/2, samples=100] ({cos(deg(x))^4}, {sin(deg(x))^4});
+        \addplot[very thick, c1, domain=0:pi/2, samples=100, forget plot] ({cos(deg(x))^4}, -{sin(deg(x))^4});
+        \addplot[very thick, c1, domain=0:pi/2, samples=100, forget plot] (-{cos(deg(x))^4}, {sin(deg(x))^4});
+        \addplot[very thick, c1, domain=0:pi/2, samples=100, forget plot] (-{cos(deg(x))^4}, -{sin(deg(x))^4});
+        \addlegendentry{$p=\frac{1}{2}$}
+
+        \addplot[very thick, c2, domain=0:pi/2, samples=100] ({cos(deg(x))^0.5}, {sin(deg(x))^0.5});
+        \addplot[very thick, c2, domain=0:pi/2, samples=100, forget plot] ({cos(deg(x))^0.5}, -{sin(deg(x))^0.5});
+        \addplot[very thick, c2, domain=0:pi/2, samples=100, forget plot] (-{cos(deg(x))^0.5}, {sin(deg(x))^0.5});
+        \addplot[very thick, c2, domain=0:pi/2, samples=100, forget plot] (-{cos(deg(x))^0.5}, -{sin(deg(x))^0.5});
+        \addlegendentry{$p=4$}
+        \node at (axis cs:1,-1.25) {\fontsize{4pt}{5pt}\selectfont $\left(|x|^p + |y|^p\right)^{\frac{1}{p}} = 1$};
+    \end{axis}
+\end{tikzpicture}

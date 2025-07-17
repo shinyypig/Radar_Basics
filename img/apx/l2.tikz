@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xlabel=$ x $, ylabel=$ y $,
+            xmin=-2, xmax=2,
+            ymin=-2, ymax=2,
+            ticklabel style={font=\tiny},
+            label style={font=\tiny},
+            axis equal image,
+            axis lines=middle,
+            legend cell align=left,
+            legend style={
+                    anchor=north east,
+                    font=\tiny,
+                    draw=none,
+                    fill=none
+                }
+        ]
+        \addplot[very thick, c1, domain=0:2*pi, samples=100] ({cos(deg(x))}, {sin(deg(x))});
+        \node at (axis cs:1,-1.25) {\fontsize{4pt}{5pt}\selectfont $x^2+y^2=1$};
+    \end{axis}
+\end{tikzpicture}

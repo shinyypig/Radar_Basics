@@ -3,8 +3,8 @@
             axis lines=middle,
             xmin=-25,
             xmax=25,
-            ymin=-0,
-            ymax=6,
+            ymin=-0.5,
+            ymax=1.2,
             xtick=\empty,
             ytick=\empty,
             legend cell align=left,
@@ -19,6 +19,6 @@
             c1,
             thick,
             smooth,
-        ] table[x=x, y=y1, col sep=comma] {img/chp1/phase_spectrum.csv};
+        ] table[x=x, y=y2, col sep=comma] {img/intro/phase_signal.csv};
     \end{axis}
 \end{tikzpicture}

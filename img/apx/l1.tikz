@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xlabel=$ x $, ylabel=$ y $,
+            xmin=-2, xmax=2,
+            ymin=-2, ymax=2,
+            ticklabel style={font=\tiny},
+            label style={font=\tiny},
+            axis equal image,
+            axis lines=middle,
+            legend cell align=left,
+            legend style={
+                    anchor=north east,
+                    font=\tiny,
+                    draw=none,
+                    fill=none
+                }
+        ]
+        \addplot[very thick, c1] coordinates {(1,0) (0,1) (-1,0) (0,-1)} -- cycle;
+        \node at (axis cs:1,-1.25) {\fontsize{4pt}{5pt}\selectfont $|x|+|y|=1$};
+    \end{axis}
+\end{tikzpicture}

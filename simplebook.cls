@@ -59,7 +59,7 @@
 \DeclareVoidOption{noanswer}{\ekv{result=noanswer}}
 
 \DeclareVoidOption{normal}{\ekv{device=normal}}
-\DeclareVoidOption{pad}{\ekv{device=normal}}
+\DeclareVoidOption{pad}{\ekv{device=pad}}
 
 \DeclareStringOption[numeric-comp]{citestyle}
 \DeclareStringOption[numeric]{bibstyle}
@@ -133,7 +133,7 @@
 \ifdefstring{\SIMPLE@device}{normal}{
     \geometry{
         papersize={169mm,239mm},
-        text={130mm,190mm},
+        text={120mm,190mm},
         centering
     }
     % \setlength{\headsep}{-1.04cm}
@@ -1352,7 +1352,7 @@
 \ifdefstring{\SIMPLE@lang}{cn}{
     \renewcommand{\cftchappresnum}{\beforechap\space}
     \renewcommand{\cftchapaftersnum}{\space\afterchap}
-    \setlength{\cftchapnumwidth}{\widthof{\textbf{附录~999}}}
+    \setlength{\cftchapnumwidth}{\widthof{\textbf{第 9999 章}}}
     \g@addto@macro\appendix{%
         \addtocontents{toc}{%
             \protect\renewcommand{\protect\cftchappresnum}{\appendixname\space}%
@@ -1442,3 +1442,6 @@
 
 % 调整图片标题下方的间距
 % \setlength{\belowcaptionskip}{-0.5\baselineskip}
+
+% 设置表格行高
+\renewcommand{\arraystretch}{1.4}

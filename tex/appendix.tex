@@ -1,0 +1,286 @@
+\appendix
+\chapter{基础知识}
+
+
+\section{符号规定}
+
+工欲善其事必先利其器, 符号书写规范是一切沟通学习的前提。本书中会使用到大量矩阵和向量, 相关符号书写规则如下：
+\begin{enumerate}
+    \item 标量：小写字母, 如$a,b,c$或者$\alpha, \beta, \gamma$.
+    \item 向量：加粗小写字母, 如$\bm{x},\bm{y},\bm{z}$.
+    \item 矩阵：加粗大写字母, 如$\mathbf{A},\mathbf{B},\mathbf{C}$.
+\end{enumerate}
+
+
+此外, 可以使用如下形式来表明向量或矩阵的维度：
+\begin{enumerate}
+    \item 向量：$\bm{x} \in \mathbb{R}^{n \times 1}$ 或 $\bm{x} \in \mathbb{R}^{n}$ 表示\( n \times 1 \)的列向量.
+    \item 矩阵：$\mathbf{A} \in \mathbb{R}^{m \times n}$表示 $m \times n$ 的矩阵.
+\end{enumerate}
+其中, $\mathbb{R}$表示实数域, 而复数域则表示为$\mathbb{C}$.
+
+需要注意的是, 对于向量和矩阵中的元素, 按照书写规则, 也应当用小写字母表示. 比如, 对于向量$\bm{x}$, 其第$i$个元素可以表示为$x_i$, 而对于矩阵$\mathbf{A}$, 其第$i$行第$j$列的元素可以表示为$a_{ij}$. 因此, \( \bm{x}_i \) 或 \( \mathbf{A}_i \)这样的符号, 代表的是第\( i \)个向量或矩阵.
+
+
+\section{矩阵函数}
+
+\section{线性规划}
+
+
+\section{拉格朗日乘数法}
+对于等式约束的优化问题：
+\[
+    \begin{cases}
+        \min          & f(\bm{x})           \\
+        \mathrm{s.t.} & h(\bm{x}) = \bm{0}.
+    \end{cases}
+\]
+其取得极值的必要条件如下：
+\begin{enumerate}
+    \item \( h(\bm{x}) = 0 \)
+    \item \( \frac{\partial f(\bm{x})}{\partial \bm{x}} + \lambda \frac{\partial h(\bm{x})}{\partial \bm{x}} = 0 \)
+\end{enumerate}
+其中\( \lambda \geq 0 \).
+
+该如何理解上述两个条件呢？对于条件1，很显然它必须成立，因为该条件本身就是约束。对于条件2，则可以分为两种情况。情况1：该目标函数取得极值时，目标函数的导数并不为0 。此时，条件2表明\( \frac{\partial f(\bm{x})}{\partial \bm{x}} = -\lambda \frac{\partial h(\bm{x})}{\partial \bm{x}}  \)，也就是说目标函数梯度下降的方向与等式约束对应的函数的梯度方向刚好反向。这意味着想要进一步降低目标函数值，必然会影响等式约束的成立，因此，此时函数取得了极值。情况2：设\( \bm{x}^* \)处目标取得极值，并且\( h(\bm{x}^*) = 0\)，也就是说目标函数取得极值时，等式约束刚好满足。此时\( \frac{\partial f(\bm{x})}{\partial \bm{x}} = \bm{0} \)，显然当\( \lambda = 0 \)时，条件2是成立的。
+
+根据如上观察，我们可以归纳出拉格朗日乘数法，其步骤如下：
+\begin{enumerate}
+    \item 构建拉格朗日函数
+          \[
+              \mathcal{L}(\bm{x}, \lambda) = f(\bm{x}) + \lambda h(\bm{x}).
+          \]
+    \item 对\( \bm{x} \)和\( \lambda \)分别求导，并令其为0，得到方程组
+          \[
+              \begin{cases}
+                  \frac{\partial f(\bm{x})}{\partial \bm{x}} + \lambda \frac{\partial h(\bm{x})}{\partial \bm{x}} = 0 \\
+                  h(\bm{x}) = 0
+              \end{cases}.
+          \]
+    \item 求解上述方程组，得到\( (\bm{x}^*,\lambda^*)\)。
+\end{enumerate}
+
+\begin{example}
+    设有如下的优化问题
+    \[
+        \begin{cases}
+            \min          & f(\bm{x}) = x_1^2 + x_1x_2 +x_2^2 \\
+            \mathrm{s.t.} & h(\bm{x}) = x_1^2 + x_2^2 - 1 = 0
+        \end{cases}.
+    \]
+    请给出该问题的拉格朗日函数，并求解最优解。
+\end{example}
+\begin{solution}
+    令向量\( \bm{x} = \begin{bsmallmatrix} x_1 \\ x_2 \end{bsmallmatrix} \)，则目标函数和约束函数可以写成如下的形式
+    \[
+        f(\bm{x}) = \bm{x}^{\mathrm{T}} \mathbf{R} \bm{x}, \quad h(\bm{x}) = \bm{x}^{\mathrm{T}} \bm{x} - 1,
+    \]
+    其中\( \mathbf{R} = \begin{bsmallmatrix} 1 & \frac{1}{2} \\ \frac{1}{2} & 1 \end{bsmallmatrix} \)。对应的拉格朗日函数为
+    \[
+        \mathcal{L}(\bm{x}, \lambda) = \bm{x}^{\mathrm{T}} \mathbf{R} \bm{x} + \lambda (\bm{x}^{\mathrm{T}} \bm{x} - 1).
+    \]
+    对\( \bm{x} \)和\( \lambda \)分别求导，并令其为0，得到方程组
+    \[
+        \begin{cases}
+            \frac{\partial f(\bm{x})}{\partial \bm{x}} + \lambda \frac{\partial h(\bm{x})}{\partial \bm{x}} = 0 \\
+            h(\bm{x}) = 0
+        \end{cases} \Rightarrow
+        \begin{cases}
+            2\mathbf{R} \bm{x} + 2\lambda \bm{x} = 0 \\
+            \bm{x}^{\mathrm{T}} \bm{x} - 1 = 0
+        \end{cases}.
+    \]
+    不难发现\( \mathbf{R} \bm{x} = -\lambda \bm{x} \)，即\( \bm{x} \)是\( \mathbf{R} \)的特征向量，对应的特征值为\( -\lambda \)。而矩阵\( \mathbf{R} \)有如下特征分解：
+    \[
+        \mathbf{R} = \mathbf{U} \bm{\Sigma} \mathbf{U}^{\mathrm{T}} = \begin{bmatrix}
+            \frac{\sqrt{2}}{2} & \frac{\sqrt{2}}{2}  \\
+            \frac{\sqrt{2}}{2} & -\frac{\sqrt{2}}{2}
+        \end{bmatrix} \begin{bmatrix}
+            \frac{3}{2} & 0           \\
+            0           & \frac{1}{2}
+        \end{bmatrix} \begin{bmatrix}
+            \frac{\sqrt{2}}{2} & \frac{\sqrt{2}}{2}  \\
+            \frac{\sqrt{2}}{2} & -\frac{\sqrt{2}}{2}
+        \end{bmatrix}.
+    \]
+    显然，其最小特征值为\( \frac{1}{2} \)，对应的模长为1的特征向量为\( \bm{x} = \pm \begin{bmatrix} \frac{\sqrt{2}}{2} \\ -\frac{\sqrt{2}}{2} \end{bmatrix} \)。
+
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.4\textwidth}
+            \centering
+            \input{img/basic/kkt1.tikz}
+            \caption{不满足极值条件}
+            \label{fig_basic_kkt_eg_1}
+        \end{subfigure}
+        \begin{subfigure}{.4\textwidth}
+            \centering
+            \input{img/basic/kkt2.tikz}
+            \caption{满足极值条件}
+            \label{fig_basic_kkt_eg_2}
+        \end{subfigure}
+        \caption{等式约束的优化问题示例}
+        \label{fig_basic_kkt_eg}
+    \end{figure}
+
+    从\cref{fig_basic_kkt_eg_1}可以看到，此时的点并不满足极值条件，目标函数的梯度（蓝色箭头）和约束函数的梯度（红色箭头）并不共线，这意味着沿着黄色箭头的方向，目标函数仍然是可以继续下降的，因此该点并不是极值点。而在极值点处，如\cref{fig_basic_kkt_eg_2}所示，目标函数的梯度和约束函数的梯度是共线的，这意味着在该点处，想要进一步降低目标函数值，必然会影响等式约束的成立，因此该点是极值点。
+\end{solution}
+
+\chapter{向量范数与矩阵范数}\label{apx.matrix-norm}
+首先给出范数的概念：
+
+\begin{definition}[范数]
+    若$V$是数域上的线性空间，在其上定义了一个实值函数$\|\cdot\|:V \to \mathbb{R}$，
+    满足：
+    \begin{enumerate}
+        \item 非负性： $\|\bm{x}\| \geq 0$, $\|\bm{x}\|=0 \Leftrightarrow \bm{x} =0$
+        \item 齐次性： $\|\alpha \bm{x}\|=|\alpha|\|\bm{x}\|$
+        \item 三角不等式： $\|\bm{x}+\bm{y}\| \leq \|\bm{x}\|+\|\bm{y}\|$
+    \end{enumerate}
+    其中\( \bm{x} \)和\( \bm{y} \)是$V$中的任意矢量，$\alpha$为数域上的任意标量. 则称$\|\cdot\|$为线性空间$V$上的\textbf{范数}. 特别地，当线性空间的元素为矩阵时，相应的范数也称为\textbf{矩阵范数}.
+\end{definition}
+
+接下来，我们给出常用的向量范数与矩阵范数.
+
+\section{向量范数}
+我们以欧氏空间为例，给出$n$维欧氏空间中元素的各种常用范数. 其中，下面用到的向量$\bm{x}=\begin{bmatrix} x_1 & x_2 & \cdots & x_n \end{bmatrix}^{\mathrm{T}}$, $\bm{y}=\begin{bmatrix} y_1 & y_2 & \cdots & y_n \end{bmatrix}^{\mathrm{T}}$均为$n$维欧氏空间中的
+向量.
+
+\begin{enumerate}[leftmargin=0em, listparindent=2em, itemindent=2em]
+    \item $\ell_1$-范数：
+          \[
+              \|\bm{x}\|_1 = \sum_{i=1}^n |x_i|.
+          \]
+          由向量的\( \ell_1 \)-范数（简称1-范数）可以定义向量之间的\textbf{曼哈顿距离（Manhattan Distance）}
+          \[
+              d_{\bm{x}\bm{y}} = \|\bm{x} - \bm{y}\|_1 = \sum_{i=1}^n |x_i - y_i|.
+          \]
+          \cref{fig_apx_l1}给出了二维平面上到原点的曼哈顿距离为1的所有的点的几何结构.
+          \begin{figure}[htb!]
+              \centering
+              \includegraphics[width=.35\textwidth]{img/apx/l1.tikz}
+              \caption{在二维平面上到原点的曼哈顿距离为 1 的点集的几何结构}
+              \label{fig_apx_l1}
+          \end{figure}
+    \item $\ell_2$-范数：
+          \[
+              \|\bm{x}\|_2 = \left(\sum_{i=1}^n x_i^2\right)^{\frac{1}{2}}.
+          \]
+          由向量的\( \ell_2 \)-范数（简称2-范数）定义可以定义向量之间的\textbf{欧氏距离（Euclidean Distance）}：
+          \[
+              d_{\bm{x}\bm{y}} = \|\bm{x} - \bm{y}\| = \left(\sum_{i=1}^{n}(x_i - y_i)^2\right)^{\frac{1}{2}}.
+          \]
+          \cref{fig_apx_l2}给出了二维平面上到原点的欧氏距离为1的所有的点的几何结构.
+          \begin{figure}[htb!]
+              \centering
+              \includegraphics[width=.35\textwidth]{img/apx/l2.tikz}
+              \caption{在二维平面上到原点的欧氏距离为1的点集的几何结构}
+              \label{fig_apx_l2}
+          \end{figure}
+    \item $\ell_p$-范数：
+          \[
+              \|\bm{x}\|_p = \left(\sum_{i=1}^n |x_i|^p\right)^{\frac{1}{p}}.
+          \]
+          由向量的$\ell_p$-范数（简称\( p \)范数）可以定义向量之间的\textbf{明斯基距离（Minkowski Distance）}：
+          \[
+              \bm{d}_{xy} = \|\bm{x} - \bm{y}\|_p = \left(\sum_{i=1}^n |x_i - y_i|^p\right)^{\frac{1}{p}}.
+          \]
+          \cref{fig_apx_lp}分别给出了$p = 0.5$和$p = 4$时二维平面上到原点的明斯基距离为1的所有的点的几何结构.
+
+          \begin{figure}[htb!]
+              \centering
+              \includegraphics[width=.35\textwidth]{img/apx/lp.tikz}
+              \caption{在二维平面上到原点明斯基距离为1的点集的几何结构}
+              \label{fig_apx_lp}
+          \end{figure}
+    \item \( \infty \)-范数：
+          \[
+              \| \bm{x} \|_{\infty} = \max_{1 \leq i \leq n} |x_i|.
+          \]
+          由向量的\( \infty \)-范数可以定义向量之间的\textbf{切比雪夫距离（Chebyshev Distance）}：
+          \[
+              d_{\bm{x}\bm{y}} = \| \bm{x} - \bm{y} \|_{\infty} = \max_{1 \leq i \leq n} |x_i - y_i|.
+          \]
+          \( \infty \)-范数可以看作是\( \ell_p \)-范数在\( p\) 趋于无穷时的极限情形，即有
+          \[
+              \|\bm{x}\|_{\infty} = \lim_{p \to \infty} \left(\sum_{i=1}^n |x_i|^p\right)^{\frac{1}{p}}.
+          \]
+          相应地，到原点的切比雪夫距离为1的图形也延续上面几个图形的规律，为正方形结构（\cref{fig_apx_linf}）.
+          \begin{figure}[htb!]
+              \centering
+              \includegraphics[width=.35\textwidth]{img/apx/linf.tikz}
+              \caption{在二维平面上到原点的切比雪夫距离为1的点集的几何结构}
+              \label{fig_apx_linf}
+          \end{figure}
+    \item \( \ell_0 \)-范数：
+          \[
+              \| \bm{x} \|_0 = \sum_{i=1}^n \mathbb{I}(x_i),
+          \]
+          其中，\( \mathbb{I}(\cdot) \) 为指示函数，有如下表达式
+          \[
+              \mathbb{I}(x_i) = \begin{cases}
+                  1, & x_i \neq 0 \\
+                  0, & x_i = 0
+              \end{cases}.
+          \]
+          简而言之，向量的\( \ell_0 \)-范数（简称0-范数）等于向量中非零元素的个数. \cref{fig_apx_l0}给出了二维平面上两个分量都不大于1且\( \ell_0 \)-范数为1的所有的点的几何结构. 需要注意的是，向量的\( \ell_0 \)-范数并不是普通意义的范数，因为它并不满足范数齐次性的性质.
+          \begin{figure}[htb!]
+              \centering
+              \includegraphics[width=.35\textwidth]{img/apx/l0.tikz}
+              \caption{二维平面上两个分量都不大于1且\( \ell_0 \)-范数为1的点集的几何结构}
+              \label{fig_apx_l0}
+          \end{figure}
+\end{enumerate}
+
+\section{矩阵范数}
+
+常用的矩阵范数（其中\( \mathbf{A} \)为\( m \times n \)实矩阵）如下.
+
+\begin{enumerate}[leftmargin=0em, listparindent=2em, itemindent=2em]
+    \item 弗罗贝尼乌斯范数（Frobenius Norm）
+
+          矩阵\( \mathbf{A} \)的弗罗贝尼乌斯范数（简称F-范数）是最常用的矩阵范数，公式如下
+          \[
+              \|\mathbf{A}\|_{\mathrm{F}} = \sqrt{\operatorname{tr}(\mathbf{A}^{\mathrm{T}}\mathbf{A})} = \left(\sum_{i=1}^m \sum_{j=1}^n a_{ij}^2\right)^{\frac{1}{2}}.
+          \]
+          事实上，它相当于将矩阵\( \mathbf{A} \)展成向量后的$\ell_2$-范数，即 $\|\mathbf{A}\|_{\mathrm{F}} = \|\operatorname{vec}(\mathbf{A})\|_2$.
+    \item $p$-范数：
+
+          矩阵\( \mathbf{A} \)的$p$-范数定义为
+          \[
+              \|\mathbf{A}\|_p = \max_{\bm{x} \neq 0} \frac{\|\mathbf{A}\bm{x}\|_p}{\|\bm{x}\|_p},
+          \]
+          其中，$\|\bm{x}\|_p$ 是向量\( \bm{x} \)的 \( \ell_p \)-范数. 需要注意的是，矩阵\( \mathbf{A} \)的2-范数和它的F-范数一般情况下并不等价.
+    \item 行和范数（Row-sum Norm）
+
+          \[
+              \|\mathbf{A}\|_{row} = \max_{1\leq i\leq m} \left\{\sum_{j=1}^n |a_{ij}|\right\}.
+          \]
+
+    \item 列和范数（Column-sum Norm）
+
+          \[
+              \|\mathbf{A}\|_{col} = \max_{1\leq j\leq n} \left\{\sum_{i=1}^m |a_{ij}|\right\}.
+          \]
+
+    \item 谱范数（Spectrum Norm）
+
+          \[
+              \|\mathbf{A}\|_{spec} = \sigma_{max} = \sqrt{\lambda_{max}},
+          \]
+          其中$\sigma_{max}$是矩阵\( \mathbf{A} \)的最大奇异值，即$\mathbf{A}^{\mathrm{T}}\mathbf{A}$的最大特征值$\lambda_{max}$的平方根.
+
+    \item 马哈拉诺比斯范数（Mahalanobis Norm）
+
+          \[
+              \|\mathbf{A}\|_{\mathbf{\Omega}} = \sqrt{\operatorname{tr}(\mathbf{A}^{\mathrm{T}}\mathbf{\Omega} \mathbf{A})},
+          \]
+          其中$\mathbf{\Omega}$为正定矩阵.
+
+    \item 核范数（Nuclear Norm）
+
+          \[
+              \|\mathbf{A}\|_* = \operatorname{tr}(\sqrt{\mathbf{A}^{\mathrm{T}}\mathbf{A}}).
+          \]
+          经过简单的验证可知，矩阵的核范数等于矩阵的所有奇异值之和.
+\end{enumerate}

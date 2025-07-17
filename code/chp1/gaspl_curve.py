@@ -23,4 +23,4 @@ plt.show()
 
 # %%
 df = pd.DataFrame({"f": fGHz, "l": L, "l0": L0})
-df.to_csv("img/chp1/gaspl.csv", index=False)
+df.to_csv("img/intro/gaspl.csv", index=False)

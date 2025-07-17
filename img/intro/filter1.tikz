@@ -19,20 +19,20 @@
             c1,
             thick,
             smooth,
-        ] table[x=x, y=y1, col sep=comma] {img/chp1/phase_signal.csv};
+        ] table[x=x, y=y1, col sep=comma] {img/intro/phase_signal.csv};
 
         % \addplot[
         %     c2,
         %     thick,
         %     smooth,
-        % ] table[x=x, y=y2, col sep=comma] {img/chp1/phase_signal.csv};
+        % ] table[x=x, y=y2, col sep=comma] {img/intro/phase_signal.csv};
         % \addlegendentry{线性相位输出};
 
         % \addplot[
         %     c3,
         %     thick,
         %     smooth,
-        % ] table[x=x, y=y3, col sep=comma] {img/chp1/phase_signal.csv};
+        % ] table[x=x, y=y3, col sep=comma] {img/intro/phase_signal.csv};
         % \addlegendentry{非线性相位输出};
     \end{axis}
 \end{tikzpicture}

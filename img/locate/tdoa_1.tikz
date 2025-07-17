@@ -1,0 +1,32 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xlabel=$ x $, ylabel=$ y $,
+            ticklabel style={font=\tiny},
+            label style={font=\tiny},
+            xmin=-3.5, xmax=3.5,
+            ymin=-3.5, ymax=3.5,
+            ticks=none,
+            axis equal image,
+            axis lines=middle,
+            legend cell align=left,
+            legend style={
+                    anchor=north east,
+                    font=\tiny,
+                    draw=none,
+                    fill=none
+                }
+        ]
+        \draw[thick, dashed] (axis cs:2, 0) -- (axis cs:1.5, 1);
+        \draw[thick, dashed] (axis cs:-2, 0) -- (axis cs:1.5, 1);
+
+        \addplot[
+            black,
+            thick,
+            smooth,
+        ] table[x=x, y=y, col sep=comma] {./img/locate/hyperbola1.csv};
+
+        \draw[thick, c1, fill=c1!60] (axis cs:2, 0) circle (2pt);
+        \draw[thick, c1, fill=c1!60] (axis cs:-2, 0) circle (2pt);
+        \draw[thick, c2, fill=c2!60] (axis cs:1.5, 1) circle (2pt);
+    \end{axis}
+\end{tikzpicture}

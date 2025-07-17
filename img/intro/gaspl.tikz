@@ -18,12 +18,12 @@
             c1,
             thick,
             smooth,
-        ] table[x=f, y=l, col sep=comma] {img/chp1/gaspl.csv};
+        ] table[x=f, y=l, col sep=comma] {img/intro/gaspl.csv};
         \addplot[
             c2,
             thick,
             smooth,
-        ] table[x=f, y=l0, col sep=comma] {img/chp1/gaspl.csv};
+        ] table[x=f, y=l0, col sep=comma] {img/intro/gaspl.csv};
         \legend{湿空气, 干空气}
     \end{axis}
 \end{tikzpicture}

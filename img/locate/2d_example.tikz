@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+    \draw[-latex] (-3, 0) -- (3, 0) node[right] {\( x_1 \)};
+    \draw[-latex] (0, -1) -- (0, 3) node[above] {\( x_2 \)};
+    \coordinate (X1) at (2, 0);
+    \coordinate (X2) at (-2, 0);
+    \coordinate (T) at (1, 2);
+    \draw[-latex, thick] (X1) -- ($(X1)!0.5!(T)$);
+    \draw[-latex, thick] (X2) -- ($(X2)!0.35!(T)$);
+    \draw[thick, dashed] (X2) -- (T);
+    \draw[thick, dashed] (X1) -- (T);
+    \draw[c1, fill=c1!60] (X1) circle (0.07) node[below] {基站1};
+    \draw[c1, fill=c1!60] (X2) circle (0.07) node[below] {基站2};
+    \draw[c2, fill=c2!60] (T) circle (0.07) node[above] {目标};
+\end{tikzpicture}

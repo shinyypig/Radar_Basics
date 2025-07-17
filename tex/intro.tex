@@ -10,7 +10,7 @@
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[width=.6\textwidth]{./img/chp1/hertz_experiment.png}
+    \includegraphics[width=.6\textwidth]{./img/intro/hertz_experiment.png}
     \caption{赫兹的实验装置示意图}
     \label{fig_chp1_hertz}
 \end{figure}
@@ -176,9 +176,9 @@
     \label{fig_chp1_radar_pulse}
 \end{figure}
 
-假设目标与雷达之间的距离为 $R$，那么不难得出，其与回波信号的时延 $\tau$ 之间的关系为
+假设目标与雷达之间的距离为 $r$，那么不难得出，其与回波信号的时延 $\tau$ 之间的关系为
 \begin{equation}
-    R = \frac{c \tau}{2},
+    r = \frac{c \tau}{2},
     \label{eq:radar_time_delay}
 \end{equation}
 其中 $c$ 是光速。
@@ -260,13 +260,13 @@
     \centering
     \begin{subfigure}{.3\textwidth}
         \centering
-        \includegraphics[width=.8\textwidth]{./img/chp1/corner_reflector_1.tikz}
+        \includegraphics[width=.8\textwidth]{./img/intro/corner_reflector_1.tikz}
         \caption{}
         \label{fig_chp1_corner_reflector_1}
     \end{subfigure}
     \begin{subfigure}{.3\textwidth}
         \centering
-        \includegraphics[width=.9\textwidth]{./img/chp1/corner_reflector_2.tikz}
+        \includegraphics[width=.9\textwidth]{./img/intro/corner_reflector_2.tikz}
         \caption{}
         \label{fig_chp1_corner_reflector_2}
     \end{subfigure}
@@ -278,7 +278,7 @@
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[width=.4\textwidth]{./img/chp1/bike.jpeg}
+    \includegraphics[width=.4\textwidth]{./img/intro/bike.jpeg}
     \caption{自行车尾部的角反射器}
     \label{fig_chp1_bike}
 \end{figure}
@@ -316,7 +316,7 @@
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[width=.7\textwidth]{./img/chp1/atmosphere_duct.tikz}
+    \includegraphics[width=.7\textwidth]{./img/intro/atmosphere_duct.tikz}
     \caption{大气波导示意图}
     \label{fig_chp1_atmosphere_duct}
 \end{figure}
@@ -326,44 +326,44 @@
 当出现大气波导现象时，雷达可以探测到地平线以下的目标。尽管能够探测到目标，但却很难精确地测量目标的距离。如\cref{fig_chp1_radar_ducting}所示，由于大气波导效应，电磁波会沿着地表或海面传播，形成一个弯曲的路径，从而能够探测到地平线以下的目标。
 \begin{figure}[htb!]
     \centering
-    \includegraphics[width=.6\textwidth]{./img/chp1/radar_atmosphere.tikz}
+    \includegraphics[width=.6\textwidth]{./img/intro/radar_atmosphere.tikz}
     \caption{雷达超视距探测示意图}
     \label{fig_chp1_radar_ducting}
 \end{figure}
 
 \subsection{自由空间路径损耗与大气衰减}
 
-自由空间衰减（Free-Space Path Loss）则是指电磁波在自由空间中传播时，由于距离的增加而导致的功率损耗，通常被定义为发射功率与接收功率之间的比率。设有一个发射功率为 $P_t$ 的天线，以球面波形式向外辐射电磁波，则在距离 $d$ 处该电磁波的功率密度 $S$ 可以表示为：
-\begin{equation}
-    S = \frac{P_t}{4 \pi d^2}.
+自由空间衰减（Free-Space Path Loss）则是指电磁波在自由空间中传播时，由于距离的增加而导致的功率损耗，通常被定义为发射功率与接收功率之间的比率。设有一个发射功率为 $P_t$ 的天线，以球面波形式向外辐射电磁波，则在距离 $r$ 处该电磁波的功率密度 $S$ 可以表示为：
+\begin{equation*}
+    S = \frac{P_t}{4 \pi r^2}.
     \label{eq:free_space_power_density}
-\end{equation}
+\end{equation*}
 而在此处的接收天线接收到的功率 $P_r$ 则与天线的有效面积 $A_e$ 有关，通常可以表示为：
-\begin{equation}
-    P_r = S A_e = \frac{P_t A_e}{4 \pi d^2}.
+\begin{equation*}
+    P_r = S A_e = \frac{P_t A_e}{4 \pi r^2}.
     \label{eq:free_space_received_power}
-\end{equation}
+\end{equation*}
 其中，$A_e$ 是接收天线的有效面积，对于一个各向增益都为1的理想天线，其有效面积可以表示为：
-\begin{equation}
+\begin{equation*}
     A_e = \frac{\lambda^2}{4 \pi},
     \label{eq:effective_area}
-\end{equation}
+\end{equation*}
 其中 $\lambda$ 是电磁波的波长。
 将\cref{eq:effective_area}代入\cref{eq:free_space_received_power}，可以得到接收功率与发射功率之间的关系：
 \begin{equation}
-    L = \frac{P_t}{P_r} = \left( \frac{4 \pi d}{\lambda} \right)^2 = \left( \frac{4 \pi f d}{c} \right)^2.
+    L = \frac{P_t}{P_r} = \left( \frac{4 \pi r}{\lambda} \right)^2 = \left( \frac{4 \pi f r}{c} \right)^2.
     \label{eq:free_space_received_power_final}
 \end{equation}
 其中，$L$ 即为自由空间路径损耗。
 
 从\cref{eq:free_space_received_power_final}可以看出，自由空间路径损耗与频率 $f$ 的平方成正比。所以想要进行远距离的探测，通常需要使用低频段的电磁波。但低频段的电磁波分辨率较低，无法提供足够的细节信息。因此，在自动驾驶、无人机等应用中，通常会使用高频的毫米波雷达（如24GHz或77GHz），以获得更高的分辨率和精度。
 
-除此以外，电磁波在大气中传播时还会受到大气衰减的影响。大气衰减是指电磁波在大气中传播时，由于大气中的水汽、氧气、二氧化碳等分子对电磁波的吸收和散射作用，导致信号强度的衰减。需要注意的是，大气衰减是指相对于自由空间路径损耗的大气导致的额外功率损耗。大气衰减与频率有关，通常在高频段（如微波和毫米波）更为显著。如\cref{fig_chp1_gaspl}所示，随着频率的增加，大气衰减会显著增加，并且湿空气的衰减比干燥空气更为明显。
+除此以外，电磁波在大气中传播时还会受到大气衰减的影响。大气衰减是指电磁波在大气中传播时，由于大气中的水汽、氧气、二氧化碳等分子对电磁波的吸收和散射\footnote{散射是指当波遇到空间中物体或介质的不均匀性（如界面、粗糙表面、微粒）时，入射波被扰动，产生新的传播方向和能量分布，从而向多方向重新辐射或传播的物理过程。在广义的波动物理概念中，散射包含了反射和折射引发的辐射场。}作用，导致信号强度的衰减。需要注意的是，大气衰减是指相对于自由空间路径损耗的大气导致的额外功率损耗。大气衰减与频率有关，通常在高频段（如微波和毫米波）更为显著。如\cref{fig_chp1_gaspl}所示，随着频率的增加，大气衰减会显著增加，并且湿空气的衰减比干燥空气更为明显。
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[width=.5\textwidth]{./img/chp1/gaspl.tikz}
-    \caption{大气衰减曲线（距离1千米，温度$15^\circ$C，气压 $1013$ hPa）}
+    \includegraphics[width=.5\textwidth]{./img/intro/gaspl.tikz}
+    \caption{大气衰减曲线\supercite{itu_r_p676_11}（距离1千米，温度$15^\circ$C，气压 $1013$ hPa）}
     \label{fig_chp1_gaspl}
 \end{figure}
 
@@ -377,22 +377,22 @@
     \centering
     \begin{subfigure}{.3\textwidth}
         \centering
-        \includegraphics[width=.9\textwidth]{./img/chp1/filter1.tikz}
-        \includegraphics[width=.9\textwidth]{./img/chp1/filter4.tikz}
+        \includegraphics[width=.9\textwidth]{./img/intro/filter1.tikz}
+        \includegraphics[width=.9\textwidth]{./img/intro/filter4.tikz}
         \caption{}
         \label{fig_chp1_filter_1}
     \end{subfigure}
     \begin{subfigure}{.3\textwidth}
         \centering
-        \includegraphics[width=.9\textwidth]{./img/chp1/filter2.tikz}
-        \includegraphics[width=.9\textwidth]{./img/chp1/filter4.tikz}
+        \includegraphics[width=.9\textwidth]{./img/intro/filter2.tikz}
+        \includegraphics[width=.9\textwidth]{./img/intro/filter4.tikz}
         \caption{}
         \label{fig_chp1_filter_2}
     \end{subfigure}
     \begin{subfigure}{.3\textwidth}
         \centering
-        \includegraphics[width=.9\textwidth]{./img/chp1/filter3.tikz}
-        \includegraphics[width=.9\textwidth]{./img/chp1/filter4.tikz}
+        \includegraphics[width=.9\textwidth]{./img/intro/filter3.tikz}
+        \includegraphics[width=.9\textwidth]{./img/intro/filter4.tikz}
         \caption{}
         \label{fig_chp1_filter_3}
     \end{subfigure}
@@ -406,12 +406,100 @@
 
 \begin{figure}[htb!]
     \centering
-    \includegraphics[width=.5\textwidth]{./img/chp1/multipath.tikz}
+    \includegraphics[width=.5\textwidth]{./img/intro/multipath.tikz}
     \caption{多径效应示意图}
     \label{fig_chp1_multipath}
 \end{figure}
 
+\section{雷达方程}
+雷达方程（Radar Equation）是雷达系统最核心的工程公式之一，用于定量描述雷达发射、传播、反射和接收信号之间的功率关系。它既揭示了影响探测距离和信号强度的主要物理量，也为雷达系统设计提供了基础依据。本节已最简单的单站雷达（即发射接收天线距离很近，甚至共用同一个天线）为例，详细介绍雷达方程的推导过程。
+
+设雷达系统的发射功率为 $P_t$，且发射天线增益为 $G_t$，那么在距离 $r$ 处的功率密度 $S$ 可以表示为：
+\begin{equation*}
+    S_t = \frac{P_t G_t}{4 \pi r^2}.
+    \label{eq:radar_power_density}
+\end{equation*}
+
+而在此处的目标会将雷达发射的电磁波，以镜面反射、漫反射、体散射等方式反回给雷达接收天线，方便起见这里统称散射。由于目标的结构和材料千差万别，很难直接计算目标的散射特性，但可以使用雷达截面积（Radar Cross-Section, RCS）来整体性地描述目标对雷达波的散射能力。简而言之，如果目标的雷达截面积为 $\sigma$，那么目标散射的电磁波的总功率 $P_s$ 可以表示为：
+\begin{equation*}
+    P_s = S_t \sigma.
+    \label{eq:radar_received_power}
+\end{equation*}
+因此，在接收天线处目标散射回来的电磁波的功率密度 $S_r$ 可以表示为：
+\begin{equation*}
+    S_r = \frac{P_s}{4 \pi r^2} = \frac{P_t G_t \sigma}{(4 \pi r^2)^2}.
+    \label{eq:radar_received_power_density}
+\end{equation*}
+
+若接收天线的增益为 $G_r$。根据天线增益和有效面积的关系，接收天线的有效面积 $A_e$ 可以表示为：
+\begin{equation}
+    A_e = \frac{G_r \lambda^2}{4 \pi}.
+    \label{eq:radar_effective_area}
+\end{equation}
+将接收天线有效面积\( A_e \)与目标散射回来的电磁波的功率密度\( S_r \)相乘，便可以得到接收天线接收到的功率 $P_r$ 为：
+\begin{equation*}
+    P_r = A_e S_r  = \frac{G_r \lambda^2}{4 \pi} \cdot \frac{P_t G_t \sigma}{(4 \pi r^2)^2}.
+    \label{eq:radar_received_power_final}
+\end{equation*}
+将\cref{eq:radar_received_power_final}整理后，可以得到雷达方程的标准形式：
+\begin{equation}
+    P_r = \frac{P_t G_t G_r \lambda^2 \sigma}{(4 \pi)^3 r^4}.
+    \label{eq:radar_equation}
+\end{equation}
+
+假设雷达能够检测的最小接收功率为 $P_{\text{min}}$，则根据\cref{eq:radar_equation}，可以得到雷达的最大探测距离 $r_{\text{max}}$ 为：
+\begin{equation}
+    r_{\text{max}} = \left( \frac{P_t G_t G_r \lambda^2 \sigma}{(4 \pi)^3 P_{\text{min}}} \right)^{1/4}.
+    \label{eq:radar_max_range}
+\end{equation}
+从\cref{eq:radar_max_range}可以看出，雷达的最大探测距离与发射功率 $P_t$、天线增益 $G_t$、接收天线增益 $G_r$、发射信号波长 $\lambda$ 以及目标的雷达截面积 $\sigma$ 成正比，而与接收机的最小接收功率 $P_{\text{min}}$ 成反比。
+
+雷达方程与自由空间损耗有着密切的联系：显然，电磁波经历了从雷达到目标再从目标到雷达这两步传播过程，其中经历了两次自由空间损耗。如果我们将目标也看作是一个天线，那么目标的雷达截面积 $\sigma$ 则对应了天线的有效面积。因此，根据\cref{eq:radar_effective_area}，我们可以得到目标作为一个天线时的增益为
+\[
+    G_s =  \frac{4 \pi \sigma}{\lambda^2}.
+\]
+此时，我们可以将发射功率与接收功率的比值写为
+\begin{equation}
+    \frac{P_t}{P_r} = \frac{(4 \pi)^3 r^4}{G_t G_r \lambda^2 \sigma} =\frac{(4 \pi r)^4}{\lambda^4 G_t G_r G_s} = \frac{L^2}{G_t G_r G_s},
+    \label{eq:radar_equation_gain}
+\end{equation}
+其中 $L$ 是自由空间路径损耗，表达式见\cref{eq:free_space_received_power_final}。
+
+\begin{figure}[htb!]
+    \centering
+    % \includegraphics[width=.4\textwidth]{./img}
+    \begin{tikzpicture}
+        \begin{axis}[
+                xlabel=$ x $, ylabel=$ y $,
+                ticklabel style={font=\small},
+                label style={font=\small},
+                axis equal image,
+                axis lines=none,
+                legend cell align=left,
+                legend style={
+                        anchor=north east,
+                        font=\tiny,
+                        draw=none,
+                        fill=none
+                    }
+            ]
+            \addplot graphics [xmin=-0.5, xmax=0.5, ymin=-0.5, ymax=0.5] {img/radar.png};
+            \addplot graphics [xmin=2.5, xmax=3.5, ymin=0.5, ymax=1.5] {img/target.png};
+            % light from radar to target and back
+            \addplot[thick, -latex, c1] coordinates {(0.5, 0.3) (2.5, 0.9)} node[midway, above=3pt, black] {\tiny 自由空间损耗\( L \)};
+            \addplot[thick, -latex, c2] coordinates {(2.5, 0.8) (0.5, 0.2)} node[midway, below=3pt, black] {\tiny 自由空间损耗\( L \)};
+            \node at (axis cs:0, 0.5) [font=\tiny] {发射增益\( G_t \)};
+            \node at (axis cs:0, -0.5) [font=\tiny] {接收增益\( G_r \)};
+            \node at (axis cs:3, 0.5) [font=\tiny] {目标增益\( G_s \)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{雷达方程与自由空间损耗}
+    \label{fig_chp1_radar_equation_gain}
+\end{figure}
+
+如\cref{fig_chp1_radar_equation_gain}所示，\cref{eq:radar_equation_gain}有明确的物理意义：在雷达系统中，电磁波首先向外发射电磁波，到达目标处，功率的损耗为 $L$ 倍；然后目标将电磁波散射回来，再由接收天线接收，相同路径再走一遍，此时又损耗了 $L$ 倍。又因为，所使用的天线有增益，且目标也并不是一个理想的点目标。所以，整体的损耗并没有达到 $L^2$，而是需要再除以各个环节的增益 $G_t G_r G_s$。
+
+
 \section{小结}
 
-本章主要介绍了雷达及其相关的基本概念、组成原理与工作特性。首先，回顾了雷达的起源，阐述了雷达利用电磁波反射实现目标探测的基本思想，并简要介绍了赫兹实验证实电磁波存在的过程。随后，系统地讲解了现代雷达的基本组成及其工作流程，包括波形产生、发射、接收及信号处理等环节，重点分析了不同工作频率雷达的应用特点。在此基础上，进一步探讨了电磁波在传播过程中的几种典型物理现象：反射、折射、大气波导、色散以及多径效应，并说明了这些现象对雷达探测的影响。
-
+本章主要介绍了雷达及其相关的基本概念、组成原理与工作特性。首先，回顾了雷达的起源，阐述了雷达利用电磁波反射实现目标探测的基本思想，并简要介绍了赫兹实验证实电磁波存在的过程。随后，系统地讲解了现代雷达的基本组成及其工作流程，包括波形产生、发射、接收及信号处理等环节，重点分析了不同工作频率雷达的应用特点。在此基础上，进一步探讨了电磁波在传播过程中的几种典型物理现象：反射、折射、大气波导、色散以及多径效应，并说明了这些现象对雷达探测的影响。最后，推导了雷达方程，揭示了雷达系统中各个参数之间的关系，为后续章节的深入学习奠定了基础。通过本章的学习，读者应能初步理解雷达的工作原理及其在实际应用中的重要性，为后续章节的深入研究做好准备。

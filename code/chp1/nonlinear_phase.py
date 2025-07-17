@@ -174,7 +174,7 @@ fig_time_comparison.show()
 
 # %%
 df = pd.DataFrame({"x": x, "y1": y, "y2": y_linear, "y3": y_nonlinear})
-df.to_csv("img/chp1/phase_signal.csv", index=False)
+df.to_csv("img/intro/phase_signal.csv", index=False)
 
 df = pd.DataFrame(
     {
@@ -184,4 +184,4 @@ df = pd.DataFrame(
         "y3": np.fft.fftshift(np.abs(Y_nonlinear)),
     }
 )
-df.to_csv("img/chp1/phase_spectrum.csv", index=False)
+df.to_csv("img/intro/phase_spectrum.csv", index=False)

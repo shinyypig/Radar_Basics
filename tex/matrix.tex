@@ -1,0 +1,348 @@
+\chapter{矩阵方法基础}
+
+\section{矩阵分解}
+矩阵分解是线性代数中的一个重要概念，它将一个矩阵分解为多个简单的矩阵的乘积。常见的矩阵分解方法包括特征分解（Eigenvalue Decomposition）、奇异值分解（Singular Value Decomposition）、稀疏分解（Sparse Decomposition）等。这些分解方法在数值计算、信号处理和机器学习等领域有着广泛的应用。
+
+\subsection{特征分解}
+
+\subsection{奇异值分解}
+
+\subsection{稀疏分解}
+
+
+\section{矩阵微分}
+
+\subsection{实矩阵微分}
+普通的求导想必大家都很熟悉, 比如对于标量函数$f(x)$, 其关于$x$的导数可以表示为\( \frac{\partial f(x)}{\partial x} \). 而函数不仅仅可以是关于标量的函数，也可以是关于向量甚至矩阵的函数。比如，一个二元函数\( f(x_1, x_2) \)则可以看作是关于向量\( \bm{x} = \begin{bsmallmatrix} x_1 & x_2 \end{bsmallmatrix}^{\mathrm{T}} \)的一个函数\( f(\bm{x}) \)。自然地，我们也可以求解其关于向量\( \bm{x} \)导数。具体而言，我们有如下定义
+
+\begin{definition}[标量关于向量求导]
+    对于向量$\bm{x} \in \mathbb{R}^{n \times 1}$，有映射\( f: \mathbb{R}^{n \times 1} \rightarrow \mathbb{R} \)，则定义其关于向量\( \bm{x} \)导数为
+    \[
+        \frac{\partial f(\bm{x})}{\partial \bm{x}}  = \begin{bmatrix}
+            \frac{\partial f(\bm{x})}{\partial x_1} \\
+            \frac{\partial f(\bm{x})}{\partial x_2} \\
+            \vdots                                  \\
+            \frac{\partial f(\bm{x})}{\partial x_n}
+        \end{bmatrix}.
+    \]
+\end{definition}
+即计算\( f(\bm{x}) \)关于\( \bm{x} \)的中每一个元素的偏导数，结果是一个和\( \bm{x} \)同样维度的向量。
+
+类似地，我们也可以定义标量对矩阵的求导，具体定义如下：
+
+\begin{definition}[标量关于矩阵求导]
+    对于矩阵$\mathbf{A} \in \mathbb{R}^{m \times n}$，有映射\( f: \mathbb{R}^{m \times n} \rightarrow \mathbb{R} \)，则定义其关于矩阵\( \mathbf{A} \)导数为
+    \[
+        \frac{\partial f(\mathbf{A})}{\partial \mathbf{A}} = \begin{bmatrix}
+            \frac{\partial f(\mathbf{A})}{\partial a_{11}} & \frac{\partial f(\mathbf{A})}{\partial a_{12}} & \cdots & \frac{\partial f(\mathbf{A})}{\partial a_{1n}} \\
+            \frac{\partial f(\mathbf{A})}{\partial a_{21}} & \frac{\partial f(\mathbf{A})}{\partial a_{22}} & \cdots & \frac{\partial f(\mathbf{A})}{\partial a_{2n}} \\
+            \vdots                                         & \vdots                                         & \ddots & \vdots                                         \\
+            \frac{\partial f(\mathbf{A})}{\partial a_{m1}} & \frac{\partial f(\mathbf{A})}{\partial a_{m2}} & \cdots & \frac{\partial f(\mathbf{A})}{\partial a_{mn}}
+        \end{bmatrix}.
+    \]
+\end{definition}
+
+此外，函数本书也有可能不是一个标量，而是一个向量，因此我们也需要定义向量对向量的求导。具体定义如下：
+
+\begin{definition}[向量关于向量求导]
+    对于向量\( \bm{x} \in \mathbb{R}^{m \times 1} \)，有映射\( \bm{f}: \mathbb{R}^{n \times 1} \rightarrow \mathbb{R}^{m \times 1} \)，则定义其关于向量\( \bm{x} \)导数为
+    \[
+        \frac{\partial \bm{f}(\bm{x})}{\partial \bm{x}} = \begin{bmatrix}
+            \frac{\partial f_1(\bm{x})}{\partial \bm{x}} \\
+            \frac{\partial f_2(\bm{x})}{\partial \bm{x}} \\
+            \vdots                                       \\
+            \frac{\partial f_m(\bm{x})}{\partial \bm{x}}
+        \end{bmatrix}.
+    \]
+\end{definition}
+可以看到，对应的求导规则就是将函数的每一个元素分别对向量\( \bm{x} \)求导，并将结果按照\( \bm{f} \)的形式排列。比如，\( m \times 1 \)列向量关于\( n \times 1 \)列向量的导数为一个\( mn \times 1 \)的列向量。如果是\( 1 \times m \)的行向量关于\( n \times 1 \)列向量的导数，那么根据规则，结果则是一个\( n \times m \)的矩阵。
+
+下面，我们会给出一些常见的矩阵微分公式，这些公式将在本课程中反复用到。
+
+\begin{example}
+    设有向量\( \bm{x} \in \mathbb{R}^{n \times 1} \)、\( \bm{y} \in \mathbb{R}^{n \times 1} \) 和矩阵\( \mathbf{A} \in \mathbb{R}^{n \times n} \)，计算如下导数
+    \begin{enumerate}
+        \item \( f = \bm{x}^{\mathrm{T}} \bm{y} \) 关于\( \bm{x} \)的导数
+        \item \( f = \bm{x}^{\mathrm{T}} \bm{y} \) 关于\( \bm{y} \)的导数
+        \item \( f = \bm{x}^{\mathrm{T}} \mathbf{A} \bm{y} \) 关于\( \bm{x} \)的导数
+        \item \( f = \bm{x}^{\mathrm{T}} \mathbf{A} \bm{y} \) 关于\( \mathbf{A} \)的导数
+        \item \( \bm{f} = \bm{x}^{\mathrm{T}} \mathbf{A} \) 关于\( \bm{x} \)的导数
+        \item \( \bm{f} = (\bm{x} - \bm{y})^{\mathrm{T}} \) 关于\( \bm{x} \)的导数
+    \end{enumerate}
+\end{example}
+\begin{solution}
+    \begin{enumerate}
+        \item 注意到\( f = \bm{x}^{\mathrm{T}} \bm{y}  = \sum_{i=1}^{n} x_i y_i\)，因此有
+              \[
+                  \frac{\partial f}{\partial \bm{x}} = \begin{bmatrix}
+                      \frac{\partial f}{\partial x_1} \\
+                      \frac{\partial f}{\partial x_2} \\
+                      \vdots                          \\
+                      \frac{\partial f}{\partial x_n}
+                  \end{bmatrix} = \begin{bmatrix}
+                      y_1    \\
+                      y_2    \\
+                      \vdots \\
+                      y_n
+                  \end{bmatrix} = \bm{y}.
+              \]
+        \item 同理，对于\( f = \bm{x}^{\mathrm{T}} \bm{y}  \)有
+              \[
+                  \frac{\partial f}{\partial \bm{y}} = \begin{bmatrix}
+                      \frac{\partial f}{\partial y_1} \\
+                      \frac{\partial f}{\partial y_2} \\
+                      \vdots                          \\
+                      \frac{\partial f}{\partial y_n}
+                  \end{bmatrix} = \begin{bmatrix}
+                      x_1    \\
+                      x_2    \\
+                      \vdots \\
+                      x_n
+                  \end{bmatrix} = \bm{x}.
+              \]
+        \item 同样地，将函数写成求和的形式\( f = \bm{x}^{\mathrm{T}} \mathbf{A} \bm{y} = \sum_{i=1}^{n} \sum_{j=1}^{n} a_{ij} x_i  y_j \)，因此有
+              \[
+                  \frac{\partial f}{\partial \bm{x}} = \begin{bmatrix}
+                      \frac{\partial f}{\partial x_1} \\
+                      \frac{\partial f}{\partial x_2} \\
+                      \vdots                          \\
+                      \frac{\partial f}{\partial x_n}
+                  \end{bmatrix} = \begin{bmatrix}
+                      \sum_{j=1}^{n} a_{1j} y_j \\
+                      \sum_{j=1}^{n} a_{2j} y_j \\
+                      \vdots                    \\
+                      \sum_{j=1}^{n} a_{nj} y_j
+                  \end{bmatrix} = \mathbf{A} \bm{y}.
+              \]
+        \item 同理，对于\( f = \bm{x}^{\mathrm{T}} \mathbf{A} \bm{y} \)有
+              \[
+                  \frac{\partial f}{\partial \mathbf{A}} = \begin{bmatrix}
+                      \frac{\partial f}{\partial a_{11}} & \frac{\partial f}{\partial a_{12}} & \cdots & \frac{\partial f}{\partial a_{1n}} \\
+                      \frac{\partial f}{\partial a_{21}} & \frac{\partial f}{\partial a_{22}} & \cdots & \frac{\partial f}{\partial a_{2n}} \\
+                      \vdots                             & \vdots                             & \ddots & \vdots                             \\
+                      \frac{\partial f}{\partial a_{n1}} & \frac{\partial f}{\partial a_{n2}} & \cdots & \frac{\partial f}{\partial a_{nn}}
+                  \end{bmatrix} = \begin{bmatrix}
+                      x_1 y_1 & x_1 y_2 & \cdots & x_1 y_n \\
+                      x_2 y_1 & x_2 y_2 & \cdots & x_2 y_n \\
+                      \vdots  & \vdots  & \ddots & \vdots  \\
+                      x_n y_1 & x_n y_2 & \cdots & x_n y_n
+                  \end{bmatrix} = \bm{x} \bm{y}^{\mathrm{T}}.
+              \]
+        \item 最后，对于\( \bm{f} = \bm{x}^{\mathrm{T}} \mathbf{A} \)，其第\( j \)个元素为\( f_j = \sum_{i=1}^{n} a_{ij} x_i \)，因此有
+              \[
+                  \frac{\partial f}{\partial \bm{x}} = \begin{bmatrix}
+                      \frac{\partial f_1}{\partial \bm{x}} & \frac{\partial f_2}{\partial \bm{x}} & \cdots & \frac{\partial f_n}{\partial \bm{x}}
+                  \end{bmatrix} = \begin{bmatrix}
+                      a_{11} & a_{12} & \cdots & a_{1n} \\
+                      a_{21} & a_{22} & \cdots & a_{2n} \\
+                      \vdots & \vdots & \ddots & \vdots \\
+                      a_{n1} & a_{n2} & \cdots & a_{nn}
+                  \end{bmatrix} = \mathbf{A}.
+              \]
+        \item 对于\( \bm{f} = \bm{x} - \bm{y} \)，有
+              \[
+                  \frac{\partial \bm{f}}{\partial \bm{x}} = \begin{bmatrix}
+                      \frac{\partial (x_1 - y_1)}{\partial \bm{x}} & \frac{\partial (x_2 - y_2)}{\partial \bm{x}} & \cdots & \frac{\partial (x_n - y_n)}{\partial \bm{x}}
+                  \end{bmatrix} = \begin{bmatrix}
+                      1      & 0      & \cdots & 0      \\
+                      0      & 1      & \cdots & 0      \\
+                      \vdots & \vdots & \ddots & \vdots \\
+                      0      & 0      & \cdots & 1
+                  \end{bmatrix} = \mathbf{I}.
+              \]
+    \end{enumerate}
+\end{solution}
+
+从以上的例子我们可以得到一些经验结论：
+
+\begin{enumerate}
+    \item 对于标量关于向量的求导，如果向量位于表达式的左侧且有转置，那么导数则直接是右侧变量，比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{x}} = \bm{y}\) 和 \( \frac{\partial \bm{x}^{\mathrm{T}} \mathbf{A}}{\partial \bm{x}} = \mathbf{A} \)。
+    \item 对于标量关于向量的求导，如果向量位于表达式的右侧，那么导数则是左侧变量加转置，比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{y}} = \bm{x}\) 和 \( \frac{\partial \mathbf{A} \bm{y}}{\partial \bm{y}} = \mathbf{A}^{\mathrm{T}} \)。
+\end{enumerate}
+
+
+矩阵微分有四个常用的性质：线性、乘积、商和链式法则，具体如下：
+
+\begin{property}[矩阵微分的四个性质]
+    以下性质中的前三个与标量函数求导的性质类似，只有最后一个链式法则略有不同。
+    \begin{enumerate}
+        \item 线性
+              \begin{equation}
+                  \frac{\partial(af(\bm{x})+bg(\bm{x}))}{\partial \bm{x}}=a\frac{\partial f(\bm{x})}{\partial \bm{x}}+b\frac{\partial g(\bm{x})}{\partial \bm{x}}.
+              \end{equation}
+        \item 乘积
+              \begin{equation}
+                  \frac{\partial f(\bm{x})g(\bm{x})}{\partial \bm{x}}=\frac{\partial f(\bm{x})}{\partial \bm{x}}g(\bm{x})+f(\bm{x})\frac{\partial g(\bm{x})}{\partial \bm{x}}.
+              \end{equation}
+        \item 商
+              \begin{equation}
+                  \frac{\partial \frac{f(\bm{x})}{g(\bm{x})}}{\partial \bm{x}}=\frac{f'(\bm{x})g(\bm{x})-f(\bm{x})g'(\bm{x})}{g^2(\bm{x})}.
+              \end{equation}
+        \item 链式法则
+              \begin{equation}
+                  \frac{\partial f(\mathbf{g}(\bm{x}))}{\partial \bm{x}}=\frac{\partial \mathbf{g}^{\mathrm{T}}(\bm{x})}{\partial \bm{x}}\frac{\partial f(\mathbf{g})}{\partial \mathbf{g}}.
+              \end{equation}
+    \end{enumerate}
+\end{property}
+
+\begin{example}
+    计算如下函数关于向量\( \bm{x} \)的导数
+    \[
+        f(\bm{x}) = \|\mathbf{A}\bm{x} - \bm{y}\|^2.
+    \]
+\end{example}
+\begin{solution}
+    方法1：将函数展开，有
+    \[
+        f(\bm{x}) = \|\mathbf{A}\bm{x} - \bm{y}\|^2 = (\mathbf{A}\bm{x} - \bm{y})^{\mathrm{T}}(\mathbf{A}\bm{x} - \bm{y}) = \bm{x}^{\mathrm{T}} \mathbf{A}^{\mathrm{T}} \mathbf{A} \bm{x} - 2\bm{y}^{\mathrm{T}} \mathbf{A} \bm{x} + \bm{y}^{\mathrm{T}} \bm{y}.
+    \]
+    因此有
+    \[
+        \frac{\partial f(\bm{x})}{\partial \bm{x}} = 2 \mathbf{A}^{\mathrm{T}} \mathbf{A} \bm{x} - 2 \mathbf{A}^{\mathrm{T}} \bm{y}.
+    \]
+
+    方法2：记\( \mathbf{g}(\bm{x}) = \mathbf{A}\bm{x} - \bm{y} \)，则\( f(\bm{x}) \)可以写为如下的复合函数形式
+    \[
+        f(\bm{x}) = \mathbf{g}(\bm{x})^{\mathrm{T}} \mathbf{g}(\bm{x}).
+    \]
+    根据链式法则，有
+    \[
+        \frac{\partial f(\bm{x})}{\partial \bm{x}} = \frac{\partial \mathbf{g}^{\mathrm{T}}(\bm{x})}{\partial \bm{x}}\frac{\partial f(\mathbf{g})}{\partial \mathbf{g}} = \frac{(\mathbf{A} \bm{x} - \bm{y})^{\mathrm{T}}}{ \partial \bm{x}} \frac{\partial \mathbf{g}^{\mathrm{T}} \mathbf{g}}{\partial \mathbf{g}} = 2 \mathbf{I}  \mathbf{g} = 2 \mathbf{A}^{\mathrm{T}} (\mathbf{A}\bm{x} - \bm{y}).
+    \]
+\end{solution}
+
+\subsection{复矩阵微分}
+
+在本课程中，还有可能涉及到复数矩阵的微分。由于在实际应用中，大部分函数都是关于复向量或者复矩阵的实值函数，因此我们只针对这种函数给出其导数的定义，具体如下：
+
+\begin{definition}
+    对于复数\( z = x + jy \)，有映射\( g: \mathbb{C} \rightarrow \mathbb{R} \)，则定义其关于复数\( z \)的导数为
+    \[
+        \frac{\partial g(z)}{\partial z} = \frac{\partial g(z)}{\partial x} + j \frac{\partial g(z)}{\partial y}.
+    \]
+\end{definition}
+
+\begin{example}
+    设有复数\( z = x + jy \)，计算\( g(z) = z \overline{z} \)关于\( z \)的导数。
+\end{example}
+\begin{solution}
+    将目标函数展开，有
+    \[
+        g(z) = z \overline{z} = (x + jy)(x - jy) = x^2 + y^2.
+    \]
+    因此根据定义有
+    \[
+        \frac{\partial g(z)}{\partial z} = \frac{\partial g(z)}{\partial x} + j \frac{\partial g(z)}{\partial y} = 2x + j 2y = 2z.
+    \]
+\end{solution}
+
+利用上述定义，我们同样得到类似的实值函数关于复向量和复矩阵的导数。下面我们通过一些简单的例子，给出一些常用的经验公式。
+
+\begin{example}
+    计算如下函数关于复向量\( \bm{z} \)的导数
+    \[
+        g(\bm{z}) = \bm{z}^{\mathrm{H}} \bm{z}.
+    \]
+\end{example}
+\begin{solution}
+    记\( \bm{z} = \bm{x} + j \bm{y} \)，其中\( \bm{x} \)和\( \bm{y} \)分别是实部和虚部向量，那么目标函数可以展开为
+    \[
+        g(\bm{z}) = \bm{z}^{\mathrm{H}} \bm{z} = (\bm{x} - j \bm{y})(\bm{x} + j \bm{y}) = \bm{x}^{\mathrm{T}} \bm{x} + \bm{y}^{\mathrm{T}} \bm{y}.
+    \]
+    因此根据定义有
+    \[
+        \frac{\partial g(\bm{z})}{\partial \bm{z}} = \frac{\partial g(\bm{z})}{\partial \bm{x}} + j \frac{\partial g(\bm{z})}{\partial \bm{y}} = 2\bm{x} + j 2\bm{y} = 2\bm{z}.
+    \]
+\end{solution}
+
+\begin{example}
+    计算如下函数关于复向量\( \bm{z} \)的导数
+    \[
+        g(\bm{z}) = \bm{z}^{\mathrm{H}} \mathbf{R} \bm{z},
+    \]
+    其中\( \mathbf{R} \)是一个共轭对称矩阵。
+\end{example}
+\begin{solution}
+    记\( \bm{z} = \bm{x} + j \bm{y} \)，\( \mathbf{R} = \mathbf{P} + j \mathbf{Q} \)，那么目标函数可以展开为
+    \[
+        \begin{split}
+            g(\bm{z}) & = \bm{z}^{\mathrm{H}} \mathbf{R} \bm{z} = (\bm{x} - j \bm{y})^{\mathrm{T}}(\mathbf{P} + j \mathbf{Q})(\bm{x} + j \bm{y})                                                                                                                                                                                                                 \\
+                      & = \bm{x}^{\mathrm{T}} \mathbf{P} \bm{x} + \bm{y}^{\mathrm{T}} \mathbf{P} \bm{y} + \bm{y}^{\mathrm{T}} \mathbf{Q} \mathbf{x} - \bm{x}^{\mathrm{T}} \mathbf{Q} \bm{y} + j (\bm{x}^{\mathrm{T}} \mathbf{Q} \bm{x} - \bm{y}^{\mathrm{T}} \mathbf{P} \bm{x} + \bm{x}^{\mathrm{T}} \mathbf{P} \bm{y} + \bm{y}^{\mathrm{T}} \mathbf{Q} \bm{y}).
+        \end{split}
+    \]
+    注意到，\( \mathbf{R} = \mathbf{R}^{\mathrm{H}} \)，即
+    \[
+        \mathbf{P} + j \mathbf{Q} = \mathbf{P}^{\mathrm{T}} - j\mathbf{Q}^{\mathrm{T}},
+    \]
+    因此，我们有
+    \[
+        \begin{cases}
+            \mathbf{P} & = \mathbf{P}^{\mathrm{T}}   \\
+            \mathbf{Q} & = - \mathbf{Q}^{\mathrm{T}}
+        \end{cases}.
+    \]
+    此外，对于任意一个向量\( \bm{x} \)，我们有
+    \[
+        \begin{cases}
+            \bm{x}^{\mathrm{T}} \mathbf{Q} \bm{x} = \bm{x}^{\mathrm{T}} ( - \mathbf{Q}^{\mathrm{T}}) \bm{x} = - \bm{x}^{\mathrm{T}} \mathbf{Q}^{\mathrm{T}} \bm{x} \\
+            \bm{x}^{\mathrm{T}} \mathbf{Q} \bm{x} = (\bm{x}^{\mathrm{T}} \mathbf{Q} \bm{x})^{\mathrm{T}} = \bm{x}^{\mathrm{T}} \mathbf{Q}^{\mathrm{T}} \bm{x},
+        \end{cases}
+    \]
+    也就是说\( \bm{x}^{\mathrm{T}} \mathbf{Q} \bm{x} =  - \bm{x}^{\mathrm{T}} \mathbf{Q} \bm{x} = 0\) 。因此，\( g(\bm{z}) \)可以简化为
+    \[
+        g(\bm{z}) = \bm{x}^{\mathrm{T}} \mathbf{P} \bm{x} + \bm{y}^{\mathrm{T}} \mathbf{P} \bm{y} + \bm{y}^{\mathrm{T}} \mathbf{Q} \mathbf{x} - \bm{x}^{\mathrm{T}} \mathbf{Q} \bm{y}.
+    \]
+    根据定义，我们有
+    \[
+        \begin{split}
+            \frac{\partial g(\bm{z})}{\partial \bm{z}} & = \frac{\partial g(\bm{z})}{\partial \bm{x}} + j \frac{\partial g(\bm{z})}{\partial \bm{y}} = 2\mathbf{P}\bm{x} - 2 \mathbf{Q} \bm{y} + j(2 \mathbf{P} \bm{y} + 2\mathbf{Q} \bm{x}) \\
+                                                       & = 2(\mathbf{P} + j \mathbf{Q}) (\bm{x} + j \bm{y}) = 2\mathbf{R} \mathbf{z}.
+        \end{split}
+    \]
+\end{solution}
+
+\section{张量及相关运算}
+
+\section{常见统计量的矩阵表示}
+
+在概率论中，我们经常会遇到一些常见的统计量，比如均值、方差、协方差等。这些统计量在本课程中也会经常用到。不同的是，本课程中的对象都是采集到的离散数据，对应向量或矩阵而不是随机变量。因此，我们需要提前了解对于向量和矩阵，如何计算这些统计量。
+
+设有向量\( \bm{x} = \begin{bsmallmatrix} x_1 & x_2 & \cdots & x_n \end{bsmallmatrix}^{\mathrm{T}} \)和\( \bm{y} =  \begin{bsmallmatrix} y_1 & y_2 & \cdots & y_n \end{bsmallmatrix}^{\mathrm{T}} \)，两者都可以看作是某个随机变量的\( n \)个观测。对应的均值、方差和协方差有如下计算公式：
+\begin{enumerate}
+    \item 均值： \( \overline{x} = \frac{1}{n} \sum_{i=1}^n x_i = \frac{1}{n} \bm{x}^{\mathrm{T}} \mathbf{1} \)。
+    \item 方差： \( \operatorname{Var}(\bm{x}) = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2 = \frac{1}{n} (\bm{x} - \bar{x}\mathbf{1} )^{\mathrm{T}} (\bm{x} - \bar{x} \mathbf{1}) \)，如果均值为零，则\( \operatorname{Var}(\bm{x}) =  \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{x} \)。
+    \item 协方差： \( \operatorname{Cov}(\bm{x}, \bm{y}) = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y}) = \frac{1}{n} (\bm{x} - \bar{x}\mathbf{1} )^{\mathrm{T}} (\bm{y} - \bar{y} \mathbf{1}) \)，如果均值为零，则\( \operatorname{Cov}(\bm{x}, \bm{y}) =  \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{y} \)。
+\end{enumerate}
+
+设有矩阵\( \mathbf{X} = \begin{bsmallmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_m \end{bsmallmatrix} \in \mathbb{R}^{n \times m} \)，其中每一列都是一个向量，假设均值为零，那么向量两两之间的协方差可以构成一个协方差矩阵\( \mathbf{\Sigma} \)，其第\( i,j \)个元素为
+\[
+    \sigma_{ij} = \operatorname{Cov}(\bm{x}_i, \bm{x}_j).
+\]
+如果均值为零，那么协方差矩阵可以表示为
+\[
+    \mathbf{\Sigma} = \frac{1}{n} \mathbf{X}^{\mathrm{T}} \mathbf{X} \in \mathbb{R}^{m \times m}.
+\]
+
+\begin{example}
+    设有一个未知的数据矩阵\( \mathbf{X} \in \mathbb{R}^{n \times m} \)，但其协方差矩阵\( \mathbf{\Sigma} \)是已知的，请给出任意投影方向\( \bm{v} \in \mathbb{R}^{m \times 1} \)下数据的方差。
+\end{example}
+\begin{solution}
+    投影后的数据向量为\(\bm{x} = \mathbf{X} \bm{v}  \)，其方差为
+    \[
+        \operatorname{Var}(\bm{x}) = \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{x} = \frac{1}{n} (\mathbf{X} \bm{v})^{\mathrm{T}} (\mathbf{X} \bm{v}) = \frac{1}{n} \bm{v}^{\mathrm{T}} \mathbf{X}^{\mathrm{T}} \mathbf{X} \bm{v} = \bm{v}^{\mathrm{T}} \mathbf{\Sigma} \bm{v}.
+    \]
+    因此，数据在任意投影方向上的方差可以由\( \bm{v}^{\mathrm{T}} \mathbf{\Sigma} \bm{v} \)给出。
+\end{solution}
+
+\section{矩阵算法}
+
+\subsection{最小二乘}
+
+\subsection{约束能量最小化}
+
+\subsection{主成分分析}
+
+\subsection{独立成分分析}
+
+\subsection{瑞利商}
+
