@@ -1,14 +1,436 @@
 \chapter{矩阵方法基础}
 
 \section{矩阵分解}
-矩阵分解是线性代数中的一个重要概念，它将一个矩阵分解为多个简单的矩阵的乘积。常见的矩阵分解方法包括特征分解（Eigenvalue Decomposition）、奇异值分解（Singular Value Decomposition）、稀疏分解（Sparse Decomposition）等。这些分解方法在数值计算、信号处理和机器学习等领域有着广泛的应用。
+矩阵分解是线性代数中的一个重要概念，它将一个矩阵分解为多个简单的矩阵的乘积。常见的矩阵分解方法包括特征分解、奇异值分解、稀疏分解等。这些分解方法在数值计算、信号处理和机器学习等领域有着广泛的应用。
 
 \subsection{特征分解}
+特征分解（Eigenvalue Decomposition）是线性代数中的一个重要概念，对于一个方阵\( \mathbf{A} \in \mathbb{R}^{n \times n} \)，其特征值和特征向量是满足以下方程的标量和向量：
+\begin{equation}
+    \mathbf{A} \bm{v} = \lambda \bm{v}.
+\end{equation}
+其中，\( \lambda \) 是特征值，非零向量\( \bm{v} \) 是对应的特征向量。
+
+如果矩阵\( \mathbf{A} \)一共有\( n \)个线性无关的特征向量，构成如下的特征向量矩阵
+\[
+    \bm{v} = \begin{bmatrix}
+        \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_n
+    \end{bmatrix},
+\]
+那么有
+\begin{equation}
+    \mathbf{A} \mathbf{V} = \mathbf{V} \mathbf{\Lambda},
+    \label{eq:eigen-decomposition}
+\end{equation}
+其中\( \mathbf{\Lambda} \)是一个对角矩阵，其对角线上的元素为对应的特征值，即
+\[
+    \mathbf{\Lambda} = \begin{bmatrix}
+        \lambda_1 & 0         & \cdots & 0         \\
+        0         & \lambda_2 & \cdots & 0         \\
+        \vdots    & \vdots    & \ddots & \vdots    \\
+        0         & 0         & \cdots & \lambda_n
+    \end{bmatrix}.
+\]
+对\cref{eq:eigen-decomposition}两边同时左乘\( \mathbf{V}^{-1} \)，可以得到
+\begin{equation}
+    \mathbf{A} = \mathbf{V} \mathbf{\Lambda} \mathbf{V}^{-1}.
+    \label{eq:eigen-decomposition-inverse}
+\end{equation}
+式\cref{eq:eigen-decomposition-inverse}就是矩阵的特征分解形式，而能够被分解的矩阵被称为可对角化矩阵。进一步地，对于对称矩阵，则有\cref{thm:symmetric-eigen-decomposition}所述的特征分解形式。
+
+\begin{theorem}[对称矩阵的特征分解]\label{thm:symmetric-eigen-decomposition}
+    如果矩阵\( \mathbf{A} \)是一个对称矩阵，则其特征向量构成的矩阵为正交矩阵，即满足
+    \[
+        \mathbf{V}^{\mathrm{T}} \mathbf{V} = \mathbf{I}.
+    \]
+    此时，矩阵有如下特征分解
+    \[
+        \mathbf{A} = \mathbf{V} \mathbf{\Lambda} \mathbf{V}^{\mathrm{T}}.
+    \]
+\end{theorem}
+\begin{proof}
+    设\( \mathbf{A} \)的特征值为\( \lambda_1, \lambda_2, \ldots, \lambda_n \)，对应的特征向量为\( \bm{v}_1, \bm{v}_2, \ldots, \bm{v}_n \)。由于\( \mathbf{A} \)是对称矩阵，所以
+    \[
+        \mathbf{A} \bm{v}_i = \mathbf{A}^{\mathrm{T}} \bm{v}_i = \lambda_i \bm{v}_i
+    \]
+    显然，对于任意的\( i \neq j \)，都有如下两个等式成立：
+    \[
+        \begin{split}
+            \bm{v}_i^{\mathrm{T}} \mathbf{A} \bm{v}_j & =  \bm{v}_i^{\mathrm{T}} (\mathbf{A} \bm{v}_j)= \lambda_j \bm{v}_i^{\mathrm{T}} \bm{v}_j,                         \\
+            \bm{v}_i^{\mathrm{T}} \mathbf{A} \bm{v}_j & = \left(\mathbf{A}^{\mathrm{T}} \bm{v}_i\right)^{\mathrm{T}} \bm{v}_j = \lambda_i \bm{v}_i^{\mathrm{T}} \bm{v}_j.
+        \end{split}
+    \]
+    因此有
+    \[
+        \lambda_j \bm{v}_i^{\mathrm{T}} \bm{v}_j = \lambda_i \bm{v}_i^{\mathrm{T}} \bm{v}_j.
+    \]
+    当\( \lambda_i \neq \lambda_j \)时，\( \bm{v}_i^{\mathrm{T}} \bm{v}_j = 0 \)，即特征向量正交。当\( \lambda_i = \lambda_j \)时，可以验证对于任意的\( \alpha, \beta \in \mathbb{C} \)，以两者为系数线性组合得到的向量
+    \[
+        \bm{v} = \alpha \bm{v}_i + \beta \bm{v}_j,
+    \]
+    也是特征向量，对应的特征值仍然是\( \lambda_i = \lambda_j \)。也就是说，由\( \bm{v}_i \)和\( \bm{v}_j \)张成的平面上的任意向量都是特征向量。从这个平面上可以选出两个正交的特征向量\( \bm{v}_i' \)和\( \bm{v}_j' \)，作为新的特征向量。这样，就可以确保所有的特征向量互相之间是正交的。如对所有特征向量都进行归一化，令其模长为一，则有特征向、量构成的矩阵满足
+    \[
+        \mathbf{V} \mathbf{V}^{\mathrm{T}} = \mathbf{I}.
+    \]
+\end{proof}
+
+然而并不是所有的矩阵都可以进行特征分解，对于部分矩阵，其特征向量可能线性相关。此时，矩阵\( \mathbf{V} \)不可逆，因此无法得到特征分解。比如，下方的\( 2 \times 2 \)矩阵：
+\[
+    \mathbf{A} = \begin{bmatrix}
+        1 & 1 \\
+        0 & 1
+    \end{bmatrix}.
+\]
+设其特征值为\( \lambda \)，则有
+\[
+    \det(\mathbf{A} - \lambda \mathbf{I}) = \det\left(\begin{bmatrix}
+            1 - \lambda & 1           \\
+            0           & 1 - \lambda
+        \end{bmatrix}\right) = (1 - \lambda)^2 = 0.
+\]
+因此，该矩阵的两个特征值都是1，对应的特征向量相同，都为
+\[
+    \bm{v} = \begin{bmatrix}
+        1 \\
+        0
+    \end{bmatrix}.
+\]
+对于这样不可对角化的矩阵，一方面我们可以进行广义特征分解，将矩阵分解为若尔当标准型（Jordan form）：
+\begin{theorem}[广义特征分解] \label{thm:jordan-decomposition}
+    对于任意的\( n \times n \)矩阵\( \mathbf{A} \)，存在一个可逆矩阵\( \mathbf{P} \)和一个分块对角矩阵\( \mathbf{J} \)，使得
+    \[
+        \mathbf{A} = \mathbf{P} \mathbf{J} \mathbf{P}^{-1}.
+    \]
+    分块对角矩阵\( \mathbf{J} \)有如下形式
+    \[
+        \mathbf{J} = \begin{bmatrix}
+            J_1    & 0      & \cdots & 0      \\
+            0      & J_2    & \cdots & 0      \\
+            \vdots & \vdots & \ddots & \vdots \\
+            0      & 0      & \cdots & J_k
+        \end{bmatrix},
+    \]
+    其中每个\( J_i \)是一个若尔当块（Jordan block），其形式为
+    \[
+        J_i = \begin{bmatrix}
+            \lambda_i & 1         & 0         & \cdots & 0         \\
+            0         & \lambda_i & 1         & \cdots & 0         \\
+            0         & 0         & \lambda_i & \ddots & 0         \\
+            \vdots    & \vdots    & \vdots    & \ddots & 1         \\
+            0         & 0         & 0         & \cdots & \lambda_i
+        \end{bmatrix}.
+    \]
+\end{theorem}
+考虑到本书中基本不涉及广义特征分解，这里不再给出\cref{thm:jordan-decomposition}证明。除了广义特征分解外，我们还可以使用其他的矩阵分解方法来处理不可对角化的矩阵，比如下一小节给出的奇异值分解。
+
+\begin{example}
+    设有三座城市，且这三座城市之间人口流动的情况可以用一个矩阵来表示：
+    \[
+        \mathbf{P} = \begin{bmatrix}
+            0.5 & 0.2 & 0.1 \\
+            0.3 & 0.5 & 0.4 \\
+            0.2 & 0.3 & 0.5
+        \end{bmatrix},
+    \]
+    其中，\( P_{ij} \)表示单位时间内，从城市\( j \)流入到城市\( i \)的人口比例。比如\( P_{11} = 0.5 \)，表明经过单位时间，有50\%的人口仍然留在城市1，\( P_{12} = 0.3 \)表示第2个城市30\%的人口会流动到城市1。请求解以下问题：
+    \begin{enumerate}
+        \item 假设初始时刻，三个城市的人口都为1000人，请计算经过一个单位时间后，各个城市的人口分布情况。
+        \item 请计算经过足够长的时间后，各个城市的人口分布情况。
+    \end{enumerate}
+\end{example}
+\begin{solution}
+    \begin{enumerate}
+        \item 记初始时刻三个城市的人口数量为如下向量
+              \[
+                  \bm{x}_0 = \begin{bmatrix}
+                      1000 \\
+                      1000 \\
+                      1000
+                  \end{bmatrix}.
+              \]
+              则经过一个单位时间后，各个城市的人口数量为
+              \[
+                  \bm{x}_1 = \mathbf{P} \bm{x}_0 = \begin{bmatrix}
+                      0.5 & 0.2 & 0.1 \\
+                      0.3 & 0.5 & 0.4 \\
+                      0.2 & 0.3 & 0.5
+                  \end{bmatrix} \begin{bmatrix}
+                      1000 \\
+                      1000 \\
+                      1000
+                  \end{bmatrix} = \begin{bmatrix}
+                      800  \\
+                      1200 \\
+                      1000
+                  \end{bmatrix}.
+              \]
+
+        \item 设\( \bm{x}_n \)为经过\( n \)个单位时间后，各个城市的人口分布情况。则有
+              \[
+                  \bm{x}_n = \mathbf{P} \bm{x}_{n-1} = \mathbf{P}^n \bm{x}_0.
+              \]
+              又因为\( \mathbf{P} \)有如下特征分解
+              \[
+                  \mathbf{P} = \mathbf{V} \mathbf{\Lambda} \mathbf{V}^{-1},
+              \]
+              其中
+              \[
+                  \mathbf{V} \approx \begin{bmatrix}
+                      0.3995 & -0.8090 & 0.3090  \\
+                      0.7068 & 0.3090  & -0.8090 \\
+                      0.5839 & 0.5000  & 0.5000
+                  \end{bmatrix}, \quad \mathbf{\Lambda} \approx \begin{bmatrix}
+                      1 & 0      & 0      \\
+                      0 & 0.3618 & 0      \\
+                      0 & 0      & 0.1382
+                  \end{bmatrix}.
+              \]
+              因此，当\( n \)趋向于无穷大时，\( \mathbf{P}^n \)的极限为
+              \[
+                  \lim_{n \to \infty} \mathbf{P}^n = \lim_{n \to \infty} \mathbf{V} \mathbf{\Lambda}^n \mathbf{V}^{-1} = \mathbf{V} \begin{bmatrix}
+                      1 & 0 & 0 \\
+                      0 & 0 & 0 \\
+                      0 & 0 & 0
+                  \end{bmatrix} \mathbf{V}^{-1} \approx \begin{bmatrix}
+                      0.2364 & 0.2364 & 0.2364 \\
+                      0.4182 & 0.4182 & 0.4182 \\
+                      0.3455 & 0.3455 & 0.3455
+                  \end{bmatrix}.
+              \]
+              于是，经过足够长的时间后，各个城市的人口分布情况为
+              \[
+                  \bm{x}_\infty = \lim_{n \to \infty} \bm{x}_n = \lim_{n \to \infty} \mathbf{P}^n \bm{x}_0 \approx \begin{bmatrix}
+                      709.1  \\
+                      1254.5 \\
+                      1036.4
+                  \end{bmatrix}.
+              \]
+
+    \end{enumerate}
+\end{solution}
 
 \subsection{奇异值分解}
 
-\subsection{稀疏分解}
+奇异值分解（Singular Value Decomposition, SVD）是线性代数中一个非常重要的矩阵分解工具，被广泛应用于信号处理、统计学、机器学习、图像压缩等领域。
 
+相比于特征分解，奇异值分解可以应用于任意形状的矩阵（包括非方阵），并且不要求矩阵是可逆的，见下方的定理。
+
+\begin{theorem}
+    对于任意的矩阵\( \mathbf{A} \in \mathbb{R}^{m \times n} \)，都存在一个奇异值分解：
+    \[
+        \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{V}^{\mathrm{T}},
+    \]
+    其中，\( \mathbf{U} \in \mathbb{R}^{m \times m} \)是一个正交矩阵，\( \mathbf{V} \in \mathbb{R}^{n \times n} \)是一个正交矩阵，\( \mathbf{S} \in \mathbb{R}^{m \times n} \)是一个对角矩阵，对角线上的元素为\( \mathbf{A} \)的奇异值（singular values）。
+\end{theorem}
+\begin{proof}
+    不妨假设\( m \geq n \)，则\( \mathbf{A}^{\mathrm{T}} \mathbf{A} \) 为一个\( n \times n \)的对称矩阵。根据特征分解定理，存在一个正交矩阵\( \mathbf{V} \)和一个对角矩阵\( \mathbf{\Lambda} \)，使得
+    \[
+        \mathbf{A}^{\mathrm{T}} \mathbf{A} = \mathbf{V} \mathbf{\Lambda} \mathbf{V}^{\mathrm{T}}.
+    \]
+    可以验证，\( \mathbf{\Lambda} \)的对角元素必然是非负的，因此不妨将矩阵\( \mathbf{A}^{\mathrm{T}} \mathbf{A} \)的特征值记作\( \lambda_i^2 \)。令\( \bm{v}_i \)为\( \mathbf{V} \)的第\( i \)列向量，并令
+    \[
+        \bm{u}_i = \frac{\mathbf{A} \bm{v}_i}{\|\mathbf{A} \bm{v}_i\|} = \frac{\mathbf{A} \bm{v}_i}{\sqrt{\bm{v}_i^{\mathrm{T}} \mathbf{A}^{\mathrm{T}} \mathbf{A} \bm{v}_i}} = \frac{1}{\lambda_i} \mathbf{A} \bm{v}_i.
+    \]
+    则有
+    \[
+        \bm{u}_i^{\mathrm{T}} \mathbf{A} \bm{v}_i = \frac{1}{\lambda_i} \bm{v}_i^{\mathrm{T}} \mathbf{A}^{\mathrm{T}} \mathbf{A} \bm{v}_i = \frac{1}{\lambda_i} \lambda_i^2 = \lambda_i.
+    \]
+
+    因此，可以构造如下的矩阵
+    \[
+        \mathbf{U} = \begin{bmatrix}
+            \bm{u}_1 & \bm{u}_2 & \cdots & \bm{u}_n & \bm{u}_{n+1} & \cdots & \bm{u}_m
+        \end{bmatrix} \in \mathbb{R}^{m \times m},
+    \]
+    对于其中的列向量，当\( 1 \leq i \leq n \)时，有\( \bm{u}_i = \frac{\mathbf{A} \bm{v}_i}{\|\mathbf{A} \bm{v}_i\|} \)；而当\( n + 1 \leq i \leq m \)时，可以令\( \bm{u}_i \)为\( \mathbf{A} \)的零空间中的任意向量，只需满足构成的矩阵\( \mathbf{U} \)是一个正交矩阵即可。
+
+    对于构造的矩阵\( \mathbf{U} \)，可以验证其满足
+    \[
+        \mathbf{U}^{\mathrm{T}} \mathbf{A} \mathbf{V} = \begin{bmatrix}
+            \sqrt{\mathbf{\Lambda}} \\
+            \mathbf{0}
+        \end{bmatrix} \in \mathbb{R}^{m \times n},
+    \]
+    其中\( \sqrt{\mathbf{\Lambda}} \)是\( \mathbf{\Lambda} \)的开平方，也是一个对角矩阵，其对角线上的元素为\( \lambda_i \)，而\( \mathbf{0} \)是一个\( (m - n) \times n \)的全零矩阵。记该分块矩阵为\( \mathbf{S} \)， 并对上式两边同时左乘\( \mathbf{U} \)，右乘\( \mathbf{V}^{\mathrm{T}} \)，即可得到
+    \[
+        \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{V}^{\mathrm{T}}.
+    \]
+\end{proof}
+
+有意思的是，对于对称矩阵，其奇异值分解和特征分解是等价的。不妨设有对称矩阵\( \mathbf{A} \in \mathbb{R}^{n \times n} \)，其SVD分解为
+\[
+    \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{V}^{\mathrm{T}}.
+\]
+又因为\( \mathbf{A}^{\mathrm{T}} = \mathbf{A} \)，因此有
+\[
+    \mathbf{A} = \mathbf{A}^{\mathrm{T}}= \left( \mathbf{U} \mathbf{S} \mathbf{V}^{\mathrm{T}} \right)^{\mathrm{T}} = \mathbf{V} \mathbf{S}^{\mathrm{T}} \mathbf{U}^{\mathrm{T}}.
+\]
+注意到\( \mathbf{S} \) 是一个\( n \times n \)的对角矩阵，所以\( \mathbf{S}^{\mathrm{T}}  = \mathbf{S} \)，至此可以得到如下等式
+\[
+    \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{V}^{\mathrm{T}} = \mathbf{V} \mathbf{S} \mathbf{U}^{\mathrm{T}}.
+\]
+观察上式，不难发现\( \mathbf{U} =  \mathbf{V} \)。此时，对称矩阵\( \mathbf{A} \)的特征分解可以写为\( \mathbf{A} = \mathbf{V} \mathbf{S} \mathbf{V}^{\mathrm{T}} \)，因此对称矩阵的奇异值分解和特征分解是等价的。
+
+除此以外，SVD分解实际上提供了一种对矩阵进行低秩近似的方法。考虑如下优化问题：
+\begin{equation}
+    \begin{cases}
+        \min_{\mathbf{B}} & \|\mathbf{A} - \mathbf{B}\|_{\mathrm{F}}^2 \\
+        \text{s.t}        & \text{rank}(\mathbf{B}) = k
+    \end{cases}
+    \label{eq:sparse-approximation}
+\end{equation}
+其中\( \|\cdot\|_F \)表示矩阵的Frobenius范数。通过计算\( \mathbf{A} \)的SVD分解，并保留最大的\( k \)个奇异值和对应的奇异向量，可以该优化问题的最优解：
+\begin{equation}
+    \mathbf{B} = \sum_{i=1}^{k} \lambda_i \bm{u}_i \bm{v}_i^{\mathrm{T}},
+    \label{eq:sparse-approximation-solution}
+\end{equation}
+其中\( \lambda_i \)是矩阵\( \mathbf{A} \)第\( i \)大的奇异值。具体证明不再展开，请读者自行推导。
+
+\begin{example}
+    对于如\cref{fig_singular_values}所示的灰度图像，可以将其看作是一个\( 300 \times 200 \)的矩阵，请利用奇异值分解对其进行压缩处理。
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[width=.3\textwidth]{./img/matrix/cat_resized.jpg}
+        \caption{原始灰度图像}
+        \label{fig_cat_gray}
+    \end{figure}
+\end{example}
+\begin{solution}
+    直接对图像矩阵进行奇异值分解，得到
+    \[
+        \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{V}^{\mathrm{T}}.
+    \]
+    其中\( \mathbf{S} \)的对角线元素从大到小排列绘制的曲线如\cref{fig_singular_values}所示。从图中可以看到，奇异值数值大小从大到小迅速下降，这表明大部分信息都集中在较大的奇异值对应的特征向量上。
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[width=.6\textwidth]{./img/matrix/cat_svd.tikz}
+        \caption{奇异值大小分布}
+        \label{fig_singular_values}
+    \end{figure}
+
+    因此，我们可以通过保留前\( k \)个奇异值来实现图像的压缩。具体而言，设\( k \)为保留的奇异值个数，则压缩后的图像矩阵为原始矩阵的低秩近似：
+    \[
+        \mathbf{A}_{\text{compressed}} = \mathbf{U}_{k} \mathbf{S}_{k} \mathbf{V}_{k}^{\mathrm{T}},
+    \]
+    其中\( \mathbf{U}_k \in \mathbb{R}^{m \times k} \)是\( \mathbf{U} \)的前\( k \)列，\( \mathbf{S}_k \in \mathbb{R}^{k \times k} \)是\( \mathbf{S} \)的前\( k \)行和前\( k \)列，\( \mathbf{V}_k \in \mathbb{R}^{n \times k} \)是\( \mathbf{V} \)的前\( k \)列。
+
+    通过调整\( k \)的值，可以控制压缩后的图像质量和文件大小，如\cref{fig_compressed_images}所示。可以看到，随着\( k \)的增大，图像质量逐渐提高，当\( k=50 \)时，图像质量已经非常接近原始图像，此时，对应的三个矩阵的元素个数大约只有原始矩阵元素个数的41\%。
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[width=.9\textwidth]{./img/matrix/cat_approx1.jpg}
+            \caption{}
+            \label{fig_compressed_images_1}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[width=.9\textwidth]{./img/matrix/cat_approx2.jpg}
+            \caption{}
+            \label{fig_compressed_images_2}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[width=.9\textwidth]{./img/matrix/cat_approx3.jpg}
+            \caption{}
+            \label{fig_compressed_images_3}
+        \end{subfigure}
+        \caption{奇异值分解压缩后的图像 (a) \( k = 10 \) (b) \( k = 20 \) (c) \( k = 50 \)}
+        \label{fig_compressed_images}
+    \end{figure}
+\end{solution}
+
+\subsection{稀疏分解}
+稀疏分解（Sparse Decomposition）是指将一个观测向量表示为一个字典矩阵与一个稀疏系数向量的乘积。该方法在信号处理、图像处理和机器学习等领域具有广泛应用，尤其在特征提取、压缩编码和降维等任务中表现出强大的建模能力。
+
+稀疏分解对应的优化问题可以表示为
+\begin{equation}
+    \begin{cases}
+        \min_{\bm{x}} & \left\| \bm{x} \right\|_0  \\
+        \text{s.t}    & \mathbf{D} \bm{x} = \bm{y}
+    \end{cases},
+    \label{eq:sparse-decomposition}
+\end{equation}
+其中，\( \bm{y} \in \mathbb{R}^m \)是观测向量，\( \mathbf{D} \in \mathbb{R}^{m \times n} \)是字典矩阵。一般来说，\( n \gg m \)，这意味着方程\( \mathbf{D} \bm{x} = \bm{y} \)可能有多个甚至无穷多个解。而稀疏分解则是希望找到其中最稀疏的那个解，即使得系数向量\( \bm{x} \)的非零元素个数最少。当存在噪声时，等式\( \mathbf{D} \bm{x} = \bm{y} \)可能无法完全满足，此时可以将约束条件改为
+\begin{equation}
+    \begin{cases}
+        \min_{\bm{x}} & \left\| \bm{x} \right\|_0                                     \\
+        \text{s.t}    & \left\| \bm{y} - \mathbf{D} \bm{x} \right\|_2 \leq \epsilon^2
+    \end{cases}.
+    \label{eq:sparse-decomposition-noisy}
+\end{equation}
+
+然而，优化问题 \cref{eq:sparse-decomposition} 中的 \( \ell_0 \)-范数是非凸且不连续的，使得该问题属于 NP-hard 问题，难以直接求解。因此，通常采用以下近似方法进行求解：
+
+\begin{enumerate}[label=\arabic*.]
+    \item \textbf{基追踪（Basis Pursuit, BP）}：将 \( \ell_0 \)-范数替换为其凸包 \( \ell_1 \)-范数，转化为如下凸优化问题：
+          \begin{equation}
+              \begin{cases}
+                  \min_{\bm{x}} \quad & \left\| \bm{x} \right\|_1                                                                          \\
+                  \text{s.t.} \quad   & \mathbf{D} \bm{x} = \bm{y} \text{ 或 } \left\| \bm{y} - \mathbf{D} \bm{x} \right\|_2 \leq \epsilon.
+              \end{cases}
+              \label{eq:basis-pursuit}
+          \end{equation}
+          在满足一定条件，如限制性等距条件（Restricted Isometry Property）时，该方法能够准确恢复原始的稀疏解。并且，可以通过成熟的线性规划等算法高效求解。
+
+    \item \textbf{LASSO（Least Absolute Shrinkage and Selection Operator）}：通过引入 \( \ell_1 \)-范数正则项，构造如下优化模型：
+          \begin{equation}
+              \min_{\bm{x} \in \mathbb{R}^n} \left\| \bm{y} - \mathbf{D} \bm{x} \right\|_2^2 + \lambda \left\| \bm{x} \right\|_1,
+              \label{eq:lasso}
+          \end{equation}
+          其中，\( \lambda > 0 \) 是正则化参数，用于权衡数据拟合精度与解的稀疏性。LASSO 更适用于存在观测噪声的实际应用场景，可以通过坐标下降法（Coordinate Descent）、交替方向乘子法（Alternating Direction Method of Multipliers, ADMM）等算法高效求解。
+\end{enumerate}
+
+除了上述方法，稀疏分解还可以采用匹配追踪（Matching Pursuit）、正交匹配追踪（Orthogonal Matching Pursuit, OMP）、迭代阈值法（Iterative Thresholding）等方法进行求解，这些方法在计算效率和精度之间提供了不同的折中选择。
+
+将稀疏分解拓展到矩阵的情形，可以得到\( k \)-SVD（\( k \)-Sparse Singular Value Decomposition）模型。该模型假设矩阵的奇异值分解可以表示为一个稀疏系数向量与字典矩阵的乘积。具体而言，给定一个矩阵 \( \mathbf{Y} \in \mathbb{R}^{m \times n} \)，对应的 \( k \)-SVD 优化问题可以表示为
+\begin{equation}
+    \begin{cases}
+        \min_{\mathbf{D}, \mathbf{X}} & \left\| \mathbf{Y} - \mathbf{D} \mathbf{X} \right\|_{\mathrm{F}}^2 \\
+        \text{s.t.}                   & \left\| \bm{x}_i \right\|_0 = 1, \quad \forall i = 1, \ldots, n
+    \end{cases},
+    \label{eq:k-svd}
+\end{equation}
+其中，\( \mathbf{D} \in \mathbb{R}^{m \times k} \)是字典矩阵，\( \mathbf{X} = \begin{bsmallmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_n \end{bsmallmatrix} \in \mathbb{R}^{k \times n} \)是稀疏系数矩阵。\( k \)-SVD是对聚类算法\( k \)-均值（\( k \)-Means）的一种推广，其中字典矩阵的列向量对应聚类中心，而稀疏系数矩阵\( \mathbf{X} \)则包含了聚类结果。
+
+除此以外，稀疏分解的矩阵推广还有另一种形式，即鲁棒主成分分析（Robust Principal Component Analysis, RPCA）。RPCA假设观测矩阵可以分解为一个低秩矩阵和一个稀疏矩阵的和。具体而言，给定一个矩阵 \( \mathbf{Y} \in \mathbb{R}^{m \times n} \)，RPCA 的优化问题可以表示为
+\begin{equation}
+    \begin{cases}
+        \min_{\mathbf{L}, \mathbf{S}} & \left\| \mathbf{L} \right\|_* + \lambda \left\| \operatorname{vec}(\mathbf{S})\right\|_1 \\
+        \text{s.t.}                   & \mathbf{Y} = \mathbf{L} + \mathbf{S}
+    \end{cases},
+    \label{eq:rpca}
+\end{equation}
+其中，\( \mathbf{L} \in \mathbb{R}^{m \times n} \)是低秩矩阵，\( \left\| \cdot \right\|_* \)表示核范数，\( \mathbf{S} \in \mathbb{R}^{m \times n} \)是稀疏矩阵，\( \left\| \operatorname{vec}(\cdot)\right\|_1 \)表示将矩阵展开为向量后的 \( \ell_1 \)-范数，也即矩阵所有元素的绝对值之和。由于稀疏项的存在，RPCA能够有效提取数据中的异常，同时保留主要的低秩结构。
+
+\begin{example}
+    请对如\cref{fig_rpca_example}所示的包含椒盐噪声的图像矩阵进行去噪处理。
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[width=.3\textwidth]{./img/matrix/cat_noisy.jpg}
+        \caption{包含椒盐噪声的图像}
+        \label{fig_rpca_example}
+    \end{figure}
+\end{example}
+\begin{solution}
+    不难发现，椒盐噪声对应的矩阵是一个稀疏矩阵，而原始图像矩阵则是一个低秩矩阵。因此，我们可以使用鲁棒主成分分析（RPCA）来对其进行去噪处理。算法结果如\cref{fig_rpca_result}所示，可以看到，所分离出的低秩矩阵基本对应无噪声的图像，而稀疏矩阵则对应椒盐噪声部分。
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[width=.9\textwidth]{./img/matrix/cat_low_rank.jpg}
+            \caption{}
+            \label{fig_rpca_result_1}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[width=.9\textwidth]{./img/matrix/cat_sparse.jpg}
+            \caption{}
+            \label{fig_rpca_result_2}
+        \end{subfigure}
+        \caption{鲁棒主成分分析结果 (a) 低秩矩阵 (b) 稀疏矩阵}
+        \label{fig_rpca_result}
+    \end{figure}
+\end{solution}
 
 \section{矩阵微分}
 
@@ -303,6 +725,13 @@
 
 \section{张量及相关运算}
 
+\subsection{张量的定义}
+
+\subsection{外积}
+
+\subsection{张量的运算}
+
+
 \section{常见统计量的矩阵表示}
 
 在概率论中，我们经常会遇到一些常见的统计量，比如均值、方差、协方差等。这些统计量在本课程中也会经常用到。不同的是，本课程中的对象都是采集到的离散数据，对应向量或矩阵而不是随机变量。因此，我们需要提前了解对于向量和矩阵，如何计算这些统计量。
@@ -334,15 +763,50 @@
     因此，数据在任意投影方向上的方差可以由\( \bm{v}^{\mathrm{T}} \mathbf{\Sigma} \bm{v} \)给出。
 \end{solution}
 
-\section{矩阵算法}
+上述证明是从代数的角度出发的，较为抽象。实际上，我们可以从几何的角度来直观理解为什么实对称矩阵的特征向量是正交的。对于\( n \)维空间的一个中心位于原点的\( n \)维超椭球，其上的点必然满足如下方程
+\[
+    \bm{x}^{\mathrm{T}} \mathbf{A} \bm{x} = 1,
+\]
+其中\( \mathbf{A} \)是一个实对称矩阵。比如，对于二维平面上一个中心位于原点的椭圆，其曲线方程为
+\[
+    A x^2 + B y^2 + 2Cxy = 1.
+\]
+对于该曲线方程，可以将其转换为矩阵形式
+\[
+    \begin{bmatrix}
+        x & y
+    \end{bmatrix}
+    \begin{bmatrix}
+        A & C \\
+        C & B
+    \end{bmatrix}
+    \begin{bmatrix}
+        x \\
+        y
+    \end{bmatrix} = 1.
+\]
 
-\subsection{最小二乘}
+% \begin{figure}[htb!]
+%     \centering
+%     % \includegraphics[width=.4\textwidth]{./img}
+%     \begin{tikzpicture}
+%         \begin{axis}[
+%                 xlabel=$ x $, ylabel=$ y $,
+%                 ticklabel style={font=\small},
+%                 label style={font=\small},
+%                 grid, axis equal image,
+%                 legend cell align=left,
+%                 legend style={
+%                         anchor=north east,
+%                         font=\tiny,
+%                         draw=none,
+%                         fill=none
+%                     }
+%             ]
+%         \end{axis}
+%     \end{tikzpicture}
+%     \caption{}
+%     \label{fig_ellipse}
+% \end{figure}
 
-\subsection{约束能量最小化}
-
-\subsection{主成分分析}
-
-\subsection{独立成分分析}
-
-\subsection{瑞利商}
 

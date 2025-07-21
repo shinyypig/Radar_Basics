@@ -133,7 +133,7 @@
 \ifdefstring{\SIMPLE@device}{normal}{
     \geometry{
         papersize={169mm,239mm},
-        text={120mm,190mm},
+        text={130mm,190mm},
         centering
     }
     % \setlength{\headsep}{-1.04cm}

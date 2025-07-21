@@ -1,0 +1,27 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            ylabel=奇异值大小,
+            ticklabel style={font=\small},
+            label style={font=\small},
+            grid, clip=false,
+            xmin=1, xmax=200,
+            ymin=0,
+            width=10cm,
+            height=4cm,
+            legend cell align=left,
+            legend style={
+                    anchor=north east,
+                    font=\tiny,
+                    draw=none,
+                    fill=none
+                }
+        ]
+        \addplot[
+            c1,
+            thick,
+            mark=*,
+            mark size=0.5pt,
+            mark options={fill=c1!60},
+        ] table[x=x, y=y, col sep=comma] {img/matrix/singular_values.csv};
+    \end{axis}
+\end{tikzpicture}

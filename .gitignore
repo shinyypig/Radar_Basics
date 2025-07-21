@@ -15,3 +15,6 @@ tmp
 ~$*
 tmp.tex
 *.synctex(busy)
+# pixi environments
+.pixi# pixi environments
+.pixi
