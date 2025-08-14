@@ -1,0 +1,15 @@
+\begin{tikzpicture}
+    \draw[thick, -latex] (0, 0) -- (6, 0);
+    \foreach \x/\i in {0/0, 2/1, 4/2} {
+            \draw[c1, fill=c1!60, thick] (\x, 0) circle (0.1);
+            \draw[-latex, thick]  (\x+2, 2.1) -- (\x, 0.1);
+            \node at (\x, -0.5) {\i};
+        }
+    \draw[decoration={brace, amplitude=4pt, mirror}, decorate, thick] (0, -0.15) -- (2, -0.15) node [black, midway, below=0.1] {$d$};
+    \draw[dashed, thick] (0, 0.1) -- (0, 2);
+    \node at (0.2, 0.5) {\tiny $\theta_k$};
+    \draw[dashed, thick] (2, 0.1) -- (1, 1.05);
+    \node at (1.7, 0.2) {\tiny $\theta_k$};
+    % \node[below] at (0.9, 0.7) {\tiny $d \sin \theta_k$};
+    \draw[decoration={brace, amplitude=4pt, mirror}, decorate, thick] (0, 0.1) -- (1, 1.05) node [black, midway, xshift=10pt, yshift=-10pt] {\tiny $d \sin \theta_k$};
+\end{tikzpicture}

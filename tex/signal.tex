@@ -24,9 +24,9 @@
 
 对于单天线雷达系统，其发射信号通常可表示为
 \begin{equation}
-    s(t) = \text{rect}\left(\frac{t}{T}\right) p(t) e^{j 2 \pi f_0 t},
+    s(t) = \text{rect}\left(\frac{t}{T}\right) p(t) e^{j 2 \pi f_c t},
 \end{equation}
-其中，$p(t)$ 为低频包络信号，$e^{j 2 \pi f_0 t}$ 为高频载波信号，$\text{rect}\left(\frac{t}{T}\right)$ 为脉冲窗函数，其定义为
+其中，$p(t)$ 为低频包络信号，$e^{j 2 \pi f_c t}$ 为高频载波信号，$\text{rect}\left(\frac{t}{T}\right)$ 为脉冲窗函数，其定义为
 \begin{equation}
     \text{rect}\left(\frac{t}{T}\right) =
     \begin{cases}
@@ -139,14 +139,140 @@
 
 若系统的接收天线与发射天线共用或距离较近，则在理想情况下，接收信号可表示为
 \[
-    r(t) = \sum_{n=1}^{N} A_n\, p\left(t - \frac{2 R_n}{c}\right),
+    r(t) = \sum_{k=1}^{K} A_k s\left(t - \frac{2 R_k}{c}\right),
 \]
-其中，$N$ 为目标数量，$A_n$ 为一个复数，包含了目标反射信号的幅度与相位信息，
-$R_n$ 表示第 $n$ 个目标与雷达间的距离，$c$ 为光速。
-通过检测接收信号中是否包含与发射信号相匹配的特征，并估计相应的时延，
-即可实现对目标的检测与定位。
+其中，$K$ 为目标数量，$A_k$ 为一个复数，包含了目标反射信号的幅度与相位信息，$R_k$ 表示第 $k$ 个目标与雷达间的距离，$c$ 为光速。通过检测接收信号中是否包含与发射信号相匹配的特征，并估计相应的时延，即可实现对目标的检测与定位。
 
 \section{阵列接收信号模型}
+单天线雷达只能获取目标的距离信息，若需进一步测量目标方位，通常需要配备具有指向性的天线，并借助机械旋转实现目标定位。然而，此类雷达系统往往依赖体积庞大且易损的伺服机构。为克服这些缺点，相控阵雷达（Phased Array Radar）应运而生。相控阵雷达利用多天线阵列同时接收信号，并通过分析各接收通道间的相位差，实现对目标方位的精确测量。
+
+以一维均匀线性阵列（Uniform Linear Array, ULA）为例，设有 $M$ 个天线单元（阵元），且阵元间距为 $d$。在目标足够远的情况下，目标反射的电磁波可以近似看作是平面波。
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=.6\textwidth]{./img/signal/array_model.tikz}
+    \caption{一维线性阵列示意图}
+    \label{fig_array}
+\end{figure}
+
+如 \cref{fig_array} 所示，设第 $k$ 个目标与阵列天线的连线与阵列法向之间的夹角为 $\theta_k$。则第 $0$ 个阵元接收到的回波信号，相较于第 $1$ 个阵元接收到的信号，其传播路径多出 $d \sin\theta_k$ 的距离。依次类推，第 $m$ 个阵元接收到的信号，相较于第 $0$ 个阵元接收到的信号，其传播路径多出 $m d \sin\theta_k$ 的距离。不妨以第0个阵元为参考，令其接收到的第\( k \)个目标的回波信号为
+\[
+    r_k(t) = A_k s\left(t - \frac{2 R_k}{c}\right),
+\]
+则第 $m$ 个阵元接收到的信号为
+\[
+    r_k^{(m)}(t) = A_k s\left(t - \frac{2 R_k - m d \sin\theta_k}{c}\right).
+\]
+
+将发射信号的基本模型
+\[
+    s(t) = \operatorname{rect}\left(\frac{t}{T}\right) p(t) e^{j 2 \pi f_c t},
+\]
+代入线性阵列接收信号模型，可得
+\[
+    r_k^{(m)}(t) = A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k - m d \sin\theta_k}{c}}{T}\right)
+    p\left(t - \frac{2 R_k - m d \sin\theta_k}{c}\right)
+    e^{j 2 \pi f_c \left(t - \frac{2 R_k - m d \sin\theta_k}{c}\right)},
+\]
+注意到，对于矩形窗函数和低频包络信号，额外的时延 $\frac{m d \sin\theta_k}{c}$ 对其影响可以忽略不计。于是，上式可近似为
+\[
+    \begin{split}
+        r_k^{(m)}(t) \approx & A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k}{c}}{T}\right)
+        p\left(t - \frac{2 R_k}{c}\right)
+        e^{j 2 \pi f_c \left(t - \frac{2 R_k - m d \sin\theta_k}{c}\right)}                      \\
+        =                    & A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k}{c}}{T}\right)
+        p\left(t - \frac{2 R_k}{c}\right)
+        e^{j 2 \pi f_c \left(t - \frac{2 R_k}{c}\right)}
+        e^{j 2 \pi f_c \frac{m d \sin\theta_k}{c}}                                               \\
+        =                    & A_k s\left(t - \frac{2 R_k}{c}\right)
+        e^{j 2 \pi f_c \frac{m d \sin\theta_k}{c}}                                               \\
+        =                    & r_k(t) e^{j 2 \pi f_c \frac{m d \sin\theta_k}{c}}.
+    \end{split}
+\]
+这表明，不同阵元接收到的回波信号，与第 0 个阵元接收到的信号相比，可近似视为相差一个与\( m \)有关的相位因子。
+
+在实际雷达系统中，接收信号通常经过模数转换采样，设采样点数为 \( L \)，则第 $0$ 个阵元接收到的第 \( k \) 个目标的回波信号可离散表示为向量
+\[
+    \bm{r}_k = \begin{bmatrix}
+        r_k[t_0] & r_k[t_1] & \cdots & r_k[t_{L-1}]
+    \end{bmatrix}^{\mathrm{T}}.
+\]
+此时，第 \( m \) 个阵元接收到的回波信号向量为
+\[
+    \bm{r}^{(m)}_k = \bm{r}_k e^{j 2 \pi f_c \frac{m d \sin\theta_k}{c}}.
+\]
+将所有阵元接收到的第\( k \)个目标的回波信号向量排列成矩阵，记作\( \mathbf{R}_k \in \mathbb{C}^{L \times M} \)，可以表示为
+\[
+    \begin{split}
+        \mathbf{R}_k & = \begin{bmatrix}
+                             \bm{r}_k^{(0)} & \bm{r}_k^{(1)} & \cdots & \bm{r}_k^{(M-1)}
+                         \end{bmatrix} = \begin{bmatrix}
+                                             \bm{r}_k & \bm{r}_k e^{j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & \bm{r}_k e^{j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
+                                         \end{bmatrix} \\
+                     & = \bm{r}_k \begin{bmatrix}
+                                      1 & e^{j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
+                                  \end{bmatrix}^{\mathrm{T}}                                 \\
+                     & = \bm{r}_k \bm{a}^{\mathrm{H}}_k,
+    \end{split}
+\]
+其中
+\[
+    \bm{a}_k = \begin{bmatrix}
+        1 & e^{-j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & e^{-j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
+    \end{bmatrix}^{\mathrm{T}},
+\]
+被称作导向矢量（Steering Vector），包含了目标的方位信息。因此，在不考虑噪声和干扰的情况下，整个接收信号矩阵可以表示为
+\[
+    \mathbf{R} = \sum_{k=1}^{K} \mathbf{R}_k = \sum_{k=1}^{K} \bm{r}_k \bm{a}^{\mathrm{H}}_k.
+\]
+也就是说，对于一维线性阵列，其接收信号可以表示成一个矩阵，并且该矩阵是由一系列秩一矩阵构成的。
+
+在实际雷达系统中，接收信号通常经过模数转换（ADC）采样。设每个阵元的采样点数为 \(L\)，则第 \(0\) 个阵元接收到的第 \(k\) 个目标的离散回波信号可表示为列向量
+\[
+    \bm{r}_k =
+    \begin{bmatrix}
+        r_k[t_0] & r_k[t_1] & \cdots & r_k[t_{L-1}]
+    \end{bmatrix}^{\mathrm{T}}.
+\]
+对于第 \(m\) 个阵元，由于目标方位 \(\theta_k\) 引入了阵元间相位差，其回波信号向量可写为
+\[
+    \bm{r}^{(m)}_k
+    = \bm{r}_k \, e^{j 2 \pi f_c \frac{m d \sin\theta_k}{c}},
+\]
+其中 \(f_c\) 为载频，\(d\) 为阵元间距，\(c\) 为电磁波传播速度。
+
+将所有 \(M\) 个阵元接收到的第 \(k\) 个目标的回波信号按列排列，可以发现第\( k \)个目标对应的接收信号矩阵是一个秩一矩阵，
+\[
+    \begin{aligned}
+        \mathbf{R}_k
+         & = \begin{bmatrix}
+                 \bm{r}_k^{(0)} & \bm{r}_k^{(1)} & \cdots & \bm{r}_k^{(M-1)}
+             \end{bmatrix}                                                           \\
+         & = \begin{bmatrix}
+                 \bm{r}_k & \bm{r}_k e^{j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & \bm{r}_k e^{j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
+             \end{bmatrix} \\
+         & = \bm{r}_k
+        \begin{bmatrix}
+            1 & e^{j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
+        \end{bmatrix}^{\mathrm{T}}                               \\
+         & = \bm{r}_k \, \bm{a}_k^{\mathrm{H}},
+    \end{aligned}
+\]
+其中
+\[
+    \bm{a}_k =
+    \begin{bmatrix}
+        1 & e^{-j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & e^{-j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
+    \end{bmatrix}^{\mathrm{T}}
+\]
+称为\textbf{导向矢量}（Steering Vector），其相位包含了目标的方位信息。因此，在不考虑噪声与干扰的情况下，整个阵列的接收信号矩阵可表示为
+\[
+    \mathbf{R}
+    = \sum_{k=1}^{K} \mathbf{R}_k
+    = \sum_{k=1}^{K} \bm{r}_k \, \bm{a}_k^{\mathrm{H}},
+\]
+所以理想情况下，对于一维均匀线阵，接收信号矩阵是由多个秩一矩阵叠加而成的。
+
 
 \section{多普勒接收信号模型}
 
