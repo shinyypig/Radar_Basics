@@ -1,4 +1,4 @@
-$clean_ext .= ' %R.figlist %R-figure* %R.makefile fls.tmp';
+# $clean_ext .= ' %R.figlist %R-figure* %R.makefile fls.tmp';
 $latex    = 'internal tikzlatex latex    %B %O %S';
 $pdflatex = 'internal tikzlatex pdflatex %B %O %S';
 $lualatex = 'internal tikzlatex lualatex %B %O %S';

@@ -12,7 +12,8 @@
 
 如果矩阵\( \mathbf{A} \)一共有\( n \)个线性无关的特征向量，构成如下的特征向量矩阵
 \[
-    \bm{v} = \begin{bmatrix}
+    \bm{v} =
+    \begin{bmatrix}
         \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_n
     \end{bmatrix},
 \]
@@ -23,7 +24,8 @@
 \end{equation}
 其中\( \mathbf{\Lambda} \)是一个对角矩阵，其对角线上的元素为对应的特征值，即
 \[
-    \mathbf{\Lambda} = \begin{bmatrix}
+    \mathbf{\Lambda} =
+    \begin{bmatrix}
         \lambda_1 & 0         & \cdots & 0         \\
         0         & \lambda_2 & \cdots & 0         \\
         \vdots    & \vdots    & \ddots & \vdots    \\
@@ -75,21 +77,24 @@
 
 然而并不是所有的矩阵都可以进行特征分解，对于部分矩阵，其特征向量可能线性相关。此时，矩阵\( \mathbf{V} \)不可逆，因此无法得到特征分解。比如，下方的\( 2 \times 2 \)矩阵：
 \[
-    \mathbf{A} = \begin{bmatrix}
+    \mathbf{A} =
+    \begin{bmatrix}
         1 & 1 \\
         0 & 1
     \end{bmatrix}.
 \]
 设其特征值为\( \lambda \)，则有
 \[
-    \det(\mathbf{A} - \lambda \mathbf{I}) = \det\left(\begin{bmatrix}
+    \det(\mathbf{A} - \lambda \mathbf{I}) = \det\left(
+    \begin{bmatrix}
             1 - \lambda & 1           \\
             0           & 1 - \lambda
         \end{bmatrix}\right) = (1 - \lambda)^2 = 0.
 \]
 因此，该矩阵的两个特征值都是1，对应的特征向量相同，都为
 \[
-    \bm{v} = \begin{bmatrix}
+    \bm{v} =
+    \begin{bmatrix}
         1 \\
         0
     \end{bmatrix}.
@@ -102,7 +107,8 @@
     \]
     分块对角矩阵\( \mathbf{J} \)有如下形式
     \[
-        \mathbf{J} = \begin{bmatrix}
+        \mathbf{J} =
+        \begin{bmatrix}
             J_1    & 0      & \cdots & 0      \\
             0      & J_2    & \cdots & 0      \\
             \vdots & \vdots & \ddots & \vdots \\
@@ -111,7 +117,8 @@
     \]
     其中每个\( J_i \)是一个若尔当块（Jordan block），其形式为
     \[
-        J_i = \begin{bmatrix}
+        J_i =
+        \begin{bmatrix}
             \lambda_i & 1         & 0         & \cdots & 0         \\
             0         & \lambda_i & 1         & \cdots & 0         \\
             0         & 0         & \lambda_i & \ddots & 0         \\
@@ -125,7 +132,8 @@
 \begin{example}
     设有三座城市，且这三座城市之间人口流动的情况可以用一个矩阵来表示：
     \[
-        \mathbf{P} = \begin{bmatrix}
+        \mathbf{P} =
+        \begin{bmatrix}
             0.5 & 0.2 & 0.1 \\
             0.3 & 0.5 & 0.4 \\
             0.2 & 0.3 & 0.5
@@ -141,7 +149,8 @@
     \begin{enumerate}
         \item 记初始时刻三个城市的人口数量为如下向量
               \[
-                  \bm{x}_0 = \begin{bmatrix}
+                  \bm{x}_0 =
+                  \begin{bmatrix}
                       1000 \\
                       1000 \\
                       1000
@@ -149,15 +158,18 @@
               \]
               则经过一个单位时间后，各个城市的人口数量为
               \[
-                  \bm{x}_1 = \mathbf{P} \bm{x}_0 = \begin{bmatrix}
+                  \bm{x}_1 = \mathbf{P} \bm{x}_0 =
+                  \begin{bmatrix}
                       0.5 & 0.2 & 0.1 \\
                       0.3 & 0.5 & 0.4 \\
                       0.2 & 0.3 & 0.5
-                  \end{bmatrix} \begin{bmatrix}
+                  \end{bmatrix}
+                  \begin{bmatrix}
                       1000 \\
                       1000 \\
                       1000
-                  \end{bmatrix} = \begin{bmatrix}
+                  \end{bmatrix} =
+                  \begin{bmatrix}
                       800  \\
                       1200 \\
                       1000
@@ -174,11 +186,13 @@
               \]
               其中
               \[
-                  \mathbf{V} \approx \begin{bmatrix}
+                  \mathbf{V} \approx
+                  \begin{bmatrix}
                       0.3995 & -0.8090 & 0.3090  \\
                       0.7068 & 0.3090  & -0.8090 \\
                       0.5839 & 0.5000  & 0.5000
-                  \end{bmatrix}, \quad \mathbf{\Lambda} \approx \begin{bmatrix}
+                  \end{bmatrix}, \quad \mathbf{\Lambda} \approx
+                  \begin{bmatrix}
                       1 & 0      & 0      \\
                       0 & 0.3618 & 0      \\
                       0 & 0      & 0.1382
@@ -186,11 +200,13 @@
               \]
               因此，当\( n \)趋向于无穷大时，\( \mathbf{P}^n \)的极限为
               \[
-                  \lim_{n \to \infty} \mathbf{P}^n = \lim_{n \to \infty} \mathbf{V} \mathbf{\Lambda}^n \mathbf{V}^{-1} = \mathbf{V} \begin{bmatrix}
+                  \lim_{n \to \infty} \mathbf{P}^n = \lim_{n \to \infty} \mathbf{V} \mathbf{\Lambda}^n \mathbf{V}^{-1} = \mathbf{V}
+                  \begin{bmatrix}
                       1 & 0 & 0 \\
                       0 & 0 & 0 \\
                       0 & 0 & 0
-                  \end{bmatrix} \mathbf{V}^{-1} \approx \begin{bmatrix}
+                  \end{bmatrix} \mathbf{V}^{-1} \approx
+                  \begin{bmatrix}
                       0.2364 & 0.2364 & 0.2364 \\
                       0.4182 & 0.4182 & 0.4182 \\
                       0.3455 & 0.3455 & 0.3455
@@ -198,7 +214,8 @@
               \]
               于是，经过足够长的时间后，各个城市的人口分布情况为
               \[
-                  \bm{x}_\infty = \lim_{n \to \infty} \bm{x}_n = \lim_{n \to \infty} \mathbf{P}^n \bm{x}_0 \approx \begin{bmatrix}
+                  \bm{x}_\infty = \lim_{n \to \infty} \bm{x}_n = \lim_{n \to \infty} \mathbf{P}^n \bm{x}_0 \approx
+                  \begin{bmatrix}
                       709.1  \\
                       1254.5 \\
                       1036.4
@@ -237,7 +254,8 @@
 
     因此，可以构造如下的矩阵
     \[
-        \mathbf{U} = \begin{bmatrix}
+        \mathbf{U} =
+        \begin{bmatrix}
             \bm{u}_1 & \bm{u}_2 & \cdots & \bm{u}_n & \bm{u}_{n+1} & \cdots & \bm{u}_m
         \end{bmatrix} \in \mathbb{R}^{m \times m},
     \]
@@ -245,7 +263,8 @@
 
     对于构造的矩阵\( \mathbf{U} \)，可以验证其满足
     \[
-        \mathbf{U}^{\mathrm{T}} \mathbf{A} \mathbf{V} = \begin{bmatrix}
+        \mathbf{U}^{\mathrm{T}} \mathbf{A} \mathbf{V} =
+        \begin{bmatrix}
             \sqrt{\mathbf{\Lambda}} \\
             \mathbf{0}
         \end{bmatrix} \in \mathbb{R}^{m \times n},
@@ -286,7 +305,7 @@
 其中\( \lambda_i \)是矩阵\( \mathbf{A} \)第\( i \)大的奇异值。具体证明不再展开，请读者自行推导。
 
 \begin{example}
-    对于如\cref{fig_singular_values}所示的灰度图像，可以将其看作是一个\( 300 \times 200 \)的矩阵，请利用奇异值分解对其进行压缩处理。
+    对于如\cref{fig_singular_values}所示的灰度图像，可以将其看作是一个\( 200 \times 300 \)的矩阵，请利用奇异值分解对其进行压缩处理。
     \begin{figure}[htb!]
         \centering
         \includegraphics[width=.3\textwidth]{./img/matrix/cat_resized.jpg}
@@ -390,7 +409,9 @@
     \end{cases},
     \label{eq:k-svd}
 \end{equation}
-其中，\( \mathbf{D} \in \mathbb{R}^{m \times k} \)是字典矩阵，\( \mathbf{X} = \begin{bsmallmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_n \end{bsmallmatrix} \in \mathbb{R}^{k \times n} \)是稀疏系数矩阵。\( k \)-SVD是对聚类算法\( k \)-均值（\( k \)-Means）的一种推广，其中字典矩阵的列向量对应聚类中心，而稀疏系数矩阵\( \mathbf{X} \)则包含了聚类结果。
+其中，\( \mathbf{D} \in \mathbb{R}^{m \times k} \)是字典矩阵，\( \mathbf{X} =
+\begin{bsmallmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_n
+\end{bsmallmatrix} \in \mathbb{R}^{k \times n} \)是稀疏系数矩阵。\( k \)-SVD是对聚类算法\( k \)-均值（\( k \)-Means）的一种推广，其中字典矩阵的列向量对应聚类中心，而稀疏系数矩阵\( \mathbf{X} \)则包含了聚类结果。
 
 除此以外，稀疏分解的矩阵推广还有另一种形式，即鲁棒主成分分析（Robust Principal Component Analysis, RPCA）。RPCA假设观测矩阵可以分解为一个低秩矩阵和一个稀疏矩阵的和。具体而言，给定一个矩阵 \( \mathbf{Y} \in \mathbb{R}^{m \times n} \)，RPCA 的优化问题可以表示为
 \begin{equation}
@@ -435,12 +456,13 @@
 \section{矩阵微分}
 
 \subsection{实矩阵微分}
-普通的求导想必大家都很熟悉, 比如对于标量函数$f(x)$, 其关于$x$的导数可以表示为\( \frac{\partial f(x)}{\partial x} \). 而函数不仅仅可以是关于标量的函数，也可以是关于向量甚至矩阵的函数。比如，一个二元函数\( f(x_1, x_2) \)则可以看作是关于向量\( \bm{x} = \begin{bsmallmatrix} x_1 & x_2 \end{bsmallmatrix}^{\mathrm{T}} \)的一个函数\( f(\bm{x}) \)。自然地，我们也可以求解其关于向量\( \bm{x} \)导数。具体而言，我们有如下定义
+普通的求导想必大家都很熟悉，比如对于标量函数$f(x)$， 其关于$x$的导数可以表示为\( \frac{\partial f(x)}{\partial x} \)。 而函数不仅仅可以是关于标量的函数，也可以是关于向量甚至矩阵的函数。比如，一个二元函数\( f(x_1, x_2) \)则可以看作是关于向量\( \bm{x} = \begin{bsmallmatrix} x_1 & x_2 \end{bsmallmatrix}^{\mathrm{T}} \)的一个函数\( f(\bm{x}) \)。自然地，我们也可以求解其关于向量\( \bm{x} \)导数。具体而言，我们有如下定义。
 
 \begin{definition}[标量关于向量求导]
     对于向量$\bm{x} \in \mathbb{R}^{n \times 1}$，有映射\( f: \mathbb{R}^{n \times 1} \rightarrow \mathbb{R} \)，则定义其关于向量\( \bm{x} \)导数为
     \[
-        \frac{\partial f(\bm{x})}{\partial \bm{x}}  = \begin{bmatrix}
+        \frac{\partial f(\bm{x})}{\partial \bm{x}}  =
+        \begin{bmatrix}
             \frac{\partial f(\bm{x})}{\partial x_1} \\
             \frac{\partial f(\bm{x})}{\partial x_2} \\
             \vdots                                  \\
@@ -448,14 +470,14 @@
         \end{bmatrix}.
     \]
 \end{definition}
-即计算\( f(\bm{x}) \)关于\( \bm{x} \)的中每一个元素的偏导数，结果是一个和\( \bm{x} \)同样维度的向量。
 
-类似地，我们也可以定义标量对矩阵的求导，具体定义如下：
+换句话说，\( f(\bm{x}) \)关于\( \bm{x} \)导数可以通过计算\( f(\bm{x}) \)关于\( \bm{x} \)中每一个元素的偏导数，并将结果排列成和\( \bm{x} \)同样维度的向量。类似地，我们也可以定义标量对矩阵的求导，具体定义如下。
 
 \begin{definition}[标量关于矩阵求导]
     对于矩阵$\mathbf{A} \in \mathbb{R}^{m \times n}$，有映射\( f: \mathbb{R}^{m \times n} \rightarrow \mathbb{R} \)，则定义其关于矩阵\( \mathbf{A} \)导数为
     \[
-        \frac{\partial f(\mathbf{A})}{\partial \mathbf{A}} = \begin{bmatrix}
+        \frac{\partial f(\mathbf{A})}{\partial \mathbf{A}} =
+        \begin{bmatrix}
             \frac{\partial f(\mathbf{A})}{\partial a_{11}} & \frac{\partial f(\mathbf{A})}{\partial a_{12}} & \cdots & \frac{\partial f(\mathbf{A})}{\partial a_{1n}} \\
             \frac{\partial f(\mathbf{A})}{\partial a_{21}} & \frac{\partial f(\mathbf{A})}{\partial a_{22}} & \cdots & \frac{\partial f(\mathbf{A})}{\partial a_{2n}} \\
             \vdots                                         & \vdots                                         & \ddots & \vdots                                         \\
@@ -464,12 +486,13 @@
     \]
 \end{definition}
 
-此外，函数本书也有可能不是一个标量，而是一个向量，因此我们也需要定义向量对向量的求导。具体定义如下：
+此外，函数本身也有可能不是一个标量，而是一个向量，因此我们也需要定义向量对向量的求导。具体定义如下：
 
 \begin{definition}[向量关于向量求导]
     对于向量\( \bm{x} \in \mathbb{R}^{m \times 1} \)，有映射\( \bm{f}: \mathbb{R}^{n \times 1} \rightarrow \mathbb{R}^{m \times 1} \)，则定义其关于向量\( \bm{x} \)导数为
     \[
-        \frac{\partial \bm{f}(\bm{x})}{\partial \bm{x}} = \begin{bmatrix}
+        \frac{\partial \bm{f}(\bm{x})}{\partial \bm{x}} =
+        \begin{bmatrix}
             \frac{\partial f_1(\bm{x})}{\partial \bm{x}} \\
             \frac{\partial f_2(\bm{x})}{\partial \bm{x}} \\
             \vdots                                       \\
@@ -479,7 +502,7 @@
 \end{definition}
 可以看到，对应的求导规则就是将函数的每一个元素分别对向量\( \bm{x} \)求导，并将结果按照\( \bm{f} \)的形式排列。比如，\( m \times 1 \)列向量关于\( n \times 1 \)列向量的导数为一个\( mn \times 1 \)的列向量。如果是\( 1 \times m \)的行向量关于\( n \times 1 \)列向量的导数，那么根据规则，结果则是一个\( n \times m \)的矩阵。
 
-下面，我们会给出一些常见的矩阵微分公式，这些公式将在本课程中反复用到。
+接下来，本节给出一些常见的矩阵微分公式，这些公式在本书的后续章节中会经常用到。
 
 \begin{example}
     设有向量\( \bm{x} \in \mathbb{R}^{n \times 1} \)、\( \bm{y} \in \mathbb{R}^{n \times 1} \) 和矩阵\( \mathbf{A} \in \mathbb{R}^{n \times n} \)，计算如下导数
@@ -496,12 +519,14 @@
     \begin{enumerate}
         \item 注意到\( f = \bm{x}^{\mathrm{T}} \bm{y}  = \sum_{i=1}^{n} x_i y_i\)，因此有
               \[
-                  \frac{\partial f}{\partial \bm{x}} = \begin{bmatrix}
+                  \frac{\partial f}{\partial \bm{x}} =
+                  \begin{bmatrix}
                       \frac{\partial f}{\partial x_1} \\
                       \frac{\partial f}{\partial x_2} \\
                       \vdots                          \\
                       \frac{\partial f}{\partial x_n}
-                  \end{bmatrix} = \begin{bmatrix}
+                  \end{bmatrix} =
+                  \begin{bmatrix}
                       y_1    \\
                       y_2    \\
                       \vdots \\
@@ -510,12 +535,14 @@
               \]
         \item 同理，对于\( f = \bm{x}^{\mathrm{T}} \bm{y}  \)有
               \[
-                  \frac{\partial f}{\partial \bm{y}} = \begin{bmatrix}
+                  \frac{\partial f}{\partial \bm{y}} =
+                  \begin{bmatrix}
                       \frac{\partial f}{\partial y_1} \\
                       \frac{\partial f}{\partial y_2} \\
                       \vdots                          \\
                       \frac{\partial f}{\partial y_n}
-                  \end{bmatrix} = \begin{bmatrix}
+                  \end{bmatrix} =
+                  \begin{bmatrix}
                       x_1    \\
                       x_2    \\
                       \vdots \\
@@ -524,12 +551,14 @@
               \]
         \item 同样地，将函数写成求和的形式\( f = \bm{x}^{\mathrm{T}} \mathbf{A} \bm{y} = \sum_{i=1}^{n} \sum_{j=1}^{n} a_{ij} x_i  y_j \)，因此有
               \[
-                  \frac{\partial f}{\partial \bm{x}} = \begin{bmatrix}
+                  \frac{\partial f}{\partial \bm{x}} =
+                  \begin{bmatrix}
                       \frac{\partial f}{\partial x_1} \\
                       \frac{\partial f}{\partial x_2} \\
                       \vdots                          \\
                       \frac{\partial f}{\partial x_n}
-                  \end{bmatrix} = \begin{bmatrix}
+                  \end{bmatrix} =
+                  \begin{bmatrix}
                       \sum_{j=1}^{n} a_{1j} y_j \\
                       \sum_{j=1}^{n} a_{2j} y_j \\
                       \vdots                    \\
@@ -538,12 +567,14 @@
               \]
         \item 同理，对于\( f = \bm{x}^{\mathrm{T}} \mathbf{A} \bm{y} \)有
               \[
-                  \frac{\partial f}{\partial \mathbf{A}} = \begin{bmatrix}
+                  \frac{\partial f}{\partial \mathbf{A}} =
+                  \begin{bmatrix}
                       \frac{\partial f}{\partial a_{11}} & \frac{\partial f}{\partial a_{12}} & \cdots & \frac{\partial f}{\partial a_{1n}} \\
                       \frac{\partial f}{\partial a_{21}} & \frac{\partial f}{\partial a_{22}} & \cdots & \frac{\partial f}{\partial a_{2n}} \\
                       \vdots                             & \vdots                             & \ddots & \vdots                             \\
                       \frac{\partial f}{\partial a_{n1}} & \frac{\partial f}{\partial a_{n2}} & \cdots & \frac{\partial f}{\partial a_{nn}}
-                  \end{bmatrix} = \begin{bmatrix}
+                  \end{bmatrix} =
+                  \begin{bmatrix}
                       x_1 y_1 & x_1 y_2 & \cdots & x_1 y_n \\
                       x_2 y_1 & x_2 y_2 & \cdots & x_2 y_n \\
                       \vdots  & \vdots  & \ddots & \vdots  \\
@@ -552,9 +583,11 @@
               \]
         \item 最后，对于\( \bm{f} = \bm{x}^{\mathrm{T}} \mathbf{A} \)，其第\( j \)个元素为\( f_j = \sum_{i=1}^{n} a_{ij} x_i \)，因此有
               \[
-                  \frac{\partial f}{\partial \bm{x}} = \begin{bmatrix}
+                  \frac{\partial f}{\partial \bm{x}} =
+                  \begin{bmatrix}
                       \frac{\partial f_1}{\partial \bm{x}} & \frac{\partial f_2}{\partial \bm{x}} & \cdots & \frac{\partial f_n}{\partial \bm{x}}
-                  \end{bmatrix} = \begin{bmatrix}
+                  \end{bmatrix} =
+                  \begin{bmatrix}
                       a_{11} & a_{12} & \cdots & a_{1n} \\
                       a_{21} & a_{22} & \cdots & a_{2n} \\
                       \vdots & \vdots & \ddots & \vdots \\
@@ -563,9 +596,11 @@
               \]
         \item 对于\( \bm{f} = \bm{x} - \bm{y} \)，有
               \[
-                  \frac{\partial \bm{f}}{\partial \bm{x}} = \begin{bmatrix}
+                  \frac{\partial \bm{f}}{\partial \bm{x}} =
+                  \begin{bmatrix}
                       \frac{\partial (x_1 - y_1)}{\partial \bm{x}} & \frac{\partial (x_2 - y_2)}{\partial \bm{x}} & \cdots & \frac{\partial (x_n - y_n)}{\partial \bm{x}}
-                  \end{bmatrix} = \begin{bmatrix}
+                  \end{bmatrix} =
+                  \begin{bmatrix}
                       1      & 0      & \cdots & 0      \\
                       0      & 1      & \cdots & 0      \\
                       \vdots & \vdots & \ddots & \vdots \\
@@ -575,17 +610,16 @@
     \end{enumerate}
 \end{solution}
 
-从以上的例子我们可以得到一些经验结论：
+从上面的例子中，我们可以得到一些经验结论：
 
 \begin{enumerate}
-    \item 对于标量关于向量的求导，如果向量位于表达式的左侧且有转置，那么导数则直接是右侧变量，比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{x}} = \bm{y}\) 和 \( \frac{\partial \bm{x}^{\mathrm{T}} \mathbf{A}}{\partial \bm{x}} = \mathbf{A} \)。
-    \item 对于标量关于向量的求导，如果向量位于表达式的右侧，那么导数则是左侧变量加转置，比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{y}} = \bm{x}\) 和 \( \frac{\partial \mathbf{A} \bm{y}}{\partial \bm{y}} = \mathbf{A}^{\mathrm{T}} \)。
+    \item 如果向量位于函数表达式的左侧且有转置，那么导数则直接是右侧变量，比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{x}} = \bm{y}\) 和 \( \frac{\partial \bm{x}^{\mathrm{T}} \mathbf{A}}{\partial \bm{x}} = \mathbf{A} \)。
+    \item 如果向量位于函数表达式的右侧，那么导数则是左侧变量加转置，比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{y}} = \bm{x}\) 和 \( \frac{\partial \mathbf{A} \bm{y}}{\partial \bm{y}} = \mathbf{A}^{\mathrm{T}} \)。
 \end{enumerate}
 
+矩阵微分有四个常用的性质：线性、乘积、商和链式法则，具体见\cref{property:matrix-differentiation-properties}。
 
-矩阵微分有四个常用的性质：线性、乘积、商和链式法则，具体如下：
-
-\begin{property}[矩阵微分的四个性质]
+\begin{property}[矩阵微分的四个性质] \label{property:matrix-differentiation-properties}
     以下性质中的前三个与标量函数求导的性质类似，只有最后一个链式法则略有不同。
     \begin{enumerate}
         \item 线性
@@ -635,7 +669,7 @@
 
 \subsection{复矩阵微分}
 
-在本课程中，还有可能涉及到复数矩阵的微分。由于在实际应用中，大部分函数都是关于复向量或者复矩阵的实值函数，因此我们只针对这种函数给出其导数的定义，具体如下：
+在本课程中，还有可能涉及到复数矩阵的微分。由于在实际应用中，大部分函数都是关于复向量或者复矩阵的实值函数，因此我们只针对这种函数给出其导数的定义，具体如下。
 
 \begin{definition}
     对于复数\( z = x + jy \)，有映射\( g: \mathbb{C} \rightarrow \mathbb{R} \)，则定义其关于复数\( z \)的导数为
@@ -727,64 +761,385 @@
 
 \subsection{张量的定义}
 
-\subsection{外积}
+
+张量（Tensor）是线性代数与多线性代数中的一个基本概念，可视为标量（0 阶张量）、向量（1 阶张量）和矩阵（2 阶张量）在更高维度上的推广，如\cref{fig_tensor}所示。形式上，一个 $n$ 阶张量可以表示为一个多维数组：
+\[
+    \mathcal{T} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_n},
+\]
+其中每个维度称为一个“模”（mode），维度的个数即为张量的“阶”（order）。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.1\textwidth}
+        \centering
+        \includegraphics[width=.4\textwidth]{./img/matrix/tensor0.tikz}
+        \caption{}
+        \label{fig_tensor_1}
+    \end{subfigure}
+    \begin{subfigure}{.23\textwidth}
+        \centering
+        \includegraphics[width=.4\textwidth]{./img/matrix/tensor1.tikz}
+        \caption{}
+        \label{fig_tensor_2}
+    \end{subfigure}
+    \begin{subfigure}{.23\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/matrix/tensor2.tikz}
+        \caption{}
+        \label{fig_tensor_3}
+    \end{subfigure}
+    \begin{subfigure}{.23\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/matrix/tensor3.tikz}
+        \caption{}
+        \label{fig_tensor_4}
+    \end{subfigure}
+    \caption{张量的示意图 (a) 0 阶张量 (b) 1 阶张量 (c) 2 阶张量 (d) 3 阶张量}
+    \label{fig_tensor}
+\end{figure}
+
+对于$n$ 阶张量 $\mathcal{T}$，其中元素可以用 $n$ 个索引来表示，通常记为 $t_{i_1, i_2, \cdots, i_n}$，其中 $i_k$ 表示第 $k$ 个模的索引。比如，\cref{fig_tensor_idx}所示的3阶张量\( \mathcal{T} \in \mathbb{R}^{4 \times 4 \times 4} \)，其中蓝色立方体对应的元素的索引为\( (3, 4, 2) \)，即 \( t_{3,4,2} \)。
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=.4\textwidth]{./img/matrix/tensor_idx.tikz}
+    \caption{张量索引示意图}
+    \label{fig_tensor_idx}
+\end{figure}
+
+实际上，张量这种形式的数据结构在实际应用中非常常见，比如一张彩色图像就可以看作是一个3阶张量，这个三阶张量的三个模分别是高度、宽度和颜色通道。\cref{fig_img_tensor_1}展示了一张\( 200 \times 300 \)像素大小的彩色图像，其对应的张量表示为\( \mathcal{T} \in \mathbb{R}^{200 \times 300 \times 3} \)，其中第三个模的三个元素分别对应红色\cref{fig_img_tensor_2}、绿色\cref{fig_img_tensor_3}和蓝色通道\cref{fig_img_tensor_4}。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.23\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/matrix/cat.jpg}
+        \caption{}
+        \label{fig_img_tensor_1}
+    \end{subfigure}
+    \begin{subfigure}{.23\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/matrix/cat_r.jpg}
+        \caption{}
+        \label{fig_img_tensor_2}
+    \end{subfigure}
+    \begin{subfigure}{.23\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/matrix/cat_g.jpg}
+        \caption{}
+        \label{fig_img_tensor_3}
+    \end{subfigure}
+    \begin{subfigure}{.23\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/matrix/cat_b.jpg}
+        \caption{}
+        \label{fig_img_tensor_4}
+    \end{subfigure}
+    \caption{一张彩色图像的张量表示 (a) 原图 (b) 红色通道 (c) 绿色通道 (d) 蓝色通道}
+    \label{fig_img_tensor}
+\end{figure}
+
+为了方便对张量进行分析，通常可以将其展开为矩阵的形式，对应的操作被称作模-k展开（Mode-k Flattening）。具体而言，对于一个 $n$ 阶张量 $\mathcal{T} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_n}$，其模-k展开可以表示为一个矩阵 $\mathbf{T}_k \in \mathbb{R}^{I_k \times (I_1 I_2 \cdots I_{k-1} I_{k+1} \cdots I_n)}$，其中矩阵的每一列对应张量 $\mathcal{T}$ 在模 $k$ 上的一个纤维（Fiber），即固定其他模的索引后，模 $k$ 上的所有元素构成的向量：
+\[
+    \begin{bmatrix} t_{i_1 \cdots i_{k-1} 1 i_{k+1}\cdots i_n} &  t_{i_1 \cdots i_{k-1} 2 i_{k+1}\cdots i_n} & \cdots & t_{i_1 \cdots i_{k-1} I_k i_{k+1}\cdots i_n} \end{bmatrix}^{\mathrm{T}}.
+\]
+
+比如，\cref{fig_img_tensor_1}所示的张量\( \mathcal{T} \in \mathbb{R}^{200 \times 300 \times 3} \)可以通过模-1展开得到一个矩阵$\mathbf{T}_1 \in \mathbb{R}^{200 \times (300 \times 3)}$，而通过模-2展开则得到一个矩阵$\mathbf{T}_2 \in \mathbb{R}^{300 \times (200 \times 3)}$。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/matrix/cat_m2.jpg}
+        \caption{}
+        \label{fig_mode_k_1}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/matrix/cat_m1.jpg}
+        \caption{}
+        \label{fig_mode_k_2}
+    \end{subfigure}
+    \caption{张量模-k展开示意图 (a) 模-1展开 (b) 模-2展开}
+    \label{fig_mode_k}
+\end{figure}
+
+除了图像以外，视频也可以看作是一个4阶张量，对应的四个模分别为高度、宽度、颜色通道和时间。比如，一段\( 10 \)秒的视频，分辨率为\( 1920 \times 1080 \)像素，帧率为\( 30 \)帧/秒，那么对应的张量可以表示为\( \mathcal{T} \in \mathbb{R}^{1920 \times 1080 \times 3 \times 300} \)。此外，本书涉及到的多域雷达数据也可以看作是高阶张量，利用张量的相关知识，可以对这些数据进行有效的分析和处理。
 
 \subsection{张量的运算}
 
+本节首先介绍一种生成张量的运算，即外积（Outer Product），然后介绍张量与向量、矩阵之间的乘法，即 k 模积（k-Mode Product），以及张量乘法与克罗内克积（Kronecker Product）之间的关系。
+
+内积（Inner Product）是线性代数中一个基本的运算，其可以将两个向量映射为一个标量。具体而言，对于两个\( n \)维向量\( \bm{a}, \bm{b} \in \mathbb{R}^{n} \)，其内积定义为
+\[
+    \langle \bm{a}, \bm{b} \rangle = \bm{a}^{\mathrm{T}} \bm{b} = \sum_{i=1}^n a_i b_i.
+\]
+而外积则刚好相反，同样是两个\( n \)维向量\( \bm{a}, \bm{b} \in \mathbb{R}^{n} \)，通过外积可以生成一个\( n \times n \)的矩阵\( \mathbf{X} \)，该矩阵可以表示为
+\[
+    \mathbf{X} = \bm{a} \circ \bm{b} = \bm{a} \bm{b}^{\mathrm{T}}.
+\]
+换句话说，矩阵\( \mathbf{X} \)的第\( i,j \)个元素为\( x_{ij} = a_i b_j \)。此外，外积还可以推广到任意个数的向量之间，具体定义如下。
+\begin{definition}
+    给定\( n \)个向量\( \bm{x}^{(1)} \in \mathbb{R}^{I_1}, \bm{x}^{(2)} \in \mathbb{R}^{I_2}, \cdots, \bm{x}^{(n)} \in \mathbb{R}^{I_n} \)，它们的外积定义为
+    \[
+        \mathcal{T} = \bm{x}^{(1)} \circ \bm{x}^{(2)} \circ \cdots \circ \bm{x}^{(n)} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_n}.
+    \]
+    对于张量\( \mathcal{T} \)中的元素，其第\( i_1, i_2, \cdots, i_n \)个元素有如下表达式
+    \[
+        t_{i_1, i_2, \cdots, i_n} = x^{(1)}_{i_1} x^{(2)}_{i_2} \cdots x^{(n)}_{i_n},
+    \]
+    其中，\( x^{(k)}_{i_k} \)表示向量\( \bm{x}^{(k)} \)的第\( i_k \)个元素。
+\end{definition}
+
+特别地，如果将同一个向量\( \bm{x} \)进行\( n \)次外积，可以得到一个\( n \)阶张量，记作
+\[
+    \mathcal{T} = \bm{x} \circ \bm{x} \circ \cdots \circ \bm{x} = \bm{x}^{\circ n}.
+\]
+并且，该张量是一个对称张量，即任意交换\( i_1, i_2, \cdots, i_n \)的顺序，其对应的元素不变，比如
+\[
+    t_{i_1, i_2, \cdots, i_n} = t_{i_n, i_{n-1}, \cdots, i_1} = x_{i_1} x_{i_2} \cdots x_{i_n}.
+\]
+
+而$k$模积同样是最基本的张量运算之一，它可以看作是矩阵乘法的推广，其定义如下。
+\begin{definition}%[$k$ 模积， $k$-mode product]
+    给定张量$\mathcal T \in \mathbb {R}^{I_1 \times I_2 \times \cdots \times I_N }$与矩阵$\mathbf U \in \mathbb {R}^{J \times I_k}$，两者的$k$模积操作可以表示为
+    \begin{equation}
+        \mathcal T \times_{k} \mathbf U \in \mathbb {R}^{I_1 \times \cdots \times I_{k-1} \times J \times I_{k+1}\times \cdots \times I_N },
+    \end{equation}
+    \( k \)模积结果中的元素具有如下表达式（\( a_{i_1 i_2 \cdots i_n}, u_{ji_{k}} \)分别为张量\( \mathcal T \)和矩阵\( \mathbf{U} \)对应位置的元素）
+    \begin{equation}
+        (\mathcal T \times_{k} \mathbf U )_{i_1\cdots i_{k-1}ji_{k+1}\cdots i_N}=\sum_{i_{k}=1} ^{I_{k}} t_{i_1 \cdots i_{k-1}i_ki_{k+1} \cdots i_N} u_{ji_{k}}.
+    \end{equation}
+\end{definition}
+
+我们知道，矩阵乘以一个向量可以看作是用该向量中的元素对矩阵的各个列向量进行线性组合. 同样地，张量与向量的$k$模积也可以看作用向量中的元素对张量沿着第 $k$ 个维度的切片进行线性组合. 例如，对于一个三阶张量$\mathcal A \in \mathbb {R}^{3 \times 3 \times 4 }$，该张量3模积一个$1\times 4$大小的向量将会得到一个\( 3 \times 3 \)的矩阵，具体操作如\cref{fig.psa.nmod_example}所示. 在这个例子中，线性组合的对象不再是向量，而是张量沿着第三个维度的切片，也就是矩阵.
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=.9\textwidth]{./img/matrix/psa_tensor_mod.tikz}
+    \caption{张量与向量$k$模积示意图}
+    \label{fig.psa.nmod_example}
+\end{figure}
+
+类似地，张量与一个矩阵的$k$模积则可以看作是：使用该矩阵的每一行对张量的第$k$个维度的切片进行线性组合得到一个新的切片，然后将这些切片组合成一个新的张量. 例如，对于一个三阶张量$\mathcal A \in \mathbb {R}^{3 \times 3 \times 4 }$，其3模积一个$2\times 4$大小的矩阵会得到一个 \( 3 \times 3 \times 2 \)的张量，具体操作如\cref{fig.psa.nmod_example2}所示。
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=.9\textwidth]{./img/matrix/psa_tensor_mod2.tikz}
+    \caption{张量与矩阵$k$模积示意图}
+    \label{fig.psa.nmod_example2}
+\end{figure}
+
+\begin{example}
+    利用\( k \)模积，将彩色图像张量\( \mathcal{T} \in \mathbb{R}^{h \times w \times 3} \)，转换为灰度图像矩阵\( \mathbf{T} \in \mathbb{R}^{h \times w} \)。
+\end{example}
+\begin{solution}
+    对于一个普通的彩色图像，其对应的灰度图像可以看作是将彩色图像的三个颜色通道进行加权求和得到的，即
+    \[
+        Y = 0.299 R + 0.587 G + 0.114 B,
+    \]
+    其中\( R, G, B \)分别表示彩色图像的红色、绿色和蓝色通道。因此，可以构建如下向量
+    \[
+        \bm{w} = \begin{bmatrix} 0.299 & 0.587 & 0.114 \end{bmatrix}.
+    \]
+    并利用\( k \)模积将彩色图像张量转换为灰度图像矩阵，即
+    \[
+        \mathbf{T} = \mathcal{T} \times_3 \bm{w}.
+    \]
+\end{solution}
 
 \section{常见统计量的矩阵表示}
 
 在概率论中，我们经常会遇到一些常见的统计量，比如均值、方差、协方差等。这些统计量在本课程中也会经常用到。不同的是，本课程中的对象都是采集到的离散数据，对应向量或矩阵而不是随机变量。因此，我们需要提前了解对于向量和矩阵，如何计算这些统计量。
 
-设有向量\( \bm{x} = \begin{bsmallmatrix} x_1 & x_2 & \cdots & x_n \end{bsmallmatrix}^{\mathrm{T}} \)和\( \bm{y} =  \begin{bsmallmatrix} y_1 & y_2 & \cdots & y_n \end{bsmallmatrix}^{\mathrm{T}} \)，两者都可以看作是某个随机变量的\( n \)个观测。对应的均值、方差和协方差有如下计算公式：
-\begin{enumerate}
-    \item 均值： \( \overline{x} = \frac{1}{n} \sum_{i=1}^n x_i = \frac{1}{n} \bm{x}^{\mathrm{T}} \mathbf{1} \)。
-    \item 方差： \( \operatorname{Var}(\bm{x}) = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2 = \frac{1}{n} (\bm{x} - \bar{x}\mathbf{1} )^{\mathrm{T}} (\bm{x} - \bar{x} \mathbf{1}) \)，如果均值为零，则\( \operatorname{Var}(\bm{x}) =  \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{x} \)。
-    \item 协方差： \( \operatorname{Cov}(\bm{x}, \bm{y}) = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})(y_i - \bar{y}) = \frac{1}{n} (\bm{x} - \bar{x}\mathbf{1} )^{\mathrm{T}} (\bm{y} - \bar{y} \mathbf{1}) \)，如果均值为零，则\( \operatorname{Cov}(\bm{x}, \bm{y}) =  \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{y} \)。
-\end{enumerate}
-
-设有矩阵\( \mathbf{X} = \begin{bsmallmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_m \end{bsmallmatrix} \in \mathbb{R}^{n \times m} \)，其中每一列都是一个向量，假设均值为零，那么向量两两之间的协方差可以构成一个协方差矩阵\( \mathbf{\Sigma} \)，其第\( i,j \)个元素为
+设有向量\( \bm{x} = \begin{bsmallmatrix} x_1 & x_2 & \cdots & x_n \end{bsmallmatrix}^{\mathrm{T}} \)，可以看作是某个随机变量的\( n \)个观测。下面，我们利用求和的形式，给出该随机变量的样本均值和方差的计算公式。首先是样本均值：
 \[
-    \sigma_{ij} = \operatorname{Cov}(\bm{x}_i, \bm{x}_j).
+    \overline{x} = \operatorname{Mean}(x) = \frac{1}{n} \sum_{i=1}^n x_i.
 \]
-如果均值为零，那么协方差矩阵可以表示为
+在获得均值的基础上，我们可以进一步计算样本方差：
 \[
-    \mathbf{\Sigma} = \frac{1}{n} \mathbf{X}^{\mathrm{T}} \mathbf{X} \in \mathbb{R}^{m \times m}.
+    \sigma^2 = \operatorname{Var}(\bm{x}) = \frac{1}{n} \sum_{i=1}^n (x_i - \bar{x})^2.
+\]
+如果样本均值为零，则样本方差计算公式可以简化为
+\[
+    \sigma^2 = \operatorname{Var}(\bm{x}) =  \frac{1}{n} \sum_{i=1}^n x_i^2.
+\]
+这两个统计量是最常见的，使用最为广泛的统计量，分别反映的数据的平均趋势（直流分量）和离散程度（功率）。
+
+除此之外，还有其他统计量，比如偏度（三阶统计量）和峰度（四阶统计量）等，这都属于高阶统计量。其中，样本偏度的计算公式为
+\[
+    \operatorname{Skew}(\bm{x}) = \frac{1}{n} \sum_{i=1}^n \frac{(x_i - \bar{x})^3}{\sigma^3}.
+\]
+而样本峰度的计算公式为
+\[
+    \operatorname{Kurt}(\bm{x}) = \frac{1}{n} \sum_{i=1}^n \frac{(x_i - \bar{x})^4}{\sigma^4}.
+\]
+偏度通常用于衡量数据分布的对称性，而峰度则用于衡量数据分布偏离正态分布的程度。当数据的均值为0，方差为1时，这两个统计量的计算公式可以简化为
+\[
+    \operatorname{Skew}(\bm{x}) = \frac{1}{n} \sum_{i=1}^n x_i^3, \quad \operatorname{Kurt}(\bm{x}) = \frac{1}{n} \sum_{i=1}^n x_i^4.
+\]
+需要注意的是，上述公式都是针对样本的计算公式。当直接考虑随机变量 \( X \) 时，对应的计算公式只需将求平均换为期望即可，比如：
+\[
+    \overline{X} = \mathbb{E}[X].
 \]
 
 \begin{example}
-    设有一个未知的数据矩阵\( \mathbf{X} \in \mathbb{R}^{n \times m} \)，但其协方差矩阵\( \mathbf{\Sigma} \)是已知的，请给出任意投影方向\( \bm{v} \in \mathbb{R}^{m \times 1} \)下数据的方差。
+    给定一个正态分布的随机变量\( X \)，设其均值为\( 0 \)，方差为\( 1 \)，请计算其偏度和峰度。
 \end{example}
 \begin{solution}
-    投影后的数据向量为\(\bm{x} = \mathbf{X} \bm{v}  \)，其方差为
+    对于均值为0，方差为1的正态分布，其概率密度函数为
     \[
-        \operatorname{Var}(\bm{x}) = \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{x} = \frac{1}{n} (\mathbf{X} \bm{v})^{\mathrm{T}} (\mathbf{X} \bm{v}) = \frac{1}{n} \bm{v}^{\mathrm{T}} \mathbf{X}^{\mathrm{T}} \mathbf{X} \bm{v} = \bm{v}^{\mathrm{T}} \mathbf{\Sigma} \bm{v}.
+        f(x) = \frac{1}{\sqrt{2\pi}} e^{-\frac{1}{2}x^2}.
     \]
-    因此，数据在任意投影方向上的方差可以由\( \bm{v}^{\mathrm{T}} \mathbf{\Sigma} \bm{v} \)给出。
+    由于正态分布的对称性，其偏度为
+    \[
+        \operatorname{Skew}(X) = \mathbb{E}\left[X^3\right] = \int_{-\infty}^{+\infty} x^3 f(x) \mathrm{d}x = 0.
+    \]
+    此外，根据 Wick's 定理\footnote{需要注意的是\( \mathbb{E}\left[X^4\right] = 3 \mathbb{E}^2\left[ X^2 \right] \)仅在正态分布下成立。}，我们可以得到正态分布的峰度为
+    \[
+        \operatorname{Kurt}(X) = \mathbb{E}\left[X^4\right] = 3 \mathbb{E}^2\left[ X^2 \right] = 3.
+    \]
+    因此，对于标准正态分布，其偏度和峰度分别为
+    \[
+        \operatorname{Skew}(X) = 0, \quad \operatorname{Kurt}(X) = 3.
+    \]
 \end{solution}
 
-上述证明是从代数的角度出发的，较为抽象。实际上，我们可以从几何的角度来直观理解为什么实对称矩阵的特征向量是正交的。对于\( n \)维空间的一个中心位于原点的\( n \)维超椭球，其上的点必然满足如下方程
+接下来，我们尝试使用矩阵来表示这些统计量。均值对应的矩阵表示较为简单，即
+\begin{equation} \label{eq_mean}
+    \overline{x} = \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{1},
+\end{equation}
+其中\( \bm{1} \)为一个全一的向量，其大小与\( \bm{x} \)相同。当均值为0时，方差的矩阵表示如下：
+\begin{equation} \label{eq_var}
+    \sigma^2 = \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{x}.
+\end{equation}
+然而，三阶和四阶样本统计量显然没有办法通过简单的矩阵运算来表示，此时就需要引入张量。注意到，\cref{eq_mean,eq_var}可以表示为如下的张量形式
+\begin{equation} \label{eq_mean_var_tensor}
+    \overline{x} = \frac{1}{n} \bm{1} \times_1 \bm{x}^{\mathrm{T}}, \quad \sigma^2 = \frac{1}{n} \mathbf{I} \times_1 \bm{x}^{\mathrm{T}} \times_2 \bm{x}^{\mathrm{T}},
+\end{equation}
+其中\( \mathbf{I} \)为单位矩阵。根据\cref{eq_mean_var_tensor}，可以自然地推导出三阶和四阶样本统计量的张量表示形式（均值为0，方差为1），如下
+\begin{equation}
+    \begin{split}
+        \operatorname{Skew}(\bm{x}) & = \frac{1}{n} \mathcal{I}_3 \times_1 \bm{x}^{\mathrm{T}} \times_2 \bm{x}^{\mathrm{T}} \times_3 \bm{x}^{\mathrm{T}},                              \\
+        \operatorname{Kurt}(\bm{x}) & = \frac{1}{n} \mathcal{I}_4 \times_1 \bm{x}^{\mathrm{T}} \times_2 \bm{x}^{\mathrm{T}} \times_3 \bm{x}^{\mathrm{T}} \times_4 \bm{x}^{\mathrm{T}},
+    \end{split}
+\end{equation}
+其中\( \mathcal{I}_k \in \mathbb{R}^{n \times n \times \cdots \times n} \)为\( k \)阶对角张量，其对角元素都为1，即
 \[
-    \bm{x}^{\mathrm{T}} \mathbf{A} \bm{x} = 1,
+    \mathcal{I}_k(i, i, \ldots, i) = 1,\quad i = 1, 2, \cdots, n.
 \]
-其中\( \mathbf{A} \)是一个实对称矩阵。比如，对于二维平面上一个中心位于原点的椭圆，其曲线方程为
+至此，我们可以给出任意一个均值为0，方差为1的向量的任意阶样本统计量的张量表示形式：
+\begin{equation}
+    S_k(\bm{x}) = \frac{1}{n} \mathcal{I}_k \times_1 \bm{x}^{\mathrm{T}} \times_2 \bm{x}^{\mathrm{T}} \cdots \times_k \bm{x}^{\mathrm{T}}, \quad k \geq 3.
+\end{equation}
+
+在实际应用中，往往需要处理多维数据，此时，我们更关心数据在某个投影下的统计信息。设有数据\( \mathbf{X} \in \mathbb{R}^{n \times p} \)，其中\( n \)为样本数，\( p \)为特征数。令投影向量为\( \bm{v} \in \mathbb{R}^{p \times 1} \)，则投影后的为\( \mathbf{X} \bm{v} \in \mathbb{R}^{n \times 1} \)。对于该向量，我们同样可以利用样本统计量的计算公式来计算相应的统计量。但注意到，对于均值，我们有
 \[
-    A x^2 + B y^2 + 2Cxy = 1.
+    \operatorname{Mean}(\mathbf{X} \bm{v}) = \frac{1}{n} \left( \mathbf{X} \bm{v} \right)^{\mathrm{T}} \bm{1} = \frac{1}{n} \bm{v}^{\mathrm{T}} \mathbf{X}^{\mathrm{T}} \bm{1} = \bm{v}^{\mathrm{T}} \left( \frac{1}{n} \mathbf{X}^{\mathrm{T}} \bm{1} \right).
 \]
-对于该曲线方程，可以将其转换为矩阵形式
+这意味着，我们可以提前计算\(\bm{u} =  \frac{1}{n} \mathbf{X}^{\mathrm{T}} \bm{1}\)并将其存储，而对于任意投影方向的均值计算，我们只需要计算\( \bm{v}^{\mathrm{T}} \bm{u} \)即可。当数据\( \mathbf{X} \)的样本数远大于特征数\( p \)时，这种方法可以大大提高计算效率。
+
+类似地，对于方差（设均值为0），我们有
 \[
-    \begin{bmatrix}
-        x & y
-    \end{bmatrix}
-    \begin{bmatrix}
-        A & C \\
-        C & B
-    \end{bmatrix}
-    \begin{bmatrix}
-        x \\
-        y
-    \end{bmatrix} = 1.
+    \operatorname{Var}(\mathbf{X} \bm{v}) = \frac{1}{n} \left( \mathbf{X} \bm{v} \right)^{\mathrm{T}} \left( \mathbf{X} \bm{v} \right) = \frac{1}{n} \bm{v}^{\mathrm{T}} \mathbf{X}^{\mathrm{T}} \mathbf{X} \bm{v} = \bm{v}^{\mathrm{T}} \mathbf{\Sigma} \bm{v},
 \]
+其中\( \mathbf{\Sigma} = \frac{1}{n} \mathbf{X}^{\mathrm{T}} \mathbf{X} \)被称作协方差矩阵。可以看到，在得到协方差矩阵的基础上，任意方向上的方差都可以通过\( \bm{v}^{\mathrm{T}} \mathbf{\Sigma} \bm{v} \)来快速得到。换句话说，协方差矩阵包含了数据的所有二阶统计量信息。
+
+对于高阶统计量，是否也存在某个矩阵或者张量包含了数据所有的高阶统计量信息呢？答案是肯定的，这里以三阶统计量偏度为例，注意到
+\[
+    \begin{split}
+        \operatorname{Skew}(\mathbf{X} \bm{v}) & = \frac{1}{n} \mathcal{I}_3 \times_1 (\mathbf{X} \bm{v})^{\mathrm{T}} \times_2 (\mathbf{X} \bm{v})^{\mathrm{T}} \times_3 (\mathbf{X} \bm{v})^{\mathrm{T}}                                                                             \\
+                                               & =  \left( \frac{1}{n} \mathcal{I}_3 \times_1 \mathbf{X}^{\mathrm{T}} \times_2 \mathbf{X}^{\mathrm{T}} \times_3 \mathbf{X}^{\mathrm{T}} \right) \times_1 \bm{v}^{\mathrm{T}} \times_2 \bm{v}^{\mathrm{T}} \times_3 \bm{v}^{\mathrm{T}} \\
+                                               & = \mathcal{S} \times_1 \bm{v}^{\mathrm{T}} \times_2 \bm{v}^{\mathrm{T}} \times_3 \bm{v}^{\mathrm{T}},
+    \end{split}
+\]
+其中\( \mathcal{S} = \frac{1}{n} \mathcal{I}_3 \times_1 \mathbf{X}^{\mathrm{T}} \times_2 \mathbf{X}^{\mathrm{T}} \times_3 \mathbf{X}^{\mathrm{T}} \) 是一个三阶张量，其大小为\( p \times p \times p \)。
+
+根据张量\( k \)模积的定义，我们可以得到\( S(i, j, k) \)的表达式如下
+\[
+    \mathcal{S}(i, j, k) = \frac{1}{n} \sum_{a, b, c = 1}^n \mathcal{I}_3(a, b, c) x_{ai} x_{bj} x_{ck} = \frac{1}{n} \sum_{l=1}^n x_{li} x_{lj} x_{lk},
+\]
+其中\( x_{ij} \)表示矩阵\( \mathbf{X} \)的第\( i, j \)个元素，并且张量\( \mathcal{S} \)是一个对称张量。进一步地， 令\( \mathcal{S}_l \) 为一个\( p \times p \times p \)的张量，其第\( i, j, k \)个元素为
+\[
+    \mathcal{S}_l(i, j, k) = x_{li} x_{lj} x_{lk}.
+\]
+根据外积的定义，不难发现\( \mathcal{S}_l \)是由向量\( \bm{x}_l = \begin{bsmallmatrix} x_{l1} & x_{l2} & \cdots & x_{lp} \end{bsmallmatrix}^{\mathrm{T}} \)的外积构成的，即
+\[
+    \mathcal{S}_l = \bm{x}_l \circ \bm{x}_l \circ \bm{x}_l.
+\]
+并且向量\( \bm{x}_l \)中的元素刚好对应矩阵\( \mathbf{X} \)的第\( l \)行中的元素。此时，张量\( \mathcal{S} \)可以表示为
+\[
+    \mathcal{S} = \sum_{l=1}^n \mathcal{S}_l = \frac{1}{n} \sum_{l=1}^n \bm{x}_l \circ \bm{x}_l \circ \bm{x}_l.
+\]
+因此，任意投影方向上的偏度可以表示为
+\[
+    \operatorname{Skew}(\mathbf{X} \bm{v}) = \mathcal{S} \times_1 \bm{v}^{\mathrm{T}} \times_2 \bm{v}^{\mathrm{T}} \times_3 \bm{v}^{\mathrm{T}}.
+\]
+方便起见，可以将上面的式子简化为
+\[
+    \operatorname{Skew}(\mathbf{X} \bm{v}) = \mathcal{S} \bm{v}^3,
+\]
+其中，\( \mathcal{S} \)被称作\textbf{协偏度张量}，其包含了数据所有的三阶统计量信息。
+
+有意思的是，对于均值和方差，同样有类似的表达式：
+\[
+    \bm{u} = \frac{1}{n} \sum_{l=1}^n \bm{x}_l, \quad \mathbf{\Sigma} = \frac{1}{n} \sum_{l=1}^n \bm{x}_l \circ \bm{x}_l.
+\]
+任意方向上的均值和方差可以表示为
+\[
+    \operatorname{Mean}(\mathbf{X} \bm{v}) = \bm{u} \times_1 \bm{v}^{\mathrm{T}}, \quad \operatorname{Var}(\mathbf{X} \bm{v}) = \mathbf{\Sigma} \times_1 \bm{v}^{\mathrm{T}} \times_2 \bm{v}^{\mathrm{T}}.
+\]
+对于数据\( \mathbf{X} \)，我们可以类似地计算高阶协方差张量和数据在任意方向上的投影的统计量，如下
+\[
+    \mathcal{S}_k = \frac{1}{n} \sum_{l=1}^n \bm{x}_l^{\circ k},
+\]
+其中\( \mathcal{S}_k \)为数据的\( k \)阶统计张量。基于\( \mathcal{S}_k \)，数据在任意方向上的投影的统计量可以表示为
+\[
+    S_k(\mathbf{X} \bm{v}) = \mathcal{S}_k \bm{v}^k.
+\]
+
+% 设有矩阵\( \mathbf{X} =
+% \begin{bsmallmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_m
+% \end{bsmallmatrix} \in \mathbb{R}^{n \times m} \)，其中每一列都是一个向量，假设均值为零，那么向量两两之间的协方差可以构成一个协方差矩阵\( \mathbf{\Sigma} \)，其第\( i,j \)个元素为
+% \[
+%     \sigma_{ij} = \operatorname{Cov}(\bm{x}_i, \bm{x}_j).
+% \]
+% 如果均值为零，那么协方差矩阵可以表示为
+% \[
+%     \mathbf{\Sigma} = \frac{1}{n} \mathbf{X}^{\mathrm{T}} \mathbf{X} \in \mathbb{R}^{m \times m}.
+% \]
+
+% \begin{example}
+%     设有一个未知的数据矩阵\( \mathbf{X} \in \mathbb{R}^{n \times m} \)，但其协方差矩阵\( \mathbf{\Sigma} \)是已知的，请给出任意投影方向\( \bm{v} \in \mathbb{R}^{m \times 1} \)下数据的方差。
+% \end{example}
+% \begin{solution}
+%     投影后的数据向量为\(\bm{x} = \mathbf{X} \bm{v}  \)，其方差为
+%     \[
+%         \operatorname{Var}(\bm{x}) = \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{x} = \frac{1}{n} (\mathbf{X} \bm{v})^{\mathrm{T}} (\mathbf{X} \bm{v}) = \frac{1}{n} \bm{v}^{\mathrm{T}} \mathbf{X}^{\mathrm{T}} \mathbf{X} \bm{v} = \bm{v}^{\mathrm{T}} \mathbf{\Sigma} \bm{v}.
+%     \]
+%     因此，数据在任意投影方向上的方差可以由\( \bm{v}^{\mathrm{T}} \mathbf{\Sigma} \bm{v} \)给出。
+% \end{solution}
+
+% 上述证明是从代数的角度出发的，较为抽象。实际上，我们可以从几何的角度来直观理解为什么实对称矩阵的特征向量是正交的。对于\( n \)维空间的一个中心位于原点的\( n \)维超椭球，其上的点必然满足如下方程
+% \[
+%     \bm{x}^{\mathrm{T}} \mathbf{A} \bm{x} = 1,
+% \]
+% 其中\( \mathbf{A} \)是一个实对称矩阵。比如，对于二维平面上一个中心位于原点的椭圆，其曲线方程为
+% \[
+%     A x^2 + B y^2 + 2Cxy = 1.
+% \]
+% 对于该曲线方程，可以将其转换为矩阵形式
+% \[
+%     \begin{bmatrix}
+%         x & y
+%     \end{bmatrix}
+%     \begin{bmatrix}
+%         A & C \\
+%         C & B
+%     \end{bmatrix}
+%     \begin{bmatrix}
+%         x \\
+%         y
+%     \end{bmatrix} = 1.
+% \]
 
 % \begin{figure}[htb!]
 %     \centering
@@ -808,5 +1163,3 @@
 %     \caption{}
 %     \label{fig_ellipse}
 % \end{figure}
-
-

@@ -1,0 +1,54 @@
+\begin{tikzpicture}[scale=1]
+    \node at (2, -2) {
+        \tdplotsetmaincoords{60}{100}
+        \begin{tikzpicture}[tdplot_main_coords]
+            \foreach \z \c in {0/c1,1/c2,2/c3,3/c4} {
+                    \foreach \x in {0,1,2} {
+                            \foreach \y in {0,1,2} {
+                                    \draw[fill=\c!80] (\x,\y,0.5*\z) -- ++(1,0,0) -- ++(0,1,0) -- ++(-1,0,0) -- cycle;
+                                    \node at (\x+0.5,\y+0.5,0.5*\z) {\tiny \number\numexpr\z+1};
+                                }
+                        }
+                }
+            \draw (-0.5, 3.5, 0) -- (3.5, 3.5, 0) node[midway, right] {\tiny $1$};
+            \draw (3.5, -0.5, 0) -- (3.5, 3.5, 0) node[midway, below] {\tiny $2$};
+            \draw (3.5, -0.5, 0) -- (3.5, -0.5, 2.5) node[midway, left] {\tiny $3$};
+        \end{tikzpicture}
+    };
+
+    \node at (5.25,-2) {$\times_{3}$};
+
+    \foreach \x \c in {0/c1,1/c2,2/c3,3/c4} {
+            \draw[fill=\c!80] (6+\x/2,-2.25) -- ++(0.5,0) -- ++(0,0.5) -- ++(-0.5,0) -- cycle;
+            \node at (6.25+\x/2, -2) {\tiny \number\numexpr4-\x};
+        }
+    \node at (8.5, -2) {$=$};
+
+    \begin{scope}[shift={(9, -2.75)}]
+        \foreach \x in {0, 1, 2} {
+                \foreach \y in {0, 1, 2} {
+                        \draw[fill=c5!80] (\x/2,\y/2) -- ++(0.5,0) -- ++(0,0.5) -- ++(-0.5,0) -- cycle;
+                        \node at (\x/2+0.25,\y/2+0.25) {\tiny 20};
+                    }
+            }
+    \end{scope}
+
+    \foreach \k \c in {0/c1,1/c2,2/c3,3/c4} {
+            \begin{scope}[shift={(\k*3, -6)}]
+                \foreach \x in {0, 1, 2} {
+                        \foreach \y in {0, 1, 2} {
+                                \draw[fill=\c!80] (\x/2,\y/2) -- ++(0.5,0) -- ++(0,0.5) -- ++(-0.5,0) -- cycle;
+                                \node at (\x/2+0.25,\y/2+0.25) {\tiny \number\numexpr\k+1};
+                            }
+                    }
+                \node at (1.75, 0.75) {$\times$};
+                \draw[fill=\c!80] (2, 0.5) -- ++(0.5,0) -- ++(0,0.5) -- ++(-0.5,0) -- cycle;
+                \node at (2.25, 0.75) {\tiny \number\numexpr4-\k};
+                \ifnum \k=3
+                    % \node at (2.75, 0.75) {$=$};
+                \else
+                    \node at (2.75, 0.75) {$+$};
+                \fi
+            \end{scope}
+        }
+\end{tikzpicture}

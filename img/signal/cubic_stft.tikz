@@ -1,0 +1,17 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xlabel={时间},
+            ylabel={频率},
+            enlargelimits=false,
+            width=8cm, height=5cm,
+            ytick=\empty,
+            xtick=\empty,
+            ticklabel style={font=\small},
+            label style={font=\small},
+            axis on top
+        ]
+        \addplot graphics [
+                xmin=-1, xmax=1, ymin=-250, ymax=250,
+            ] {./img/signal/cubic_stft.png};
+    \end{axis}
+\end{tikzpicture}

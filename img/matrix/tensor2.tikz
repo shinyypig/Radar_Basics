@@ -1,0 +1,19 @@
+\begin{tikzpicture}[scale=1]
+    \def\len{3}
+    \foreach \i in {0,...,\len} {
+            \foreach \j in {0} {
+                    \foreach \k in {-\len,...,0} {
+                            \def\c{c3}
+                            \def\o{1}
+                            \begin{scope}[shift={(\i,\j,\k)}]
+                                \draw[fill=\c!60, fill opacity=\o] (0,0,0) -- (0.8,0,0) -- (0.8,0,0.8) -- (0,0,0.8) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0,0,0) -- (0,0,0.8) -- (0,0.8,0.8) -- (0,0.8,0) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0,0,0) -- (0,0.8,0) -- (0.8,0.8,0) -- (0.8,0,0) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0.8,0.8,0.8) -- (0.8,0,0.8) -- (0,0,0.8) -- (0,0.8,0.8) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0.8,0.8,0.8) -- (0.8,0.8,0) -- (0.8,0,0) -- (0.8,0,0.8) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0.8,0.8,0.8) -- (0,0.8,0.8) -- (0,0.8,0) -- (0.8,0.8,0) -- cycle;
+                            \end{scope}
+                        }
+                }
+        }
+\end{tikzpicture}

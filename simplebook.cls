@@ -190,13 +190,13 @@
 \ifdefstring{\SIMPLE@lang}{cn}{
     \ifdefstring{\SIMPLE@chinesefont}{founder}{
         \RequirePackage[UTF8,scheme=plain,fontset=none]{ctex}
-        \setCJKmainfont[BoldFont={SimHei},ItalicFont={FZKai-Z03}]{SimSun}
-        \setCJKsansfont[BoldFont={SimHei}]{FZKai-Z03}
-        \setCJKmonofont[BoldFont={SimHei}]{SimSun}
-        \setCJKfamilyfont{zhsong}{SimSun}[AutoFakeBold]
-        \setCJKfamilyfont{zhhei}{SimHei}
-        \setCJKfamilyfont{zhkai}[BoldFont={SimHei}]{FZKai-Z03}
-        \setCJKfamilyfont{zhfs}[BoldFont={SimHei}]{SimSun}
+        \setCJKmainfont[BoldFont={Adobe Heiti Std},ItalicFont={Adobe Kaiti Std}]{Adobe Song Std}
+        \setCJKsansfont[BoldFont={Adobe Heiti Std}]{Adobe Kaiti Std}
+        \setCJKmonofont[BoldFont={Adobe Heiti Std}]{Adobe Fangsong Std}
+        \setCJKfamilyfont{zhsong}{Adobe Song Std}[AutoFakeBold]
+        \setCJKfamilyfont{zhhei}{Adobe Heiti Std}
+        \setCJKfamilyfont{zhkai}[BoldFont={Adobe Heiti Std}]{Adobe Kaiti Std}
+        \setCJKfamilyfont{zhfs}[BoldFont={Adobe Heiti Std}]{Adobe Fangsong Std}
         \newcommand*{\songti}{\CJKfamily{zhsong}}
         \newcommand*{\heiti}{\CJKfamily{zhhei}}
         \newcommand*{\kaishu}{\CJKfamily{zhkai}}
@@ -1340,8 +1340,8 @@
 
 
 % https://tex.stackexchange.com/questions/56839/chaptername-is-used-even-for-appendix-chapters-in-toc
-\usepackage{calc}
-\usepackage[titles]{tocloft}
+\RequirePackage{calc}
+\RequirePackage[titles]{tocloft}
 \renewcommand{\cftchapfont}{\zihao{-4}}    % 设置章节的字体大小和样式
 \renewcommand{\cftsecfont}{\zihao{-4}}
 \renewcommand{\cftsubsecfont}{\zihao{-4}}
@@ -1393,15 +1393,15 @@
     set layers=my layer set,
 }
 \usetikzlibrary{matrix,calc}
+\RequirePackage{pgfplotstable}
 
-\ifdefstring{\SIMPLE@external}{true} {
+\ifdefstring{\SIMPLE@external}{true}{
     \usetikzlibrary{external}
     \tikzexternalize[
         prefix=tmp/,
         mode=list and make,
     ]
-}
-
+}{}
 
 \definecolor{c1}{rgb}{0, 0.4470, 0.7410}  % blue
 \definecolor{c2}{rgb}{0.8500, 0.3250, 0.0980} % red

@@ -1,10 +1,150 @@
 \chapter{雷达发射与接收信号模型}
 
 \section{发射信号模型}
+在第一节中我们提到，典型的雷达系统通常采用同一副天线进行信号的发射与接收。雷达通过发射信号，并测量接收回波与发射信号之间的时延来确定目标的距离。严格而言，这种工作方式主要适用于脉冲体制雷达，其发射信号为离散的脉冲序列。与之不同，连续波体制雷达持续向外辐射电磁波，并利用多普勒效应测量目标的距离与速度。鉴于实际应用中脉冲体制雷达更为常见，且连续波雷达的信号处理可在一定条件下转化为脉冲体制的处理形式，因此本书将主要关注脉冲体制雷达的信号模型。
 
-\subsection{脉冲信号}
+对于单天线雷达系统，其发射信号由三部分组成
+\[
+    s(t) = \text{rect}\left(\frac{t}{T}\right) p(t) e^{j 2 \pi f_0 t},
+\]
+其中 \( p(t) \) 为低频包络信号，\( e^{j 2 \pi f_0 t} \)为高频载波信号，而\( \text{rect}\left(\frac{t}{T}\right) \)为矩形窗函数，有如下表达式
+\[
+    \text{rect}\left(\frac{t}{T}\right) =
+    \begin{cases}
+        1, & |t| \leq \frac{T}{2} \\
+        0, & |t| > \frac{T}{2}
+    \end{cases}.
+\]
 
-\subsection{连续波信号}
+早期雷达结构简单，对应的低频包络表达式为\( p(t) = 1 \)，即发射信号是一个截断的复指数信号。判断是否有回波信号也是通过简单的阈值判断，通常设定一个固定的阈值，当接收到的信号强度超过该阈值时，认为检测到了目标回波。因此，当两个目标对应的回波信号之间的时延差小于脉冲宽度时，系统可能会将其误判为同一目标的回波。所以，早期雷达的距离分辨率取决于发射脉冲的宽度，两者之间的关系可以用以下公式表示：
+\[
+    \Delta R = \frac{cT}{2},
+\]
+其中，\( \Delta R \)为距离分辨率，\( c \)为光速。可以发现，脉冲宽度越小，距离分辨率越高。但是，脉冲宽度变小的同时，发射信号的能量也会相应减少，这可能导致信号的信噪比降低，从而影响目标的检测性能。为了解决这一矛盾，现在雷达系统通常在低频包络中引入时间信息，让低频包络随时间变化，从而提高系统的抗干扰能力和目标检测性能。
+
+对于单天线雷达系统，其发射信号通常可表示为
+\begin{equation}
+    s(t) = \text{rect}\left(\frac{t}{T}\right) p(t) e^{j 2 \pi f_0 t},
+\end{equation}
+其中，$p(t)$ 为低频包络信号，$e^{j 2 \pi f_0 t}$ 为高频载波信号，$\text{rect}\left(\frac{t}{T}\right)$ 为脉冲窗函数，其定义为
+\begin{equation}
+    \text{rect}\left(\frac{t}{T}\right) =
+    \begin{cases}
+        1, & |t| \leq \frac{T}{2}, \\
+        0, & |t| > \frac{T}{2}.
+    \end{cases}
+\end{equation}
+
+早期雷达系统结构较为简单，低频包络常取为常数 $p(t) = 1$，此时发射信号即为一个截断的复指数信号，如图\ref{fig_radar_signal_1_1}所示。回波检测方式也较为直接：对接收信号幅度进行固定阈值判决，若信号强度超过设定阈值，则认为检测到目标回波。然而，这种方式存在分辨率限制。当两个目标的回波时延差小于脉冲宽度时，系统可能将它们误判为同一目标回波，如图\ref{fig_radar_signal_1_2}所示。由此，早期雷达的距离分辨率由发射脉冲宽度决定，其关系为
+\begin{equation}
+    \Delta R = \frac{cT}{2},
+\end{equation}
+其中，$\Delta R$ 为距离分辨率，$c$ 为光速。可见，脉冲宽度越窄，距离分辨率越高；但同时，脉冲宽度减小会降低发射信号的能量，导致信噪比下降，从而影响目标检测性能。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/signal/demo_radar_signal1.tikz}
+        \caption{}
+        \label{fig_radar_signal_1_1}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/signal/demo_radar_signal2.tikz}
+        \caption{}
+        \label{fig_radar_signal_1_2}
+    \end{subfigure}
+    \caption{单天线雷达发射与接收信号示意图（仅绘制了实部） (a) 发射信号 (b) 接收信号}
+    \label{fig_radar_signal_1}
+\end{figure}
+
+为兼顾距离分辨率与检测性能，现代雷达系统通常在低频包络 $p(t)$ 中引入时间调制，使其随时间变化。这样不仅可以在保持发射信号能量的同时缩短等效脉冲宽度，还能提升抗干扰能力与目标检测性能。常见的时间调制方式包括线性调频（Linear Frequency Modulation, LFM）、非线性调频（Nonlinear Frequency Modulation, NLFM）以及相位编码（Phase Coding）等，其中线性调频因其实现简单、性能稳定而被广泛采用。
+
+线性调频信号的低频包络可表示为
+\[
+    p(t) = e^{j \pi \kappa t^2},
+\]
+其中 $\kappa$ 为调频率，决定了信号频率随时间的变化速率。由于该信号的瞬时相位为
+\[
+    \phi(t) = \pi \kappa t^2,
+\]
+其瞬时频率可由相位求导得到：
+\[
+    f_{\text{inst}}(t) = \frac{1}{2\pi} \frac{d \phi(t)}{dt} = \kappa t.
+\]
+如\cref{fig_chirp}所示，线性调频信号的瞬时频率与时间成正比，呈线性变化。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/signal/chirp.tikz}
+        \caption{}
+        \label{fig_chirp_1}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/signal/chirp_stft.tikz}
+        \caption{}
+        \label{fig_chirp_2}
+    \end{subfigure}
+    \caption{线性调频信号示意图 (a) 信号实部 (b) 短时傅里叶变换结果}
+    \label{fig_chirp}
+\end{figure}
+
+为了进一步提升系统的抗干扰能力与目标检测性能，可采用非线性调频技术，其瞬时相位函数可以有多种形式，例如：
+\begin{enumerate}
+    \item 三次相位：$\phi(t) = \frac{\kappa}{2} t^3$，瞬时频率随时间二次变化（如\cref{fig_cubic}所示）；
+    \item 高次多项式相位：$\phi(t) = \sum_{n=0}^{N} a_n t^n$，可灵活控制频率变化规律；
+    \item 正弦相位：$\phi(t) = A \sin(2 \pi f_m t + \phi_0)$，瞬时频率呈周期性波动；
+    \item 指数相位：$\phi(t) = A \big(e^{\alpha t} - 1\big)$，瞬时频率按指数规律变化。
+\end{enumerate}
+这些非线性调频形式能够在特定应用中优化脉冲压缩旁瓣特性，提升目标检测与抗干扰性能。但其实现复杂度相对较高，硬件要求也更为严格。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/signal/cubic.tikz}
+        \caption{}
+        \label{fig_cubic_1}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/signal/cubic_stft.tikz}
+        \caption{}
+        \label{fig_cubic_2}
+    \end{subfigure}
+    \caption{三次相位调频信号示意图 (a) 信号实部 (b) 短时傅里叶变换结果}
+    \label{fig_cubic}
+\end{figure}
+
+
+相位编码是一种通过在发射信号中引入离散相位变化来实现调制的技术，其核心思想是在信号持续时间内按照预定的编码序列对载波相位进行跳变。常见的相位编码方式包括：
+\begin{enumerate}
+    \item 二相编码（Binary Phase Shift Keying, BPSK）：相位取 $\{0, \pi\}$ 两个值，对应发射信号符号为 $\{+1, -1\}$，典型代表为 Barker 码（如\cref{fig_barker}所示）；
+    \item 多相编码（M-ary Phase Shift Keying, MPSK）：相位在 $M$ 个等间隔值之间跳变，例如四相编码（Quadrature Phase Shift Keying，QPSK）取 $\{0, \pi/2, \pi, 3\pi/2\}$；
+    \item Frank 编码：将信号分为若干子脉冲，每个子脉冲的相位按二维矩阵规律编码，可实现较低旁瓣；
+    \item P1--P4 编码：适用于脉冲压缩的特殊多相编码序列，通过相位设计获得理想的自相关特性。
+\end{enumerate}
+相位编码实现相对简单，主要通过数字信号处理技术对信号进行离散化和相位调制。其优点在于能够灵活控制信号的频谱特性，提高抗干扰能力，但对硬件实现要求较高。
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=.4\textwidth]{./img/signal/barker13.tikz}
+    \caption{Barker-13 相位编码示意图}
+    \label{fig_barker}
+\end{figure}
+
+若系统的接收天线与发射天线共用或距离较近，则在理想情况下，接收信号可表示为
+\[
+    r(t) = \sum_{n=1}^{N} A_n\, p\left(t - \frac{2 R_n}{c}\right),
+\]
+其中，$N$ 为目标数量，$A_n$ 为一个复数，包含了目标反射信号的幅度与相位信息，
+$R_n$ 表示第 $n$ 个目标与雷达间的距离，$c$ 为光速。
+通过检测接收信号中是否包含与发射信号相匹配的特征，并估计相应的时延，
+即可实现对目标的检测与定位。
 
 \section{阵列接收信号模型}
 

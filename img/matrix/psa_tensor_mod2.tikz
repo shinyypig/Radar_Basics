@@ -1,0 +1,42 @@
+\begin{tikzpicture}[scale=1]
+    \node at (2, -2) {
+        \tdplotsetmaincoords{60}{100}
+        \begin{tikzpicture}[tdplot_main_coords]
+            \foreach \z \c in {0/c1,1/c2,2/c3,3/c4} {
+                    \foreach \x in {0,1,2} {
+                            \foreach \y in {0,1,2} {
+                                    \draw[fill=\c!80] (\x,\y,0.5*\z) -- ++(1,0,0) -- ++(0,1,0) -- ++(-1,0,0) -- cycle;
+                                    \node at (\x+0.5,\y+0.5,0.5*\z) {\tiny \number\numexpr\z+1};
+                                }
+                        }
+                }
+            \draw (-0.5, 3.5, 0) -- (3.5, 3.5, 0) node[midway, right] {\tiny $1$};
+            \draw (3.5, -0.5, 0) -- (3.5, 3.5, 0) node[midway, below] {\tiny $2$};
+            \draw (3.5, -0.5, 0) -- (3.5, -0.5, 2.5) node[midway, left] {\tiny $3$};
+        \end{tikzpicture}
+    };
+
+    \node at (5.8,-2) {$\times_{3}$};
+
+    \foreach \x in {0, ..., 3} {
+            \foreach \y \c in {1/c5, 2/c6} {
+                    \draw[fill=\c!80] (6.2+\x/2,-1.5-\y/2) -- ++(0.5,0) -- ++(0,0.5) -- ++(-0.5,0) -- cycle;
+                    \node at (6.45+\x/2, -1.25-\y/2) {\tiny \y};
+                }
+        }
+    \node at (8.7, -2) {$=$};
+
+    \node at (11, -2) {
+        \tdplotsetmaincoords{60}{100}
+        \begin{tikzpicture}[tdplot_main_coords]
+            \foreach \z \c \v in {0/c5/10,1/c6/20} {
+                    \foreach \x in {0,1,2} {
+                            \foreach \y in {0,1,2} {
+                                    \draw[fill=\c!80] (\x,\y,0.5*\z) -- ++(1,0,0) -- ++(0,1,0) -- ++(-1,0,0) -- cycle;
+                                    \node at (\x+0.5,\y+0.5,0.5*\z) {\tiny \v};
+                                }
+                        }
+                }
+        \end{tikzpicture}
+    };
+\end{tikzpicture}

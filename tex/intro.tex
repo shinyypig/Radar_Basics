@@ -28,11 +28,11 @@
     \begin{tikzpicture}
         \tikzset{
             myblock/.style={
-                    rectangle, draw, minimum width=2cm, minimum height=1cm, rounded corners, thick
-                }
+                rectangle, draw, minimum width=2cm, minimum height=1cm, rounded corners, thick
+            }
         }
 
-        \node (transmitter) [myblock, fill=c1!60, draw=c1] at (0, 0) {发射机};
+        \node (transmitter) [myblock, fill=c1!60] at (0, 0) {发射机};
         \node (receiver) [myblock, fill=c2!60] at (0, -3) {接收机};
         \node (antenna) [myblock, fill=c3!60] at (-3, -1.5) {天线};
         \node (waveform_generator) [myblock, fill=c4!60] at (3, 0) {波形产生器};
@@ -118,11 +118,11 @@
                     axis lines=none,
                     legend cell align=left,
                     legend style={
-                            anchor=north east,
-                            font=\tiny,
-                            draw=none,
-                            fill=none
-                        }
+                        anchor=north east,
+                        font=\tiny,
+                        draw=none,
+                        fill=none
+                    }
                 ]
                 \addplot graphics [xmin=-0.5, xmax=0.5, ymin=-0.5, ymax=0.5] {img/radar.png};
                 \addplot graphics [xmin=2.5, xmax=3.5, ymin=0.5, ymax=1.5] {img/target.png};
@@ -151,12 +151,12 @@
                     legend cell align=left,
                     clip=false,
                     legend style={
-                            % anchor=north east,
-                            at={(1.03, 1.5)},
-                            font=\tiny,
-                            draw=none,
-                            fill=none
-                        }
+                        % anchor=north east,
+                        at={(1.03, 1.5)},
+                        font=\tiny,
+                        draw=none,
+                        fill=none
+                    }
                 ]
                 % draw a pulse
                 \addplot[domain=-0.2:0.2, samples=200, thick, color=c1, smooth] {0.5 * (abs(x) < 0.2) * sin(deg(20 * pi * x))};
@@ -198,16 +198,16 @@
         \begin{tikzpicture}
             \draw[thick] (-3, 0) -- (1, 0); % Ground line
             \foreach \i in {-3, -2.6, ..., 0.5} {
-                    \draw[] (\i, -0.5) -- (\i+0.5, 0); % Vertical lines
-                }
+                \draw[] (\i, -0.5) -- (\i+0.5, 0); % Vertical lines
+            }
             \foreach \i in {-2.5, -2.2, -1.9, -1.6} {
-                    \draw[thick, -latex] (\i, 3) -- (\i +0.8, 0.6);
-                    \draw[thick] (\i, 3) -- (\i+1, 0);
-                }
+                \draw[thick, -latex] (\i, 3) -- (\i +0.8, 0.6);
+                \draw[thick] (\i, 3) -- (\i+1, 0);
+            }
             \foreach \i in {-2.5, -2.2, -1.9, -1.6} {
-                    \draw[thick, -latex] (\i+1, 0) -- (\i+1.8, 2.4);
-                    \draw[thick] (\i+1, 0) -- (\i+2, 3);
-                }
+                \draw[thick, -latex] (\i+1, 0) -- (\i+1.8, 2.4);
+                \draw[thick] (\i+1, 0) -- (\i+2, 3);
+            }
         \end{tikzpicture}
         \caption{}
         \label{fig_chp1_reflection_1}
@@ -217,12 +217,12 @@
         \begin{tikzpicture}
             \draw[thick,decorate,decoration={snake,amplitude=0.8mm,segment length=4mm}] (-3, 0) -- (1, 0); % Ground line
             \foreach \i in {-3, -2.6, ..., 0.5} {
-                    \draw[] (\i, -0.5) -- (\i+0.4, -0.1); % Vertical lines
-                }
+                \draw[] (\i, -0.5) -- (\i+0.4, -0.1); % Vertical lines
+            }
 
             \foreach \i in {-2.5, -2.2, -1.9, -1.6} {
-                    \draw[thick, -latex] (\i, 3) -- (\i +0.8, 0.6);
-                }
+                \draw[thick, -latex] (\i, 3) -- (\i +0.8, 0.6);
+            }
             \draw[thick] (-2.5, 3) -- (-2.5+1+0.025, 0-0.075);
             \draw[thick, -latex] (-2.5+1+0.025, 0-0.075) -- (-2.5+1+0.025+0.8, 0-0.075+2.4);
             \draw[thick] (-2.5+1+0.025, 0-0.075) -- (-2.5+1+0.025+1, 0-0.075+3);
@@ -284,7 +284,6 @@
 \end{figure}
 
 由于角反可以有效地将入射的电磁波反射回原方向，因此可以提供稳定、明确的强回波信号，通常被用作雷达系统的校准目标，检验雷达设备的测距精度、方向精度和灵敏度。在航海与航空领域，角反射器常用于标识特定位置，如航道、海岸线或机场跑道周围，为雷达导航提供明确的位置标识，提高导航的准确性与安全性。
-
 
 \subsection{电磁波的折射}
 
@@ -477,11 +476,11 @@
                 axis lines=none,
                 legend cell align=left,
                 legend style={
-                        anchor=north east,
-                        font=\tiny,
-                        draw=none,
-                        fill=none
-                    }
+                    anchor=north east,
+                    font=\tiny,
+                    draw=none,
+                    fill=none
+                }
             ]
             \addplot graphics [xmin=-0.5, xmax=0.5, ymin=-0.5, ymax=0.5] {img/radar.png};
             \addplot graphics [xmin=2.5, xmax=3.5, ymin=0.5, ymax=1.5] {img/target.png};
@@ -498,7 +497,6 @@
 \end{figure}
 
 如\cref{fig_chp1_radar_equation_gain}所示，\cref{eq:radar_equation_gain}有明确的物理意义：在雷达系统中，电磁波首先向外发射电磁波，到达目标处，功率的损耗为 $L$ 倍；然后目标将电磁波散射回来，再由接收天线接收，相同路径再走一遍，此时又损耗了 $L$ 倍。又因为，所使用的天线有增益，且目标也并不是一个理想的点目标。所以，整体的损耗并没有达到 $L^2$，而是需要再除以各个环节的增益 $G_t G_r G_s$。
-
 
 \section{小结}
 

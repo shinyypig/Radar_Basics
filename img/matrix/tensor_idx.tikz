@@ -1,0 +1,31 @@
+\begin{tikzpicture}[scale=1]
+    \draw[thick, -latex] (0 ,0, 0) -- (5, 0, 0) node[above] {模1};
+    \draw[thick, -latex] (0, 0, 0) -- (0, 0, 5) node[below] {模2};
+    \draw[thick, -latex] (0, 0, 0) -- (0, 5, 0) node[right] {模3};
+
+    \def\len{3}
+    \foreach \i in {0,...,\len} {
+            \foreach \j in {0,...,\len} {
+                    \foreach \k in {0,...,\len} {
+                            \def\c{white}
+                            \def\o{0.8}
+                            \ifnum \i=2
+                                \ifnum \j=1
+                                    \ifnum \k=3
+                                        \def\c{c1}
+                                        \def\o{1}
+                                    \fi
+                                \fi
+                            \fi
+                            \begin{scope}[shift={(\i,\j,\k)}]
+                                \draw[fill=\c!60, fill opacity=\o] (0,0,0) -- (0.8,0,0) -- (0.8,0,0.8) -- (0,0,0.8) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0,0,0) -- (0,0,0.8) -- (0,0.8,0.8) -- (0,0.8,0) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0,0,0) -- (0,0.8,0) -- (0.8,0.8,0) -- (0.8,0,0) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0.8,0.8,0.8) -- (0.8,0,0.8) -- (0,0,0.8) -- (0,0.8,0.8) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0.8,0.8,0.8) -- (0.8,0.8,0) -- (0.8,0,0) -- (0.8,0,0.8) -- cycle;
+                                \draw[fill=\c!60, fill opacity=\o] (0.8,0.8,0.8) -- (0,0.8,0.8) -- (0,0.8,0) -- (0.8,0.8,0) -- cycle;
+                            \end{scope}
+                        }
+                }
+        }
+\end{tikzpicture}

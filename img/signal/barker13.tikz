@@ -1,0 +1,25 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xlabel=时间, ylabel=幅度,
+            ticklabel style={font=\small},
+            label style={font=\small},
+            ymin=-1.2, ymax=1.2,
+            xmin=-1, xmax=1,
+            grid,
+            ytick=\empty,
+            xtick=\empty,
+            width=8cm, height=5cm,
+            legend cell align=left,
+            legend style={
+                    anchor=north east,
+                    font=\tiny,
+                    draw=none,
+                    fill=none
+                }
+        ]
+        \addplot[
+            c1,
+            thick,
+        ] table[x=t, y=x, col sep=comma] {./img/signal/barker13.csv};
+    \end{axis}
+\end{tikzpicture}
