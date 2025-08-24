@@ -6,7 +6,7 @@
 
 工欲善其事必先利其器, 符号书写规范是一切沟通学习的前提。本书中会使用到大量矩阵和向量, 相关符号书写规则如下：
 \begin{enumerate}
-    \item 标量：小写字母, 如$a,b,c$或者$\alpha, \beta, \gamma$.
+    \item 标量：小写字母, 如$a,b,c$或者$\alpha, \beta, l$.
     \item 向量：加粗小写字母, 如$\bm{x},\bm{y},\bm{z}$.
     \item 矩阵：加粗大写字母, 如$\mathbf{A},\mathbf{B},\mathbf{C}$.
 \end{enumerate}
@@ -284,3 +284,141 @@
           \]
           经过简单的验证可知，矩阵的核范数等于矩阵的所有奇异值之和.
 \end{enumerate}
+
+\section{张量乘法性质}
+
+\begin{property}
+    给定两个矩阵\( \mathbf{A} \in \mathbb{R}^{M \times K} \)和\( \mathbf{B} \in \mathbb{R}^{N \times K} \)，则矩阵乘法可以写成如下的k模积的形式
+    \[
+        \mathbf{A} \mathbf{B}^{\mathrm{T}} = \mathbf{I} \times_1 \mathbf{A} \times_2 \mathbf{B},
+    \]
+    其中，\( \mathbf{I} \)为一个\( K \times K \)的单位矩阵。
+\end{property}
+\begin{proof}
+    由k模积的定义，有
+    \[
+        \begin{split}
+            \left( \mathbf{I} \times_1 \mathbf{A} \times_2 \mathbf{B} \right)_{mn} & = \sum_{i_2=1}^K \sum_{i_1=1}^{K} (\mathbf{I})_{i_1 i_2} (\mathbf{A})_{mi_1} (\mathbf{B})_{ni_2} \\
+                                                                                   & = \sum_{i=1}^K (\mathbf{A})_{mi} (\mathbf{B})_{ni} = (\mathbf{A} \mathbf{B}^{\mathrm{T}})_{mn}.
+        \end{split}
+    \]
+    证明完毕。
+\end{proof}
+
+\begin{property}
+    利用张量模k展开，可以将k模积写成矩阵乘法形式。给定张量\( \mathcal{T} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_N} \)和矩阵\( \mathbf{U} \in \mathbb{R}^{J \times I_k} \)，记
+    \[
+        \mathcal{X} = \mathcal{T} \times_k \mathbf{U} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_{k-1} \times J \times I_{k+1} \times \cdots \times I_N}
+    \]
+    则\( \mathcal{X} \)的模\( k \)展开\( \mathbf{X}_k \in \mathbb{R}^{J \times I_1 \cdots I_{k-1} I_{k+1} \cdots I_N}\)有如下表达式
+    \[
+        \mathbf{X}_k = \mathbf{U} \mathbf{T}_k,
+    \]
+    其中\( \mathbf{T}_k \in \mathbb{R}^{I_k \times I_1 \cdots I_{k-1} I_{k+1} \cdots I_N} \)为张量\( \mathcal{T} \)的模\( k \)展开。
+\end{property}
+\begin{proof}
+    令\( r =\rho(i_1,\ldots,i_{k-1},i_{k+1},\ldots,i_N)\)为索引编码，满足如下关系
+    \[
+        (\mathbf{T}_k)_{i_k r} = (\mathcal{T})_{i_1\cdots i_k\cdots i_N}.
+    \]
+    因此有
+    \[
+        (\mathbf{X}_k)_{jr}=(\mathcal{T}\times_k \mathbf{U})_{i_1\cdots j\cdots i_N}.
+    \]
+    进一步地，根据k模积的定义，有
+    \[
+        (\mathbf{X}_k)_{jr} = \sum_{i_k=1}^{I_k} (\mathcal{T})_{i_1\cdots i_k\cdots i_N} (\mathbf{U})_{ji_k}.
+    \]
+    另一方面，矩阵乘法给出
+    \[
+        (\mathbf{U}\mathbf{T}_k)_{j r} = \sum_{i_k=1}^{I_k} (\mathbf{U})_{j i_k} (\mathbf{T}_k)_{i_k r} = \sum_{i_k=1}^{I_k} (\mathcal{T})_{i_1\cdots i_k\cdots i_N} (\mathbf{U})_{ji_k}.
+    \]
+    两式右端逐项相等，故 $(\mathbf{X}_k)_{j r}=(\mathbf{U}\mathbf{T}_k)_{j r}$，即
+    $\mathbf{X}_k=\mathbf{U}\mathbf{T}_k$。证毕。
+\end{proof}
+
+\begin{property}
+    给定张量\( \mathcal{T} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_N} \)，以及两个矩阵\( \mathbf{A} \in \mathbb{R}^{A \times I_a} \)和\( \mathbf{B} \in \mathbb{R}^{B \times I_b} \)，则有
+    \[
+        \mathcal{T} \times_a \mathbf{A} \times_b \mathbf{B} = \mathcal{T} \times_b \mathbf{B} \times_a \mathbf{A}, \quad a \neq b,
+    \]
+    即k模积是可交换的。
+\end{property}
+\begin{proof}
+    令
+    \[
+        \mathcal{X} = \mathcal{T}\times_a \mathbf{A}\times_b \mathbf{B}
+        \quad\text{与}\quad
+        \mathcal{Y} = \mathcal{T}\times_b \mathbf{B}\times_a \mathbf{A}.
+    \]
+    这两个张量的大小均为
+    $I_1\times\cdots\times I_{a-1}\times A\times I_{a+1}\times\cdots\times
+        I_{b-1}\times B\times I_{b+1}\times\cdots\times I_N$。
+    对任意索引
+    \[
+        (i_1,\ldots,i_{a-1},\alpha, i_{a+1},\ldots,i_{b-1},\beta, i_{b+1},\ldots,i_N),
+    \]
+    由定义得
+    \begin{align*}
+        x_{i_1\cdots i_{a-1}\alpha i_{a+1}\cdots i_{b-1}\beta i_{b+1}\cdots i_N}
+         & = \sum_{i_a=1}^{I_a}\sum_{i_b=1}^{I_b}
+        t_{i_1\cdots i_a\cdots i_b\cdots i_N}
+        a_{\alpha i_a}b_{\beta i_b},              \\
+        y_{i_1\cdots i_{a-1}\alpha i_{a+1}\cdots i_{b-1}\beta i_{b+1}\cdots i_N}
+         & = \sum_{i_b=1}^{I_b}\sum_{i_a=1}^{I_a}
+        t_{i_1\cdots i_a\cdots i_b\cdots i_N}
+        b_{\beta i_b}a_{\alpha i_a}.
+    \end{align*}
+    交换求和次序不改变结果，得证。
+\end{proof}
+
+\begin{property}
+    给定张量\( \mathcal{T} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_N} \)，以及两个矩阵\( \mathbf{A} \in \mathbb{R}^{J \times I_k} \)和\( \mathbf{B} \in \mathbb{R}^{K \times J} \)，则有
+    \[
+        \mathcal{T} \times_k \mathbf{A} \times_k \mathbf{B} = \mathcal{T} \times_k (\mathbf{B} \mathbf{A}).
+    \]
+\end{property}
+\begin{proof}
+    根据k模积的定义，有
+    \begin{align*}
+        \left(\mathcal{T}\times_k \mathbf{A}\times_k \mathbf{B}\right)_{i_1\cdots i_{k-1}j i_{k+1}\cdots i_N}
+         & =\sum_{l=1}^{J}\left(\sum_{i_k=1}^{I_k}
+        t_{i_1\cdots i_k\cdots i_N} a_{l i_k}\right)b_{jl}                                                    \\
+         & =\sum_{i_k=1}^{I_k}t_{i_1\cdots i_k\cdots i_N}
+        \left(\sum_{l=1}^{J}b_{jl}a_{l i_k}\right)                                                            \\
+         & =\sum_{i_k=1}^{I_k}t_{i_1\cdots i_k\cdots i_N}(\mathbf{B} \mathbf{A})_{j i_k}                      \\
+         & = \left(\mathcal{T}\times_k (\mathbf{B}\mathbf{A})\right)_{i_1\cdots i_{k-1} j i_{k+1}\cdots i_N}.
+    \end{align*}
+    证毕。
+\end{proof}
+
+\begin{property}\label{prop:diag-kron}
+    给定\( N \)阶对角张量\( \mathcal{I}_K \in \mathbb{R}^{K \times K \times \cdots \times K} \)，且对角元素都为1。此外，还有\( N \)个矩阵
+    \[
+        \mathbf{X}_n = \begin{bmatrix}
+            \bm{x}_{n1} & \bm{x}_{n2} & \cdots & \bm{x}_{nK}
+        \end{bmatrix} \in \mathbb{R}^{I_n \times K},
+    \]
+    则如下等式成立
+    \[
+        \mathcal{I}_K \times_1 \mathbf{X}_1 \times_2 \mathbf{X}_2 \times_3 \cdots \times_N \mathbf{X}_N = \sum_{k=1}^K \bm{x}_{1k} \circ \bm{x}_{2k} \circ \cdots \circ \bm{x}_{Nk},
+    \]
+\end{property}
+\begin{proof}
+    根据k模积的定义，有
+    \[
+        \left( \mathcal{I}_K \times_1 \mathbf{X}_1 \times_2 \cdots \times_N \mathbf{X}_N \right)_{i_1 \cdots i_N} = \sum_{k_1=1}^{K}\cdots\sum_{k_N=1}^{K} (\mathcal{I}_K)_{k_1\cdots k_N} (\mathbf{X}_1)_{i_1 k_1} \cdots (\mathbf{X}_N)_{i_N k_N}.
+    \]
+    又因为当且仅当 $k_1=k_2=\cdots=k_N$ 时，$(\mathcal{I}_K)_{k_1\cdots k_N}=1$，否则为0，所以有
+    \[
+        \begin{split}
+            \left( \mathcal{I}_K \times_1 \mathbf{X}_1 \times_2 \cdots \times_N \mathbf{X}_N \right)_{i_1 \cdots i_N} & = \sum_{k=1}^{K} (\mathbf{X}_1)_{i_1 k} \cdots (\mathbf{X}_N)_{i_N k}                      \\
+                                                                                                                      & = \sum_{k=1}^{K} (\bm{x}_{1k})_{i_1} \cdots (\bm{x}_{Nk})_{i_N}                            \\
+                                                                                                                      & = \sum_{k=1}^K \left( \bm{x}_{1k} \circ \cdots \circ \bm{x}_{Nk} \right)_{i_1 \cdots i_N}.
+        \end{split}
+    \]
+    因此，有
+    \[
+        \mathcal{I}_K \times_1 \mathbf{X}_1 \times_2 \cdots \times_N \mathbf{X}_N = \sum_{k=1}^K \bm{x}_{1k} \circ \bm{x}_{2k} \circ \cdots \circ \bm{x}_{Nk}.
+    \]
+\end{proof}

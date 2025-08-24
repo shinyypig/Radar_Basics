@@ -1,0 +1,70 @@
+\begin{tikzpicture}
+        \begin{axis}[
+                xlabel=$ x $, ylabel=$ y $, zlabel=$ z $,
+                ticklabel style={font=\tiny},
+                xmin=0, xmax=3.5,
+                ymin=0, ymax=3.5,
+                zmin=0, zmax=3.5,
+                xtick=\empty,
+                ytick=\empty,
+                ztick=\empty,
+                axis lines=center,
+                grid, axis equal image,
+                clip=false,
+                view={120}{30}, % 更改视角，azimuth=120, elevation=30
+            ]
+            \addplot3[
+                only marks,
+                mark=*,
+                mark size=1,
+                mark options={draw=black,fill=gray},
+            ] coordinates {
+                    (0, 0, 0) (1, 0, 0) (2, 0, 0) (3, 0, 0)
+                    (0, 1, 0) (1, 1, 0) (2, 1, 0) (3, 1, 0)
+                    (0, 2, 0) (1, 2, 0) (2, 2, 0) (3, 2, 0)
+                    (0, 3, 0) (1, 3, 0) (2, 3, 0) (3, 3, 0)
+                };
+
+            \addplot3[dashed, c2] coordinates {
+                    (1, 2, 0)
+                    (1, 0, 0)
+                };
+            \addplot3[dashed, c2] coordinates {
+                    (1, 2, 0)
+                    (0, 2, 0)
+                };
+            \addplot3[dashed, c2] coordinates {
+                    (1, 2, 3)
+                    (1, 2, 0)
+                };
+            \addplot3[dashed, c2] coordinates {
+                    (1, 2, 3)
+                    (0, 0, 3)
+                };
+            \addplot3[dashed, c2] coordinates {
+                    (1, 2, 0)
+                    (0, 0, 0)
+                };
+
+            \addplot3[dashed, c1] coordinates {
+                    (2, 3, 0)
+                    (0.57, 1.14, 1.71)
+                };
+
+            \addplot3[thick, -latex, c2] coordinates {
+                    (0, 0, 0)
+                    (1, 2, 3)
+                } node[right, black] {\tiny $ \bm{u}_k $};
+
+            \addplot3[thick, -latex, c1] coordinates {
+                    (0, 0, 0)
+                    (2, 3, 0)
+                } node[right, black] {\tiny $ \bm{l}^{(m, n)} $};
+
+            % 方位角（azimuth）标志
+            \node at (axis cs:0.4,0.2,0) {\tiny $\phi_k$};
+            % 俯仰角（elevation）标志
+            \node at (axis cs:0.4,0.4,0.8) {\tiny $\theta_k$};
+
+        \end{axis}
+    \end{tikzpicture}
