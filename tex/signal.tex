@@ -364,7 +364,17 @@
     \end{bmatrix}.
 \]
 
+当二维阵列的第二个维度\( N=1 \)时，此时阵列退化为一维阵列，接收张量可以表示为
+\[
+    \mathcal{X} = \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A}.
+\]
+根据\cref{prop:apx_kron_matmul}，可以发现该接收张量的表示形式与一维阵列的情况等价，即
+\[
+    \mathcal{X} = \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} = \mathbf{R} \mathbf{A}^{\mathrm{T}}.
+\]
+
 \section{多普勒接收信号模型}
+
 
 \section{空时联合接收信号模型}
 
