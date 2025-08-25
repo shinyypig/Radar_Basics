@@ -5,9 +5,9 @@
 
 对于单天线雷达系统，其发射信号由三部分组成
 \[
-    s(t) = \text{rect}\left(\frac{t}{T}\right) p(t) e^{j 2 \pi f_0 t},
+    s(t) = \text{rect}\left(\frac{t}{T}\right) p(t) e^{j 2 \pi f_c t},
 \]
-其中 \( p(t) \) 为低频包络信号，\( e^{j 2 \pi f_0 t} \)为高频载波信号，而\( \text{rect}\left(\frac{t}{T}\right) \)为矩形窗函数，有如下表达式
+其中 \( p(t) \) 为低频包络信号，\( e^{j 2 \pi f_c t} \)为高频载波信号，而\( \text{rect}\left(\frac{t}{T}\right) \)为矩形窗函数，有如下表达式
 \[
     \text{rect}\left(\frac{t}{T}\right) =
     \begin{cases}
@@ -157,7 +157,7 @@
     \label{fig_array}
 \end{figure}
 
-如 \cref{fig_array} 所示，设第 $k$ 个目标与阵列天线的连线与阵列法向之间的夹角为 $\theta_k$。则第 $0$ 个阵元接收到的回波信号，相较于第 $1$ 个阵元接收到的信号，其传播路径多出 $d \sin\theta_k$ 的距离。依次类推，第 $m$ 个阵元接收到的信号，相较于第 $0$ 个阵元接收到的信号，其传播路径多出 $m d \sin\theta_k$ 的距离。不妨以第0个阵元为参考，令其接收到的第\( k \)个目标的回波信号为
+如\cref{fig_array}所示，设第 $k$ 个目标与阵列天线的连线与阵列法向之间的夹角为 $\theta_k$。则第 $0$ 个阵元接收到的回波信号，相较于第 $1$ 个阵元接收到的信号，其传播路径多出 $d \sin\theta_k$ 的距离。依次类推，第 $m$ 个阵元接收到的信号，相较于第 $0$ 个阵元接收到的信号，其传播路径多出 $m d \sin\theta_k$ 的距离。不妨以第0个阵元为参考，令其接收到的第\( k \)个目标的回波信号为
 \[
     r_k(t) = A_k s\left(t - \frac{2 R_k}{c}\right),
 \]
@@ -258,7 +258,25 @@
     \label{fig_array_angle}
 \end{figure}
 
-因此，在不考虑噪声与干扰的情况下，整个阵列的接收信号矩阵可表示为
+注意到，导向矢量本质上是一段复指数序列，其对应的``空间频率''为
+\[
+    f_k = \frac{f_c d \sin\theta_k}{c}.
+\]
+由于 \( |\theta_k| \leq \tfrac{\pi}{2} \)，可得最大的频率为
+\[
+    |f_k| \leq \frac{f_c d}{c} = \frac{d}{\lambda},
+\]
+其中 \(\lambda = \tfrac{c}{f_c}\) 为载波波长。另一方面，\(\bm{a}_k\) 可以理解为以单位采样率（每阵元采样一次）对该复指数信号进行采样得到的向量。根据奈奎斯特采样定理，为避免频率混叠必须满足
+\[
+    |f_k| < \frac{1}{2}.
+\]
+因此，为防止出现空间混叠，阵元间距应满足
+\[
+    d \leq \frac{\lambda}{2}.
+\]
+
+
+进一步地，在不考虑噪声与干扰的情况下，整个阵列的接收信号矩阵可表示为
 \[
     \mathbf{X}
     = \sum_{k=1}^{K} \mathbf{X}_k
@@ -280,7 +298,7 @@
 \subsection{二维均匀线性阵列}
 为了能够在三维空间中对目标进行定位，通常需要使用二维均匀线性阵列。与一维阵列类似，二维阵列的接收信号模型也可以通过导向矢量来表示。
 
-设有一个 \(M \times N\) 的二维均匀线性阵列，阵元间距分别为 \(d_x\) 和 \(d_y\)。方便起见，令该二维阵列位于\( x-y \) 平面上。因此，阵列上的第 \( (m,n) \) 个阵元的坐标可以表示为
+设有一个 \(M \times N\) 的二维均匀线性阵列，两个方向上的阵元间距分别为 \(d_x\) 和 \(d_y\)。方便起见，令该二维阵列位于\( x-y \) 平面上。因此，阵列上的第 \( (m,n) \) 个阵元的坐标可以表示为
 \[
     \bm{l}^{(m, n)} = \begin{bmatrix}
         m d_x & n d_y & 0
@@ -376,7 +394,7 @@
 \section{多普勒接收信号模型}
 天线阵列的空间展开赋予雷达``方向分辨力''，从而测量目标的方位；而时间维度的展开则提供了``运动分辨力''，用以估计目标的速度。相较于需要多阵元同步采样的空间维展开，时间维展开的实现更为直接，只需进行脉冲的重复发射与接收。
 
-设雷达系统每隔 \(T_r\) 秒发射一个脉冲，并持续发射 \(P\) 个脉冲。与此同时，设第\( k \)个目标的径向速度为\( v_k \)，则第 \( p \) 脉冲发射的时刻为\( p T_r \)。如\cref{fig_v_k}所示，此时目标到雷达的距离近似为\( R_k -  p T_r v_k\)，其中\( R_k \)为初始时刻目标到雷达的距离。
+设雷达系统只有一个天线，且每隔 \(T_r\) 秒发射一个脉冲，即脉冲重复周期（Pulse Repetition Interval, PRI）为 \(T_r\)，并持续发射 \(P\) 个脉冲。与此同时，设第\( k \)个目标的径向速度为\( v_k \)，则第 \( p \) 脉冲发射的时刻为\( p T_r \)。如\cref{fig_v_k}所示，此时目标到雷达的距离近似为\( R_k -  p T_r v_k\)，其中\( R_k \)为初始时刻目标到雷达的距离。
 
 \begin{figure}[htb!]
     \centering
@@ -385,6 +403,89 @@
     \label{fig_v_k}
 \end{figure}
 
+因此，对于第\( k \)个目标，第\( p \)个脉冲对应接收到的信号可以表示为
+\[
+    \bm{r}_k^{(p)} = A_k s\left(t - \frac{2 (R_k - p T_r v_k)}{c}\right).
+\]
+将发射信号的基本模型带入到上式中，有
+\[
+    \begin{split}
+        \bm{r}_k^{(p)} & = A_k \text{rect}\left(\frac{t - \frac{2 (R_k - p T_r v_k)}{c}}{T}\right) p\left(t - \frac{2 (R_k - p T_r v_k)}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 (R_k - p T_r v_k)}{c}\right)}   \\
+                       & \approx A_k \text{rect}\left(\frac{t - \frac{2 R_k}{c}}{T}\right) p\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k}{c}\right)} e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}} \\
+                       & = A_k s\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}}                                                                                                              \\
+                       & = r_k(t) e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}},
+    \end{split}
+\]
+其中，\( r_k(t) \)为第0次发射脉冲对应的接收信号。可以看出，第\( p \)次脉冲接收到的信号，相较于第0次脉冲接收到的信号，多了一个与\( p \)有关的相位因子，这个相位因子包含了目标的径向速度信息。
+
+同样地，令\( \bm{r}_k \) 为第0次发射脉冲对应的接收信号向量，则第\( p \)次脉冲对应的接收信号向量可以表示为
+\[
+    \bm{r}_k^{(p)} = \bm{r}_k e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}}.
+\]
+将所有的\( P \)次脉冲接收到的信号向量组合成一个矩阵，可以表示为
+\[
+    \begin{split}
+        \mathbf{X}_k & = \begin{bmatrix}
+                             \bm{r}_k^{(0)} & \bm{r}_k^{(1)} & \cdots & \bm{r}_k^{(P-1)}
+                         \end{bmatrix}                                                             \\
+                     & = \begin{bmatrix}
+                             \bm{r}_k & \bm{r}_k e^{j 2 \pi f_c \frac{2 T_r v_k}{c}} & \cdots & \bm{r}_k e^{j 2 \pi f_c \frac{2 (P-1) T_r v_k}{c}}
+                         \end{bmatrix} \\
+                     & = \bm{r}_k \begin{bmatrix}
+                                      1 & e^{j 2 \pi f_c \frac{2 T_r v_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{2 (P-1) T_r v_k}{c}}
+                                  \end{bmatrix}                 \\
+                     & = \bm{r}_k \bm{p}_k^{\mathrm{T}},
+    \end{split}
+\]
+其中
+\[
+    \bm{p}_k = \begin{bmatrix}
+        1 & e^{j 2 \pi f_c \frac{2 T_r v_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{2 (P-1) T_r v_k}{c}}
+    \end{bmatrix}^{\mathrm{T}},
+\]
+同样也是一个导向矢量，其中包含了目标的径向速度信息。注意到，矩阵 \( \mathbf{X}_k \in \mathbb{C}^{L \times P} \) 的两个维度都与时间相关：其中，维度 \(L\) 对应雷达系统对回波信号的采样时刻，而维度 \(P\) 则对应脉冲的重复发射次数。由于前者的采样间隔远小于后者，通常将 \(L\) 所在的维度称为“快时间”，而将 \(P\) 所在的维度称为“慢时间”。
+
+类似于一维线性阵列中的空间混叠现象，在多普勒体制的雷达中同样可能出现速度模糊。由于\(\bm{p}_k\) 也是一段复指数序列，其对应的“多普勒频率”为
+\[
+    f_k = f_c \frac{2 T_r v_k}{c}.
+\]
+由于脉冲在慢时间上以单位采样率（每个脉冲采样一次）采集，为避免混叠必须满足
+\[
+    |f_k| \leq \frac{1}{2}.
+\]
+因此，目标径向速度的可测范围为
+\[
+    |v_k| \leq \frac{c}{4 f_c T_r}
+    = \frac{\lambda}{4 T_r}
+    = \frac{\lambda f_r}{4},
+\]
+其中 \(\lambda = c/f_c\) 为载波波长，\(f_r = 1/T_r\) 为脉冲重复频率（Pulse Repetition Frequency, PRF）。除此之外，多普勒体制的雷达还可能出现距离模糊现象。由于脉冲重复周期为 \(T_r\)，当目标距离 \(R_k\) 大于 \(\tfrac{c T_r}{2}\) 时，其回波信号至少要到下一次脉冲发射之后才能返回接收机，从而导致目标距离无法被正确估计。由此可得，多普勒雷达的无模糊测距范围为
+\[
+    R_k \leq \frac{c T_r}{2} = \frac{c}{2 f_r}.
+\]
+进一步，将无模糊速度与无模糊距离相乘，有
+\[
+    |v_k| \cdot R_k \;\leq\;
+    \frac{c}{4 f_c T_r} \cdot \frac{c T_r}{2}
+    = \frac{c^2}{8 f_c}.
+\]
+这表明，无模糊速度与无模糊距离之间存在乘积约束，其上限仅由载波频率 \(f_c\) 决定。换句话说，若希望同时增大可测速度与可测距离，就必须降低载波频率；然而频率降低又会使雷达系统的体积增大，分辨率下降，从而产生新的折中问题。
+
+考虑所有的\( K \)个目标，最终总的接收信号可以表示为
+\[
+    \mathbf{X} = \sum_{k=1}^{K} \mathbf{X}_k = \sum_{k=1}^{K} \bm{r}_k \bm{p}_k^{\mathrm{T}} = \mathbf{R} \mathbf{P}^{\mathrm{T}},
+\]
+其中
+\[
+    \mathbf{R} = \begin{bmatrix}
+        \bm{r}_1 & \bm{r}_2 & \cdots & \bm{r}_K
+    \end{bmatrix}, \quad \mathbf{P} = \begin{bmatrix}
+        \bm{p}_1 & \bm{p}_2 & \cdots & \bm{p}_K
+    \end{bmatrix},
+\]
+分别表示目标的接收信号和导向矢量构成的矩阵。
+
 \section{空时联合接收信号模型}
+
 
 \section{噪声、杂波和多径模型}
