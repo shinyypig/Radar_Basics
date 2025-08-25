@@ -1,6 +1,6 @@
 \chapter{雷达发射与接收信号模型}
 
-\section{发射信号模型}
+\section{发射信号模型}\label{sec_radar_signal_model}
 在第一节中我们提到，典型的雷达系统通常采用同一副天线进行信号的发射与接收。雷达通过发射信号，并测量接收回波与发射信号之间的时延来确定目标的距离。严格而言，这种工作方式主要适用于脉冲体制雷达，其发射信号为离散的脉冲序列。与之不同，连续波体制雷达持续向外辐射电磁波，并利用多普勒效应测量目标的距离与速度。鉴于实际应用中脉冲体制雷达更为常见，且连续波雷达的信号处理可在一定条件下转化为脉冲体制的处理形式，因此本书将主要关注脉冲体制雷达的信号模型。
 
 对于单天线雷达系统，其发射信号由三部分组成
@@ -322,24 +322,24 @@
 \[
     \Delta d^{(m,n)}_k = \bm{u}_k^{\mathrm{T}} \bm{l}^{(m,n)} = m d_x \sin\theta_k \cos\phi_k + n d_y \sin\theta_k \sin\phi_k.
 \]
-记\( \mu = d_x \sin\theta_k \cos\phi_k \)，\( \nu = d_y \sin\theta_k \sin\phi_k \)，则第\( (m,n) \)个阵元接收到的信号可以表示为
+记\( \vartheta = d_x \sin\theta_k \cos\phi_k \)，\( \varphi = d_y \sin\theta_k \sin\phi_k \)，则第\( (m,n) \)个阵元接收到的信号可以表示为
 \[
     \begin{split}
-        r^{(m,n)}_k(t) & = A_k s\left(t - \frac{2 R_k - m \mu - n \nu}{c}\right)                                                                                                                                                \\
-                       & = A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k - m \mu - n \nu}{c}}{T}\right) p\left(t - \frac{2 R_k - m \mu - n \nu}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k - m \mu - n \nu}{c}\right)} \\
-                       & \approx A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k}{c}}{T}\right) p\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k}{c}\right)} e^{j 2 \pi f_c \frac{m \mu + n \nu}{c}}   \\
-                       & = A_k s\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \frac{m \mu + n \nu}{c}}                                                                                                                        \\
-                       & = r_k(t) e^{j 2 \pi f_c \frac{m \mu + n \nu}{c}}.
+        r^{(m,n)}_k(t) & = A_k s\left(t - \frac{2 R_k - m \vartheta - n \varphi}{c}\right)                                                                                                                                                                    \\
+                       & = A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k - m \vartheta - n \varphi}{c}}{T}\right) p\left(t - \frac{2 R_k - m \vartheta - n \varphi}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k - m \vartheta - n \varphi}{c}\right)} \\
+                       & \approx A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k}{c}}{T}\right) p\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k}{c}\right)} e^{j 2 \pi f_c \frac{m \vartheta + n \varphi}{c}}                       \\
+                       & = A_k s\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \frac{m \vartheta + n \varphi}{c}}                                                                                                                                            \\
+                       & = r_k(t) e^{j 2 \pi f_c \frac{m \vartheta + n \varphi}{c}}.
     \end{split}
 \]
 同样地，令\( \bm{r}_k \) 为第\( (0,0) \)个阵元接收到的信号对应的离散向量，则第\( (m,n) \)个阵元接收到的信号向量可以表示为
 \[
-    \bm{r}_k^{(m,n)} = \bm{r}_k e^{j 2 \pi f_c \frac{m \mu + n \nu}{c}} = \bm{r}_k e^{j 2 \pi f_c \frac{m \mu}{c}} e^{j 2 \pi f_c \frac{n \nu}{c}}.
+    \bm{r}_k^{(m,n)} = \bm{r}_k e^{j 2 \pi f_c \frac{m \vartheta + n \varphi}{c}} = \bm{r}_k e^{j 2 \pi f_c \frac{m \vartheta}{c}} e^{j 2 \pi f_c \frac{n \varphi}{c}}.
 \]
 
 将所有阵元接收到的第\( k \)个目标反射的信号向量排列成一个\( L \times M \times N \)大小的张量\( \mathcal{X}_k \)，则该张量中的元素有如下表达式
 \[
-    \left( \mathcal{X}_k \right)_{lmn} = \left( \bm{r}_k \right)_l e^{j 2 \pi f_c \frac{m \mu}{c}} e^{j 2 \pi f_c \frac{n \nu}{c}}.
+    \left( \mathcal{X}_k \right)_{lmn} = \left( \bm{r}_k \right)_l e^{j 2 \pi f_c \frac{m \vartheta}{c}} e^{j 2 \pi f_c \frac{n \varphi}{c}}.
 \]
 根据\cref{def:outer-product}中的外积定义，不难发现\( \mathcal{X}_k \)是由三个向量的外积构成的：
 \[
@@ -349,10 +349,10 @@
 \[
     \begin{split}
         \bm{a}_k & = \begin{bmatrix}
-                         1 & e^{j 2 \pi f_c \frac{\mu}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) \mu}{c}}
+                         1 & e^{j 2 \pi f_c \frac{\vartheta}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) \vartheta}{c}}
                      \end{bmatrix}^{\mathrm{T}}, \\
         \bm{b}_k & = \begin{bmatrix}
-                         1 & e^{j 2 \pi f_c \frac{\nu}{c}} & \cdots & e^{j 2 \pi f_c \frac{(N-1) \nu}{c}}
+                         1 & e^{j 2 \pi f_c \frac{\varphi}{c}} & \cdots & e^{j 2 \pi f_c \frac{(N-1) \varphi}{c}}
                      \end{bmatrix}^{\mathrm{T}}.
     \end{split},
 \]
@@ -487,5 +487,89 @@
 
 \section{空时联合接收信号模型}
 
+在前面的推导中，我们分别从空间维度（阵列接收）和时间维度（脉冲重复）出发，建立了目标回波的接收信号模型。实际上，现代雷达系统往往需要在空间与时间两个维度上同时处理数据：一方面，阵列天线提供了空域采样能力，可以用于角度估计与波束形成；另一方面，脉冲重复采样则提供了时域上的信息，可用于目标检测、速度估计以及杂波抑制。将这两个维度结合起来，可以得到所谓的``空时联合接收信号模型''（space-time signal model），为后续的空时自适应处理（Space-Time Adaptive Processing, STAP）奠定基础。本节将建立这一联合模型，并为后续算法的推导提供统一的数学表示。
+
+设有一部多普勒二维阵列雷达系统，阵列规模为 \(M \times N\)，在两个正交方向上的阵元间距分别为 \(d_x\) 和 \(d_y\)。系统的脉冲重复周期为 \(T_r\)，一次观测中连续发射 \(P\) 个脉冲。考虑场景中存在 \(K\) 个目标，第 \(k\) 个目标的径向距离为 \(R_k\)，径向速度为 \(v_k\)，其相对于阵列坐标系的俯仰角为 \(\theta_k\)，方位角为 \(\phi_k\)。则第 \((m,n)\) 个阵元接收到的第 \(p\) 个脉冲对应的回波信号可以表示为
+\[
+    \begin{split}
+        r^{(m,n,p)}_k(t)
+         & = A_k\, s\left(t - \frac{2 R_k - m\vartheta - n\varphi - p\nu}{c}\right) \\
+         & \approx r_k(t)\,
+        e^{j 2 \pi f_c \tfrac{m \vartheta}{c}}\,
+        e^{j 2 \pi f_c \tfrac{n \varphi}{c}}\,
+        e^{j 2 \pi f_c \tfrac{p \nu}{c}},
+    \end{split}
+\]
+其中，\(r_k(t)\) 为参考信号，即第 \((0,0)\) 个阵元在初始时刻接收到的回波；而
+\[
+    \vartheta = d_x \sin\theta_k \cos\phi_k,
+    \quad
+    \varphi = d_y \sin\theta_k \sin\phi_k,
+    \quad
+    \nu = 2 T_r v_k
+\]
+分别表示目标在两个空间维度上的相位偏移量以及在慢时间维度上的多普勒相位偏移。令\( \bm{r}_k \in \mathbb{C}^{L} \) 为对 \(r_k(t)\) 进行离散采样所获得的向量，并构造如下导向矢量
+\[
+    \begin{split}
+        \bm{a}_k & = \begin{bmatrix}
+                         1 & e^{j 2 \pi f_c \frac{\vartheta}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) \vartheta}{c}}
+                     \end{bmatrix}^{\mathrm{T}}, \\
+        \bm{b}_k & = \begin{bmatrix}
+                         1 & e^{j 2 \pi f_c \frac{\varphi}{c}} & \cdots & e^{j 2 \pi f_c \frac{(N-1) \varphi}{c}}
+                     \end{bmatrix}^{\mathrm{T}}, \\
+        \bm{p}_k & = \begin{bmatrix}
+                         1 & e^{j 2 \pi f_c \frac{\nu}{c}} & \cdots & e^{j 2 \pi f_c \frac{(P-1) \nu}{c}}
+                     \end{bmatrix}^{\mathrm{T}}.
+    \end{split}
+\]
+类似于二维阵列接收信号模型，多普勒二维阵列雷达系统整个接收到的第\( k \)个目标的回波数据可以排列为一个\( L \times M \times N \times P \) 的四维张量，有如下表达式
+\[
+    \mathcal{X}_k = \bm{r}_k \circ \bm{a}_k \circ \bm{b}_k \circ \bm{p}_k.
+\]
+考虑所有的 \(K\) 个目标，最终总的接收信号张量可以表示为
+\[
+    \mathcal{X} = \sum_{k=1}^{K} \mathcal{X}_k = \sum_{k=1}^{K} \bm{r}_k \circ \bm{a}_k \circ \bm{b}_k \circ \bm{p}_k.
+\]
+
+构造如下的接收信号与导向矢量的矩阵：
+\[
+    \begin{split}
+        \mathbf{R} & = \begin{bmatrix}
+                           \bm{r}_1 & \cdots & \bm{r}_K
+                       \end{bmatrix}, \quad
+        \mathbf{A} = \begin{bmatrix}
+                         \bm{a}_1 & \cdots & \bm{a}_K
+                     \end{bmatrix}, \quad   \\
+        \mathbf{B} & = \begin{bmatrix}
+                           \bm{b}_1 & \cdots & \bm{b}_K
+                       \end{bmatrix}, \quad
+        \mathbf{P} = \begin{bmatrix}
+                         \bm{p}_1 & \cdots & \bm{p}_K
+                     \end{bmatrix}.
+    \end{split}
+\]
+那么根据\cref{prop:diag-kron}，张量\( \mathcal{X} \)可以写成如下形式：
+\[
+    \begin{split}
+        \mathcal{X} = \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \times_4 \mathbf{P},
+    \end{split}
+\]
+其中\( \mathcal{I}_K \)为一个\( K \times K \times K \times K \)的单位张量。
+
+这一张量表示不仅与前文所述的阵列接收信号模型和多普勒接收信号模型兼容，而且还与\cref{sec_radar_signal_model} 中介绍的最基本的单天线接收信号模型相一致：
+\[
+    r(t) = \sum_{k=1}^{K} A_k s\!\left(t - \frac{2 R_k}{c}\right).
+\]
+在这种情况下，接收信号张量可写为
+\[
+    \mathcal{X} = \mathcal{I}_K \times_1 \mathbf{R},
+\]
+其中 \(\mathcal{I}_K\) 退化为一阶单位张量，即一个全 1 向量。于是，
+\[
+    \mathcal{X} = \mathbf{R}\bm{1} = \sum_{k=1}^{K} \bm{r}_k,
+\]
+恰好对应所有目标回波向量的叠加。
+
+综上所述，引入张量这一表示方式后，原本复杂的接收信号模型得到了显著简化，并在形式上实现了高度统一。无论是最简单的单阵元单脉冲体制，还是复杂的多阵元多脉冲体制，甚至是包含了极化域信息的多维雷达系统，都能用同一套张量框架加以描述。这不仅为不同雷达体制提供了统一的数学表述，也为后续空时联合处理和多维信号处理方法奠定了坚实基础。
 
 \section{噪声、杂波和多径模型}
