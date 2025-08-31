@@ -372,7 +372,7 @@
 
 \RequirePackage{graphicx}
 %\RequirePackage{enumerate}
-\RequirePackage{amsmath,mathrsfs,amsfonts,amssymb,mathtools}
+\RequirePackage{amsmath,mathrsfs,amsfonts,amssymb,mathtools,mathdots}
 % \providecommand\qed{}
 % \renewcommand{\qed}{\hfill$\blacksquare$}
 \RequirePackage{booktabs}

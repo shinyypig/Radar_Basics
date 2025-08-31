@@ -947,6 +947,77 @@
     \]
 \end{solution}
 
+\subsection{张量分解}
+
+类似于矩阵的奇异值分解（SVD），张量分解旨在将高维张量表示为低维张量的组合。常见的张量分解方法包括CANDECOMP/PARAFAC（CP分解）和Tucker分解等。
+
+给定一个张量\(\mathcal{T} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_N}\)，其CP分解可以表示为
+\[
+    \mathcal{T} \approx \sum_{r=1}^{R} \bm{x}_1^{(r)} \circ \bm{x}_2^{(r)} \circ \cdots \circ \bm{x}_N^{(r)},
+\]
+其中，\(\bm{x}_1^{(r)} \in \mathbb{R}^{I_1}, \bm{x}_2^{(r)} \in \mathbb{R}^{I_2}, \cdots, \bm{x}_N^{(r)} \in \mathbb{R}^{I_N}\)为基向量，\(R\)为分解秩。 简而言之，张量CP分解旨在将高维张量表示为多个秩一张量的和。为了避免向量大小带来的模糊问题，我们可以规定所有的基向量的模长都为1，此时CP分解的可以写为
+\[
+    \mathcal{T} \approx \sum_{r=1}^{R} \lambda_r \bm{x}_1^{(r)} \circ \bm{x}_2^{(r)} \circ \cdots \circ \bm{x}_N^{(r)},
+\]
+其中，\(\lambda_r\)为标量系数，表示第\(r\)个秩一张量的权重。
+
+而Tucker分解则将张量表示为核心张量与一组因子矩阵的乘积，其形式为
+\[
+    \mathcal{T} \approx \mathcal{G} \times_1 \mathbf{X}_1 \times_2 \mathbf{X}_2 \times_3 \cdots \times_N \mathbf{X}_N,
+\]
+其中，\(\mathcal{G} \in \mathbb{R}^{J_1 \times J_2 \times \cdots \times J_N}\)为核心张量，\(\mathbf{X}^{(n)} \in \mathbb{R}^{J_n \times I_n}\)为第\(n\)个维度的因子矩阵。
+
+根据\cref{prop:diag-kron}，可以将CP分解写为如下的形式
+\[
+    \mathcal{T} \approx \mathcal{D} \times_1 \mathbf{X}_1 \times_2 \mathbf{X}_2 \times_3 \cdots \times_N \mathbf{X}_N,
+\]
+其中，\(\mathcal{D} \in \mathbb{R}^{R \times R \times \cdots \times R}\)为对角张量，对角线元素为\(\lambda_r\)。而\( \mathbf{X}_n \in \mathbb{R}^{I_n \times R} \)则是有所有的\( \bm{x}_n^{(r)} \)构成的矩阵：
+\[
+    \mathbf{X}_n = \begin{bmatrix} \bm{x}_n^{(1)} & \bm{x}_n^{(2)} & \cdots & \bm{x}_n^{(R)} \end{bmatrix}.
+\]
+这表明Tucker分解可以看作是对CP分解的一种推广。
+
+\begin{example}
+    对\cref{fig_img_tensor_1}所示的彩色图像进行CP分解，并重构出低秩近似图像。
+\end{example}
+\begin{solution}
+    令\( R = 200 \)，对\cref{fig_tensor_lam}进行CP分解，对应的各个秩一分量的权重如\cref{fig_tensor_lam}所示。可以发现，类似于SVD分解，权重下降速度极快，这意味着图像的主要信息集中在少数几个秩一分量中。
+
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[width=.6\textwidth]{./img/matrix/cat_cp.tikz}
+        \caption{}
+        \label{fig_tensor_lam}
+    \end{figure}
+
+    如\cref{fig_tensor_cp_result}所示，当使用的秩一分量数量接近50时，重构图像的质量已经非常接近原始图像。
+
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[width=.9\textwidth]{./img/matrix/cat_recon_10.png}
+            \caption{}
+            \label{fig_tensor_cp_result_1}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[width=.9\textwidth]{./img/matrix/cat_recon_20.png}
+            \caption{}
+            \label{fig_tensor_cp_result_2}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \includegraphics[width=.9\textwidth]{./img/matrix/cat_recon_50.png}
+            \caption{}
+            \label{fig_tensor_cp_result_3}
+        \end{subfigure}
+        \caption{重构图像 (a) 10个秩一分量 (b) 20个秩一分量 (c) 50个秩一分量}
+        \label{fig_tensor_cp_result}
+    \end{figure}
+
+\end{solution}
+
 \section{常见统计量的矩阵表示}
 
 在概率论中，我们经常会遇到一些常见的统计量，比如均值、方差、协方差等。这些统计量在本课程中也会经常用到。不同的是，本课程中的对象都是采集到的离散数据，对应向量或矩阵而不是随机变量。因此，我们需要提前了解对于向量和矩阵，如何计算这些统计量。

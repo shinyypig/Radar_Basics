@@ -1,6 +1,147 @@
 \chapter{雷达信号检测}
+在雷达系统中，目标检测是由接收信号处理走向目标识别的关键环节。其核心任务是从含有噪声、杂波与多径效应的复杂回波中，可靠地区分目标与干扰。为了提升检测性能，雷达信号处理往往需要经过脉冲压缩以提高距离分辨率，通过脉冲积累增强信噪比，最终在统计意义下实现目标检测。
+
+本章将依次介绍：首先讨论脉冲压缩原理及其在提高雷达分辨率中的作用；随后分析非相干积累与相干积累两类脉冲积累方法的特点与适用场景；最后重点研究目标检测的统计理论，包括虚警率、检测率、门限选择与恒虚警率（CFAR）检测等经典方法。
 
 \section{脉冲压缩}
+如\cref{sec_radar_signal_model}所述，早期雷达系统往往难以同时兼顾距离分辨率与目标检测性能。为在保持较高距离分辨率的同时提升检测效能，现代雷达通常在低频包络中引入时间调制以拓展信号带宽，从而增强系统的抗干扰能力与目标检测能力。以线性调频信号为例，其回波信号的实部如\cref{fig_chirp_eg}所示。在实际应用中，由于噪声等因素的存在，往往难以直接确定回波脉冲的上升沿；此外，若仅依靠上升沿来估计脉冲时延，也无法有效解决距离分辨率与检测性能之间的固有矛盾。
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=.6\textwidth]{./img/detection/chirp_eg.tikz}
+    \caption{线性调频回波信号示意图}
+    \label{fig_chirp_eg}
+\end{figure}
+
+需要注意的是，\cref{fig_chirp_eg} 中仅绘制了回波信号的低频包络部分。这是因为在实际应用中，回波信号通常会先经过下变频处理，再进行采样。经过这一过程，高频载波成分被滤除，仅保留下变频后的低频信息。因此，本章讨论的信号均不再考虑高频载波。
+
+为克服这一难题，雷达信号处理中引入了脉冲压缩（Pulse Compression）技术。该方法通过在发射端发送宽脉冲、在接收端对回波进行匹配滤波，实现了``能量积累''与``时间压缩''的统一。由此，雷达既能在保持高能量积累以提高检测概率的同时，又获得等效的窄脉冲，从而显著提升距离分辨率。
+
+设\( \bm{s} \in \mathbb{C}^{W \times 1} \)为发射信号对应的离散时间序列向量，也称作参考向量，\( \bm{x} \in \mathbb{C}^{L \times 1} \)为接收信号对应的离散时间序列向量。此时，问题就转换成从回波向量\( \bm{x} \)中找到与发射向量相似的序列。不妨将\( \bm{x} \)排列成如下的矩阵形式
+\[
+    \mathbf{X} = \begin{bmatrix}
+        x_1    & x_2     & \cdots & x_{L-W+1} \\
+        x_2    & x_3     & \cdots & x_{L-W+2} \\
+        \vdots & \vdots  & \ddots & \vdots    \\
+        x_W    & x_{W+1} & \cdots & x_L
+    \end{bmatrix} \in \mathbb{C}^{W \times (L-W+1)},
+\]
+其中矩阵\( \mathbf{X} \)的第\( i \)列记为\( \bm{x}_i \in \mathbb{C}^{W \times 1} \)。显然，我们只需要一一对比所有的\( \bm{x}_i \)与\( \bm{s} \)的相似性，如果相似度比较高，那么就可以认为在该位置存在回波信号，自然就能确定对应的时延了。最常见的衡量相似度的指标是余弦相似度（Cosine Similarity），其定义如下
+\begin{definition}
+    设有两个向量\( \bm{a}, \bm{b} \in \mathbb{C}^{n \times 1} \)，则它们的余弦相似度有如下计算公式
+    \[
+        S(\bm{a}, \bm{b}) = \frac{\bm{a}^{\mathrm{H}} \bm{b}}{\|\bm{a}\| \|\bm{b}\|}
+    \]
+    其中\( \bm{a}^{\mathrm{H}} \)为\( \bm{a} \)的共轭转置。余弦相似度越大，一定程度上表示两个向量越相似。
+\end{definition}
+
+因此，依次计算所有的
+\[
+    y_i = S(\bm{x}_i, \bm{s}),
+\]
+即可得到脉冲压缩后的输出结果：
+\[
+    \bm{y} = \begin{bmatrix} y_1 & y_2 & \cdots & y_{L-W+1} \end{bmatrix}^{\mathrm{T}}
+    \in \mathbb{C}^{(L-W+1) \times 1}.
+\]
+然而，余弦相似度的计算在硬件实现中相对复杂，因此在实际应用中往往需要进一步简化。注意到参考向量 \( \bm{s} \) 是已知的，不妨提前归一化，令其模长\( \left\| \bm{s} \right\| = 1 \)。于是余弦相似度可简化为
+\[
+    y_i = \frac{\bm{x}_i^{\mathrm{H}} \bm{s}}{\|\bm{x}_i\|}.
+\]
+但在工程实现中，计算 \( \|\bm{x}_i\| \) 仍然存在一定开销。
+
+为克服这一问题，可以预先对接收向量 \( \bm{x} \) 进行归一化，使得不同距离单元处的信号能量保持在相近水平。根据雷达方程\cref{eq:radar_equation}，接收信号的功率随目标距离的四次方衰减。因此，可以利用这一先验规律，对回波信号施加随时间（或距离）变化的自动增益控制：距离越远，信号衰减越严重，所需增益越大。这样便能在不显著增加硬件复杂度的前提下，近似实现归一化处理。在这种情况下，余弦相似度可近似简化为一个内积形式：
+\[
+    y_i =  \bm{x}_i^{\mathrm{H}} \bm{s},
+\]
+并可以进一步写成矩阵乘法的形式：
+\[
+    \bm{y} = \mathbf{X}^{\mathrm{H}} \bm{s}.
+\]
+
+由\cref{apx.conv-corr-mat}可知，该形式实质上对应一次相关运算，即将原始回波信号与参考信号进行相关处理。进一步地，相关运算可以等价地转化为卷积运算，而卷积又可视为一个有限冲激响应（Finite Impulse Response, FIR）滤波器，其滤波器系数正是参考信号的共轭翻转序列。因此，该处理过程通常被称为\emph{匹配滤波}。方便起见，我们直接称\( \bm{s} \)为匹配滤波器的滤波器系数。
+
+\begin{example}
+    对\cref{fig_pc_eg1}中的接收信号进行匹配滤波处理。
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[width=.6\textwidth]{./img/detection/pc_eg1.tikz}
+        \caption{接收信号示意图（仅绘制了实部）}
+        \label{fig_pc_eg1}
+    \end{figure}
+\end{example}
+\begin{solution}
+    从原始回波信号可以看出，噪声干扰较为明显。若仅依靠脉冲的上升沿进行判别，只能大致识别出两个目标回波。而经过匹配滤波处理后，不仅能够清晰地区分出三个目标回波，而且噪声得到了有效抑制，其结果如\cref{fig_pc_eg2}所示。由于匹配滤波能够将宽脉冲在时域中压缩为尖锐的脉冲峰，这一过程通常也被称为脉冲压缩。
+    \begin{figure}[htb!]
+        \centering
+        \includegraphics[width=.6\textwidth]{./img/detection/pc_eg2.tikz}
+        \caption{脉冲压缩结果}
+        \label{fig_pc_eg2}
+    \end{figure}
+\end{solution}
+
+既然脉冲压缩本质上是对原始回波信号的一种滤波，而其对应的滤波器系数通常取为参考信号所对应的向量，那么一个自然的问题是：最优的滤波系数是否必然就是参考信号向量？不妨将期望的滤波器系数记为 \( \bm{w} \)。显然，理想的滤波器应在凸显目标回波信号的同时，尽可能抑制非目标分量，例如噪声、干扰和杂波等。基于这一考虑，可以建立如下的优化模型：
+\[
+    \begin{cases}
+        \min\limits_{\bm{w}} \left\| \mathbf{X}^{\mathrm{H}} \bm{w} \right\|^2, \\[6pt]
+        \text{s.t. } \bm{s}^{\mathrm{H}} \bm{w} = 1 ,
+    \end{cases}
+\]
+其中，目标函数刻画了滤波器输出的总能量，约束条件保证了参考信号方向上的响应被固定为 1。这样，滤波器在保持对目标信号敏感的同时，能够最大程度地抑制非目标分量的输出。利用\cref{apx.lagrange-multiplier}介绍的拉格朗日乘数法，可以获得该优化问题的解析解。首先，构建拉格朗日函数
+\[
+    \mathcal{L}(\bm{w}, \lambda) = \frac{1}{2}\left\| \mathbf{X}^{\mathrm{H}} \bm{w} \right\|^2 - \lambda \left( \bm{s}^{\mathrm{H}} \bm{w} - 1 \right).
+\]
+对\( \bm{w} \)和\( \lambda \)分别求导，并令其为0，得到方程组
+\[
+    \begin{cases}
+        \frac{\partial \mathcal{L}}{\partial \bm{w}} = \mathbf{X} \mathbf{X}^{\mathrm{H}} \bm{w} - \lambda \bm{s} = 0 \\
+        \frac{\partial \mathcal{L}}{\partial \lambda} = \bm{s}^{\mathrm{H}} \bm{w} - 1 = 0
+    \end{cases}.
+\]
+联立上述方程组，得到
+\[
+    \begin{cases}
+        \lambda = \frac{1}{\bm{s}^{\mathrm{H}} \mathbf{X} \mathbf{X}^{\mathrm{H}} \bm{s}} \\
+        \bm{w} = \frac{\mathbf{X} \mathbf{X}^{\mathrm{H}} \bm{s}}{\bm{s}^{\mathrm{H}} \mathbf{X} \mathbf{X}^{\mathrm{H}} \bm{s}}
+    \end{cases}.
+\]
+从中可以看出，最优的滤波器系数 \( \bm{w} \) 并不等于参考信号 \( \bm{s} \)。但注意到，当我们假设信号中只存在高斯白噪声时，数据的协方差矩阵近似为一个对角矩阵\( \frac{1}{L-W+1} \mathbf{X} \mathbf{X}^{\mathrm{H}} \approx \sigma^2 \mathbf{I} \)，其中\( \mathbf{I} \)为单位矩阵。此时，最优的滤波器系数 \( \bm{w} \) 近似为
+\[
+    \bm{w} \approx \frac{ \mathbf{I} \bm{s}}{\bm{s}^{\mathrm{H}} \mathbf{I} \bm{s}} = \frac{\bm{s}}{\bm{s}^{\mathrm{H}} \bm{s}} = \bm{s}.
+\]
+这表明，在仅含白噪声的理想环境下，最优的滤波器系数近似等于参考向量。
+
+此外，注意到脉冲压缩结果中的脉冲实际上就是参考向量的自相关。因此，脉冲的波形与参考向量息息相关。注意到，参考向量就是对发射信号的一个离散采样，而发射信号的低频包络有如下表达式
+\[
+    s(t) = rect\left( \frac{t}{T} \right) p(t).
+\]
+则其自相关函数为
+\[
+    R_s(\tau)=\int_{-\infty}^{\infty}s(t)\,s^*(t-\tau)\,dt
+    =\int_{-\infty}^{\infty} rect\left( \frac{t}{T} \right) rect\left( \frac{t - \tau}{T} \right) p(t) p^*(t-\tau)\,dt.
+\]
+由于 \(rect\left( \frac{t}{T} \right) rect\left( \frac{t - \tau}{T} \right)\) 仅在区间交集
+\(
+I(\tau)=[-T/2,\,T/2]\cap[\tau-T/2,\,\tau+T/2]
+\)
+上为 1，可得
+\[
+    R_s(\tau)=
+    \begin{cases}
+        \displaystyle
+        \int_{\max(-T/2,\;\tau-T/2)}^{\min(T/2,\;\tau+T/2)}
+        p(t)\,p^*(t-\tau)\,dt, & |\tau|<T,    \\[10pt]
+        0,                     & |\tau|\ge T.
+    \end{cases}
+\]
+设\( p(t) \)的自相关函数为 \(R_p(\tau)=\mathbb{E}\{p(t)p^*(t-\tau)\}\)，其中 \( \mathbb{E}\{\cdot\} \) 表示对时间 \( t \) 的期望。则有
+则有
+\[
+    \mathbb{E}\{R_s(\tau)\}
+    =R_p(\tau)\int_{-\infty}^{\infty} w(t)w(t-\tau)\,dt
+    =R_p(\tau)\,(T-|\tau|)_+,
+\]
+其中 \((x)_+=\max(x,0)\)；即期待的自相关为 \(R_p(\tau)\) 乘以三角窗。
 
 \section{脉冲积累}
 \subsection{非相干积累}

@@ -21,13 +21,88 @@
 
 需要注意的是, 对于向量和矩阵中的元素, 按照书写规则, 也应当用小写字母表示. 比如, 对于向量$\bm{x}$, 其第$i$个元素可以表示为$x_i$, 而对于矩阵$\mathbf{A}$, 其第$i$行第$j$列的元素可以表示为$a_{ij}$. 因此, \( \bm{x}_i \) 或 \( \mathbf{A}_i \)这样的符号, 代表的是第\( i \)个向量或矩阵.
 
-
 \section{矩阵函数}
+
+\section{卷积与相关的矩阵表示}\label{apx.conv-corr-mat}
+
+给定两个向量 \( \bm{x} \in \mathbb{C}^{M \times 1} \) 和 \( \bm{p} \in \mathbb{C}^{N \times 1} \)（不妨假设 \( M \geq N \)），其卷积（Convolution）定义为
+\begin{equation}
+    y_k = \sum_{m=1}^{M} x_{\,k-m+1}\, p_m,
+    \quad k = 1,2,\ldots, M+N-1,
+\end{equation}
+其中，当 \(k-m+1\) 超出向量 \(\bm{x}\) 的有效索引范围时，约定 \(x_{\,k-m+1}=0\)。由此得到的卷积向量长度为 \(M+N-1\)，通常称为\emph{完全卷积}（full convolution）。在某些场景下，为避免边界零填充，也常采用\emph{有效卷积}（valid convolution），即仅在索引完全重叠的区间内进行计算：
+\begin{equation}
+    y_{\,k-M+1} = \sum_{m=1}^{N} x_{\,k-m+1}\, p_m,
+    \quad k = M, M+1, \ldots, N,
+\end{equation}
+其结果向量长度为 \(N-M+1\)，仅对应于所有索引均有效的部分。
+
+上述两种卷积均可写为矩阵形式
+\begin{equation}
+    \bm{y} = \mathbf{X}\,\bm{p},
+\end{equation}
+其中完全卷积对应的矩阵为
+\[
+    \mathbf{X} =
+    \begin{bmatrix}
+        x_1    & 0      & \cdots & 0      \\
+        x_2    & x_1    & \ddots & \vdots \\
+        \vdots & x_2    & \ddots & 0      \\
+        x_M    & \vdots & \ddots & x_1    \\
+        0      & x_M    & \ddots & x_2    \\
+        \vdots & \ddots & \ddots & \vdots \\
+        0      & \cdots & 0      & x_M
+    \end{bmatrix}
+    \in \mathbb{C}^{(M+N-1)\times N},
+\]
+而有效卷积对应的矩阵为
+\[
+    \mathbf{X} =
+    \begin{bmatrix}
+        x_N     & x_{N-1} & \cdots & x_1       \\
+        x_{N+1} & x_N     & \cdots & x_2       \\
+        \vdots  & \vdots  & \ddots & \vdots    \\
+        x_{M}   & x_{M-1} & \cdots & x_{M-N+1}
+    \end{bmatrix}
+    \in \mathbb{C}^{(M-N+1) \times N}.
+\]
+这种``每条主对角线元素均相同''的矩阵称为Toeplitz 矩阵。与卷积不同，相关（correlation）运算定义为
+\begin{equation}
+    y_k = \sum_{m=1}^{M} \overline{x}_{\,k+m-1}\, p_m,
+    \quad k = 1,2,\ldots, M+N-1.
+\end{equation}
+其矩阵形式可写为
+\begin{equation}
+    \bm{y} = \mathbf{X}^{\mathrm{H}} \bm{p},
+\end{equation}
+其中
+\[
+    \mathbf{X} =
+    \begin{bmatrix}
+        0      & \cdots  & 0       & x_1     & x_2     & \cdots  & x_M    \\
+        0      & \iddots & x_1     & x_2     & \cdots  & x_M     & 0      \\
+        \vdots & \iddots & \iddots & \iddots & \iddots & \iddots & \vdots \\
+        x_1    & x_2     & \cdots  & x_M     & 0       & \cdots  & 0
+    \end{bmatrix}
+    \in \mathbb{C}^{N \times (M+N-1)}.
+\]
+若不进行边界零填充，则相关矩阵可写为
+\[
+    \mathbf{X} =
+    \begin{bmatrix}
+        x_1    & x_2     & \cdots & x_{M-N+1} \\
+        x_2    & x_3     & \cdots & x_{M-N+2} \\
+        \vdots & \vdots  & \ddots & \vdots    \\
+        x_N    & x_{N+1} & \cdots & x_M
+    \end{bmatrix}
+    \in \mathbb{C}^{N \times (M-N+1)}.
+\]
+这种``每条反对角线元素均相同''的矩阵称为 Hankel 矩阵。
 
 \section{线性规划}
 
 
-\section{拉格朗日乘数法}
+\section{拉格朗日乘数法}\label{apx.lagrange-multiplier}
 对于等式约束的优化问题：
 \[
     \begin{cases}
@@ -285,7 +360,7 @@
           经过简单的验证可知，矩阵的核范数等于矩阵的所有奇异值之和.
 \end{enumerate}
 
-\section{张量乘法性质}
+\chapter{张量乘法性质}
 
 \begin{property}\label{prop:apx_kron_matmul}
     给定两个矩阵\( \mathbf{A} \in \mathbb{R}^{M \times K} \)和\( \mathbf{B} \in \mathbb{R}^{N \times K} \)，则矩阵乘法可以写成如下的k模积的形式
