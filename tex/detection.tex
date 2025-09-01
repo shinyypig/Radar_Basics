@@ -44,7 +44,7 @@
     \bm{y} = \begin{bmatrix} y_1 & y_2 & \cdots & y_{L-W+1} \end{bmatrix}^{\mathrm{T}}
     \in \mathbb{C}^{(L-W+1) \times 1}.
 \]
-然而，余弦相似度的计算在硬件实现中相对复杂，因此在实际应用中往往需要进一步简化。注意到参考向量 \( \bm{s} \) 是已知的，不妨提前归一化，令其模长\( \left\| \bm{s} \right\| = 1 \)。于是余弦相似度可简化为
+然而，余弦相似度的计算在硬件实现中相对复杂，因此在实际应用中往往需要进一步简化。注意到参考向量 \( \bm{s} \) 是已知的，不妨提前归一化\footnote{后文均默认\( \bm{s} \)为归一化后的向量}，令其模长\( \left\| \bm{s} \right\| = 1 \)。于是余弦相似度可简化为
 \[
     y_i = \frac{\bm{x}_i^{\mathrm{H}} \bm{s}}{\|\bm{x}_i\|}.
 \]
@@ -61,7 +61,7 @@
 
 由\cref{apx.conv-corr-mat}可知，该形式实质上对应一次相关运算，即将原始回波信号与参考信号进行相关处理。进一步地，相关运算可以等价地转化为卷积运算，而卷积又可视为一个有限冲激响应（Finite Impulse Response, FIR）滤波器，其滤波器系数正是参考信号的共轭翻转序列。因此，该处理过程通常被称为\emph{匹配滤波}。方便起见，我们直接称\( \bm{s} \)为匹配滤波器的滤波器系数。
 
-\begin{example}
+\begin{example}\label{eg_pc}
     对\cref{fig_pc_eg1}中的接收信号进行匹配滤波处理。
     \begin{figure}[htb!]
         \centering
@@ -78,6 +78,39 @@
         \caption{脉冲压缩结果}
         \label{fig_pc_eg2}
     \end{figure}
+    不妨假设\( \bm{x}_i = A \bm{s} + \bm{n} \)刚好对应了某个回波信号，其中\( A \)为一个常数包含了信号的幅度和相位信息，\( \bm{n} \)为噪声向量，并假设噪声功率为\( \sigma^2 \)。不难得到原始回波数据的信噪比为
+    \[
+        \mathrm{SNR}_{\mathrm{a}} = \operatorname{E}\left[ \frac{|A|^2 \bm{s}^{\mathrm{H}} \bm{s}}{\bm{n}^{\mathrm{H}} \bm{n}} \right] = \frac{|A|^2 W}{\sigma^2 W} = \frac{|A|^2}{\sigma^2}.
+    \]
+    脉冲压缩后，其输出为
+    \[
+        \bm{x}_i^{\mathrm{H}} \bm{s} = A \bm{s}^{\mathrm{H}} \bm{s} + \bm{n}^{\mathrm{H}} \bm{s}.
+    \]
+    因此，脉压后的信噪比为
+    \[
+        \mathrm{SNR}_{\mathrm{b}} = \operatorname{E}\left[\frac{|A|^2 \bm{s}^{\mathrm{H}} \bm{s} \bm{s}^{\mathrm{H}} \bm{s} }{  \bm{s}^{\mathrm{H}} \bm{n}  \bm{n}^{\mathrm{H}} \bm{s} } \right] = \frac{|A|^2 W^2}{\sigma^2 \bm{s}^{\mathrm{H}}  \mathbf{I} \bm{s} } = \frac{|A|^2 W^2}{\sigma^2 W} = \frac{|A|^2 W}{\sigma^2}.
+    \]
+    因此，脉冲压缩后的信噪比提升为
+    \[
+        \frac{\mathrm{SNR}_{\mathrm{b}}}{\mathrm{SNR}_{\mathrm{a}}} = W.
+    \]
+
+    不妨令\( \bm{x}_i = A \bm{s} + \bm{n} \)刚好对应了某个回波信号，其中，常数 \(A\) 含有目标回波的幅度与相位信息，\(\bm{n}\) 为噪声向量，假设其方差为 \(\sigma^2\)。不难得到原始回波数据的信噪比为
+    \[
+        \mathrm{SNR}_{\mathrm{a}} = \operatorname{E}\left[ \frac{\frac{1}{W}|A|^2 \bm{s}^{\mathrm{H}} \bm{s}}{\frac{1}{W}\bm{n}^{\mathrm{H}} \bm{n}} \right] = \frac{|A|^2}{W\sigma^2},
+    \]
+    其中 \(W \) 为参考信号的长度。经过脉冲压缩处理后，输出为
+    \[
+        \bm{x}_i^{\mathrm{H}} \bm{s} = A \bm{s}^{\mathrm{H}} \bm{s} + \bm{n}^{\mathrm{H}} \bm{s}.
+    \]
+    则在峰值处的信噪比为
+    \[
+        \mathrm{SNR}_{\mathrm{b}} = \operatorname{E}\left[\frac{|A|^2 \bm{s}^{\mathrm{H}} \bm{s} \bm{s}^{\mathrm{H}} \bm{s} }{  \bm{s}^{\mathrm{H}} \bm{n}  \bm{n}^{\mathrm{H}} \bm{s} } \right] = \frac{|A|^2}{\sigma^2 \bm{s}^{\mathrm{H}}  \mathbf{I} \bm{s} } = \frac{|A|^2}{\sigma^2} = \frac{|A|^2}{\sigma^2}.
+    \]
+    综上，脉冲压缩的信噪比提升倍数为
+    \[
+        \frac{\mathrm{SNR}_{\mathrm{b}}}{\mathrm{SNR}_{\mathrm{a}}} = W.
+    \]
 \end{solution}
 
 既然脉冲压缩本质上是对原始回波信号的一种滤波，而其对应的滤波器系数通常取为参考信号所对应的向量，那么一个自然的问题是：最优的滤波系数是否必然就是参考信号向量？不妨将期望的滤波器系数记为 \( \bm{w} \)。显然，理想的滤波器应在凸显目标回波信号的同时，尽可能抑制非目标分量，例如噪声、干扰和杂波等。基于这一考虑，可以建立如下的优化模型：
@@ -111,45 +144,84 @@
 \]
 这表明，在仅含白噪声的理想环境下，最优的滤波器系数近似等于参考向量。
 
-此外，注意到脉冲压缩结果中的脉冲实际上就是参考向量的自相关。因此，脉冲的波形与参考向量息息相关。注意到，参考向量就是对发射信号的一个离散采样，而发射信号的低频包络有如下表达式
+此外需要注意，脉冲压缩后的输出脉冲实际上对应于参考向量的自相关，因此其波形形状与参考向量（低频包络）密切相关。注意到，发射信号的低频包络由两部分组成
 \[
-    s(t) = rect\left( \frac{t}{T} \right) p(t).
+    s(t) = \operatorname{rect}\left( \frac{t}{T} \right) p(t).
 \]
-则其自相关函数为
+其自相关函数为
 \[
-    R_s(\tau)=\int_{-\infty}^{\infty}s(t)\,s^*(t-\tau)\,dt
-    =\int_{-\infty}^{\infty} rect\left( \frac{t}{T} \right) rect\left( \frac{t - \tau}{T} \right) p(t) p^*(t-\tau)\,dt.
+    R_s(\tau) = \operatorname{E}\left[ s(t)\,s^*(t-\tau)\right]
+    = \lim_{T \rightarrow \infty } \frac{1}{T} \int_{-T/2}^{T/2} \operatorname{rect}\left( \frac{t}{T} \right)
+    \operatorname{rect}\left( \frac{t-\tau}{T} \right)
+    p(t)\,p^*(t-\tau)\,dt.
 \]
-由于 \(rect\left( \frac{t}{T} \right) rect\left( \frac{t - \tau}{T} \right)\) 仅在区间交集
-\(
-I(\tau)=[-T/2,\,T/2]\cap[\tau-T/2,\,\tau+T/2]
-\)
-上为 1，可得
+不妨设 \(p(t)\) 为宽平稳随机过程，则其自相关函数\( R_p(\tau) = \mathrm{E}[p(t)p^*(t-\tau)] \) 仅与时间差 \(\tau\) 有关。由此可得近似
 \[
-    R_s(\tau)=
+    \begin{split}
+        R_s(\tau) & \approx R_p(\tau)
+        \lim_{T \rightarrow \infty } \frac{1}{T} \int_{-T/2}^{T/2}
+        \operatorname{rect}\left( \frac{t}{T} \right)
+        \operatorname{rect}\left( \frac{t-\tau}{T} \right) dt                      \\
+                  & = R_p(\tau)\, \operatorname{Tri}\left( \frac{\tau}{T} \right),
+    \end{split}
+\]
+其中 \(\operatorname{Tri}(\cdot)\) 为三角函数，定义为
+\[
+    \operatorname{Tri}(x) =
     \begin{cases}
-        \displaystyle
-        \int_{\max(-T/2,\;\tau-T/2)}^{\min(T/2,\;\tau+T/2)}
-        p(t)\,p^*(t-\tau)\,dt, & |\tau|<T,    \\[10pt]
-        0,                     & |\tau|\ge T.
+        1-|x|, & |x|\leq 1, \\
+        0,     & |x|>1.
     \end{cases}
 \]
-设\( p(t) \)的自相关函数为 \(R_p(\tau)=\mathbb{E}\{p(t)p^*(t-\tau)\}\)，其中 \( \mathbb{E}\{\cdot\} \) 表示对时间 \( t \) 的期望。则有
-则有
+
+这表明，脉冲压缩输出的脉冲形状近似为\( p(t) \)自相关函数与三角窗的乘积。而一个信号的自相关函数宽度取决于其带宽：带宽越大，自相关函数越窄，反之亦然。若假设 \(p(t)\) 的带宽为 \(B\)，则其自相关函数宽度约为 \(1/B\)。另一方面，若两个目标间的距离差为 \(\Delta R\)，则其回波经脉冲压缩后的时间间隔为 \(\tfrac{2\Delta R}{c}\)。因此，只有当\(\frac{2\Delta R}{c} > \frac{1}{B}\)时，两个脉冲才能有效区分。由此可见，脉冲压缩技术能够将雷达的距离分辨率提升至
 \[
-    \mathbb{E}\{R_s(\tau)\}
-    =R_p(\tau)\int_{-\infty}^{\infty} w(t)w(t-\tau)\,dt
-    =R_p(\tau)\,(T-|\tau|)_+,
+    \Delta R = \frac{c}{2B}.
 \]
-其中 \((x)_+=\max(x,0)\)；即期待的自相关为 \(R_p(\tau)\) 乘以三角窗。
+
+\cref{fig_mf}展示了不同低频包络信号及其脉冲压缩结果，从中可以发现信号带宽越大，脉冲压缩后的波形越尖锐。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/detection/mf1.tikz}
+        \includegraphics[width=.9\textwidth]{./img/detection/mf4.tikz}
+        \caption{复指数信号}
+        \label{fig_mf_1}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/detection/mf2.tikz}
+        \includegraphics[width=.9\textwidth]{./img/detection/mf5.tikz}
+        \caption{线性调频信号\( \kappa = 20 \)}
+        \label{fig_mf_2}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/detection/mf3.tikz}
+        \includegraphics[width=.9\textwidth]{./img/detection/mf6.tikz}
+        \caption{线性调频信号\( \kappa=100 \)}
+        \label{fig_mf_3}
+    \end{subfigure}
+    \caption{不同低频包络信号及其脉冲压缩结果}
+    \label{fig_mf}
+\end{figure}
+
+在\cref{eg_pc}中，我们已经证明，脉冲压缩所带来的信噪比提升倍数等于参考向量的长度 \(W\)。根据香农采样定理，采样率 \(f_s\) 至少应满足 \(f_s \geq 2B\)，其中 \(B\) 为信号带宽。因此，对于时宽为 \(T\) 的发射信号，其参考向量的采样点数至少为
+\[
+    W = f_s T \geq 2BT.
+\]
+这表明，脉冲压缩所获得的处理增益与发射信号的时宽和带宽的乘积（Time-Bandwidth Product）成正比。
 
 \section{脉冲积累}
+在实际应用中，对于部分微弱目标，即便是使用脉冲压缩技术，单次脉冲的信噪比仍然可能不足以实现有效检测。这时，可以通过脉冲积累（Pulse Integration）技术进一步提高信噪比。根据积累过程中是否保留信号的相位信息，可以分为两类：一类是直接对回波幅度或功率进行统计平均的非相干积累（Non-coherent Integration）；另一类则是对回波进行相位对齐后再叠加的相干积累（Coherent Integration）。前者实现简单，但积累增益有限；后者能够充分利用信号能量，但对相位同步的要求更高。
+
 \subsection{非相干积累}
+
 \subsection{相干积累}
 
 \section{目标检测}
 \subsection{虚警率与检测率}
 \subsection{门限选择与检测性能}
 \subsection{恒虚警率检测}
-
-

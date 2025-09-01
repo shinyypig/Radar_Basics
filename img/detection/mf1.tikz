@@ -1,0 +1,24 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xlabel=时间, ylabel=实部,
+            ticklabel style={font=\small},
+            xmin=-1,xmax=1,
+            ymin=-1, ymax=1,
+            xtick=\empty, ytick=\empty,
+            label style={font=\small},
+            grid,
+            width=6cm,height=3cm,
+            legend cell align=left,
+            legend style={
+                    anchor=north east,
+                    font=\tiny,
+                    draw=none,
+                    fill=none
+                }
+        ]
+        \addplot[
+            c1,
+            thick,
+        ] table[x=t, y=x1, col sep=comma] {./img/detection/pulse_compression_var.csv};
+    \end{axis}
+\end{tikzpicture}
