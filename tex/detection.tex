@@ -78,38 +78,35 @@
         \caption{脉冲压缩结果}
         \label{fig_pc_eg2}
     \end{figure}
-    不妨假设\( \bm{x}_i = A \bm{s} + \bm{n} \)刚好对应了某个回波信号，其中\( A \)为一个常数包含了信号的幅度和相位信息，\( \bm{n} \)为噪声向量，并假设噪声功率为\( \sigma^2 \)。不难得到原始回波数据的信噪比为
+
+    令\( A \)为回波对应的幅度与相位信息，并假设噪声的均值\( \mu_n \)为零，方差为\( \sigma_n^2 \)，则对于回波处的采样点，其均值为
     \[
-        \mathrm{SNR}_{\mathrm{a}} = \operatorname{E}\left[ \frac{|A|^2 \bm{s}^{\mathrm{H}} \bm{s}}{\bm{n}^{\mathrm{H}} \bm{n}} \right] = \frac{|A|^2 W}{\sigma^2 W} = \frac{|A|^2}{\sigma^2}.
+        \mu_s = \operatorname{E}[A s_k + n] = A s_k,
     \]
-    脉冲压缩后，其输出为
+    其中\( s_k \)为参考信号的第\( k \)个采样点， \( n \) 为噪声项。注意到，对于线性调频信号而言，归一化后的参考向量\( \bm{s} \in \mathbb{C}^{W \times 1} \)中的元素\( s_k \)的模值均为\( \frac{1}{\sqrt{W}} \)。因此，根据信噪比的定义\footnote{本书中，信噪比均采用偏转系数（Deflection Coefficient）定义，即\( SNR = \frac{|\mu_s - \mu_n|^2}{\sigma_n^2} \)，其中\( \mu_s \) 和 \( \mu_n \) 分别为目标和噪声的均值，\( \sigma_n^2 \) 为噪声的方差。当噪声均值为零时，偏转系数与经典信噪比形式一致。}，可以得到原始回波信号的信噪比为
     \[
-        \bm{x}_i^{\mathrm{H}} \bm{s} = A \bm{s}^{\mathrm{H}} \bm{s} + \bm{n}^{\mathrm{H}} \bm{s}.
-    \]
-    因此，脉压后的信噪比为
-    \[
-        \mathrm{SNR}_{\mathrm{b}} = \operatorname{E}\left[\frac{|A|^2 \bm{s}^{\mathrm{H}} \bm{s} \bm{s}^{\mathrm{H}} \bm{s} }{  \bm{s}^{\mathrm{H}} \bm{n}  \bm{n}^{\mathrm{H}} \bm{s} } \right] = \frac{|A|^2 W^2}{\sigma^2 \bm{s}^{\mathrm{H}}  \mathbf{I} \bm{s} } = \frac{|A|^2 W^2}{\sigma^2 W} = \frac{|A|^2 W}{\sigma^2}.
-    \]
-    因此，脉冲压缩后的信噪比提升为
-    \[
-        \frac{\mathrm{SNR}_{\mathrm{b}}}{\mathrm{SNR}_{\mathrm{a}}} = W.
+        \mathrm{SNR}_{a} = \frac{(\mu_s - \mu_n)^2}{\sigma^2} = \frac{|A s_k - 0|^2}{\sigma^2} = \frac{|A|^2}{\sigma^2 W}.
     \]
 
-    不妨令\( \bm{x}_i = A \bm{s} + \bm{n} \)刚好对应了某个回波信号，其中，常数 \(A\) 含有目标回波的幅度与相位信息，\(\bm{n}\) 为噪声向量，假设其方差为 \(\sigma^2\)。不难得到原始回波数据的信噪比为
+    不妨令向量\( \bm{x}_i = A \bm{s} + \bm{n}_i \)对应了目标的回波信号，其中\(\bm{n}_i\) 为噪声向量。那么脉压后，目标对应的尖值取值的均值为
     \[
-        \mathrm{SNR}_{\mathrm{a}} = \operatorname{E}\left[ \frac{\frac{1}{W}|A|^2 \bm{s}^{\mathrm{H}} \bm{s}}{\frac{1}{W}\bm{n}^{\mathrm{H}} \bm{n}} \right] = \frac{|A|^2}{W\sigma^2},
+        \mu_s = \operatorname{E}[\bm{x}_i^{\mathrm{H}} \bm{s}] = \operatorname{E}[(A \bm{s} + \bm{n}_i)^{\mathrm{H}} \bm{s}] = A \bm{s}^{\mathrm{H}} \bm{s} + \operatorname{E}[\bm{n}_i^{\mathrm{H}} \bm{s}] = A.
     \]
-    其中 \(W \) 为参考信号的长度。经过脉冲压缩处理后，输出为
+    与此同时，令\( \bm{x}_j = \bm{n}_j \)为噪声对应的向量，其不包含目标回波，则对应的脉压结果的均值为
     \[
-        \bm{x}_i^{\mathrm{H}} \bm{s} = A \bm{s}^{\mathrm{H}} \bm{s} + \bm{n}^{\mathrm{H}} \bm{s}.
+        \mu_n = \operatorname{E}[\bm{n}_j^{\mathrm{H}} \bm{s}] = 0,
     \]
-    则在峰值处的信噪比为
+    方差为
     \[
-        \mathrm{SNR}_{\mathrm{b}} = \operatorname{E}\left[\frac{|A|^2 \bm{s}^{\mathrm{H}} \bm{s} \bm{s}^{\mathrm{H}} \bm{s} }{  \bm{s}^{\mathrm{H}} \bm{n}  \bm{n}^{\mathrm{H}} \bm{s} } \right] = \frac{|A|^2}{\sigma^2 \bm{s}^{\mathrm{H}}  \mathbf{I} \bm{s} } = \frac{|A|^2}{\sigma^2} = \frac{|A|^2}{\sigma^2}.
+        \sigma^2 = \operatorname{E}[|\bm{n}_j^{\mathrm{H}} \bm{s} - 0|^2] = \operatorname{E}[\bm{s}^{\mathrm{H}} \bm{n}_j \bm{n}_j^{\mathrm{H}} \bm{s}] = \sigma^2 \bm{s}^{\mathrm{H}} \mathbf{I} \bm{s} = \sigma^2.
+    \]
+    因此，脉冲压缩后的信噪比为
+    \[
+        \mathrm{SNR}_{b} = \frac{|A-0|^2}{\sigma^2} = \frac{|A|^2}{\sigma^2}.
     \]
     综上，脉冲压缩的信噪比提升倍数为
     \[
-        \frac{\mathrm{SNR}_{\mathrm{b}}}{\mathrm{SNR}_{\mathrm{a}}} = W.
+        \frac{\mathrm{SNR}_{b}}{\mathrm{SNR}_{a}} = W.
     \]
 \end{solution}
 
@@ -150,10 +147,10 @@
 \]
 其自相关函数为
 \[
-    R_s(\tau) = \operatorname{E}\left[ s(t)\,s^*(t-\tau)\right]
+    R_s(\tau) = \operatorname{E}\left[ s(t)s^*(t-\tau)\right]
     = \lim_{T \rightarrow \infty } \frac{1}{T} \int_{-T/2}^{T/2} \operatorname{rect}\left( \frac{t}{T} \right)
     \operatorname{rect}\left( \frac{t-\tau}{T} \right)
-    p(t)\,p^*(t-\tau)\,dt.
+    p(t)p^*(t-\tau)dt.
 \]
 不妨设 \(p(t)\) 为宽平稳随机过程，则其自相关函数\( R_p(\tau) = \mathrm{E}[p(t)p^*(t-\tau)] \) 仅与时间差 \(\tau\) 有关。由此可得近似
 \[
@@ -161,8 +158,8 @@
         R_s(\tau) & \approx R_p(\tau)
         \lim_{T \rightarrow \infty } \frac{1}{T} \int_{-T/2}^{T/2}
         \operatorname{rect}\left( \frac{t}{T} \right)
-        \operatorname{rect}\left( \frac{t-\tau}{T} \right) dt                      \\
-                  & = R_p(\tau)\, \operatorname{Tri}\left( \frac{\tau}{T} \right),
+        \operatorname{rect}\left( \frac{t-\tau}{T} \right) dt                    \\
+                  & = R_p(\tau) \operatorname{Tri}\left( \frac{\tau}{T} \right),
     \end{split}
 \]
 其中 \(\operatorname{Tri}(\cdot)\) 为三角函数，定义为
@@ -174,7 +171,7 @@
     \end{cases}
 \]
 
-这表明，脉冲压缩输出的脉冲形状近似为\( p(t) \)自相关函数与三角窗的乘积。而一个信号的自相关函数宽度取决于其带宽：带宽越大，自相关函数越窄，反之亦然。若假设 \(p(t)\) 的带宽为 \(B\)，则其自相关函数宽度约为 \(1/B\)。另一方面，若两个目标间的距离差为 \(\Delta R\)，则其回波经脉冲压缩后的时间间隔为 \(\tfrac{2\Delta R}{c}\)。因此，只有当\(\frac{2\Delta R}{c} > \frac{1}{B}\)时，两个脉冲才能有效区分。由此可见，脉冲压缩技术能够将雷达的距离分辨率提升至
+这表明，脉冲压缩输出的脉冲形状近似为\( p(t) \)自相关函数与三角窗的乘积。而一个信号的自相关函数宽度取决于其带宽：带宽越大，自相关函数越窄，反之亦然。若假设 \(p(t)\) 的带宽为 \(B\)，则其自相关函数宽度约为 \(1/B\)。另一方面，若两个目标间的距离差为 \(\Delta R\)，则其回波经脉冲压缩后的时间间隔为 \(\frac{2\Delta R}{c}\)。因此，只有当\(\frac{2\Delta R}{c} > \frac{1}{B}\)时，两个脉冲才能有效区分。由此可见，脉冲压缩技术能够将雷达的距离分辨率提升至
 \[
     \Delta R = \frac{c}{2B}.
 \]
@@ -215,13 +212,83 @@
 这表明，脉冲压缩所获得的处理增益与发射信号的时宽和带宽的乘积（Time-Bandwidth Product）成正比。
 
 \section{脉冲积累}
-在实际应用中，对于部分微弱目标，即便是使用脉冲压缩技术，单次脉冲的信噪比仍然可能不足以实现有效检测。这时，可以通过脉冲积累（Pulse Integration）技术进一步提高信噪比。根据积累过程中是否保留信号的相位信息，可以分为两类：一类是直接对回波幅度或功率进行统计平均的非相干积累（Non-coherent Integration）；另一类则是对回波进行相位对齐后再叠加的相干积累（Coherent Integration）。前者实现简单，但积累增益有限；后者能够充分利用信号能量，但对相位同步的要求更高。
+在实际应用中，对于部分微弱目标，即便采用脉冲压缩技术，单次脉冲的信噪比仍可能不足以实现有效检测。此时，可以借助脉冲积累（Pulse Integration）进一步提升信噪比。根据积累过程中是否保留信号的相位信息，脉冲积分类方法可分为两类：其一是对回波进行相位对齐后再叠加的相干积累（Coherent Integration）；其二是直接对回波幅度或功率进行统计平均的非相干积累（Non-coherent Integration）。前者能够充分利用信号能量，但对相位同步精度要求较高；后者实现简便，但积累增益有限。
 
-\subsection{非相干积累}
+设多普勒雷达系统共发射 \( P \) 个脉冲，并且场景中仅存在一个目标。则脉冲压缩后第 \( p \) 个脉冲对应的尖峰输出为
+\[
+    y_p = A e^{j \varphi_p} + n_p,
+\]
+其中 \( A \) 表示目标的幅度与相位信息，\(\varphi_p\) 为第 \( p \) 个脉冲带来的额外相位，\( n_p \) 为服从方差为\( \sigma^2 \)的复高斯分布的随机变量，即\( n_p \sim \mathcal{CN}(0,\sigma^2) \)。此外，噪声处对应的脉冲压缩输出记为 \( w_p \)，其与 \( n_p \) 独立同分布。则单脉冲信噪比为
+\[
+    \mathrm{SNR}_s
+    = \frac{\left| \operatorname{E}(y_p) - \operatorname{E}(w_p) \right|^2}{\sigma^2}
+    = \frac{|A|^2}{\sigma^2}.
+\]
 
-\subsection{相干积累}
+相干积累的基本思想是对各脉冲进行相位补偿后再叠加，得到输出
+\[
+    y_{\mathrm{ci}} = \sum_{p=1}^P y_p e^{-j \varphi_p} = PA + \sum_{p=1}^P n_p e^{-j \varphi_p}.
+\]
+相应的噪声输出为
+\[
+    w_{\mathrm{ci}} = \sum_{p=1}^P w_p e^{-j \varphi_p}.
+\]
+因此，相干积累后目标的均值为
+\[
+    \operatorname{E}[y_{\mathrm{ci}}] = PA + \operatorname{E}\left[ \sum_{p=1}^P n_p e^{-j \varphi_p} \right] = PA,
+\]
+噪声的均值为
+\[
+    \operatorname{E}[w_{\mathrm{ci}}] = \sum_{p=1}^P \operatorname{E}[w_p] e^{-j \varphi_p} = 0.
+\]
+由于各个噪声项相互独立，因此其方差为
+\[
+    \operatorname{Var}[w_{\mathrm{ci}}] =\operatorname{Var}\left[\sum_{p=1}^P w_p e^{-j \varphi_p} \right] = \sum_{p=1}^P \operatorname{Var}[w_p] = P \sigma^2.
+\]
+由此可得相干积累后的信噪比为
+\[
+    \mathrm{SNR}_{\mathrm{ci}} = \frac{|PA|^2}{P \sigma^2} = \frac{P|A|^2}{\sigma^2}.
+\]
+
+这表明，当有\( P \)个脉冲时，通过相干积累可以将信噪比提升至原来的\( P \)倍。但相干积累要求能够精确地对齐各个脉冲的相位，这在实际应用中可能会难以实现。此时，可以考虑非相干积累的方法，其思想是直接对回波幅度平方进行累加，即
+\[
+    y_{\mathrm{nci}} = \sum_{p=1}^P |y_p|^2 = \sum_{p=1}^P \left| A e^{j \varphi_p} + n_p \right|^2.
+\]
+对应的噪声输出为
+\[
+    w_{\mathrm{nci}} = \sum_{p=1}^P |w_p|^2.
+\]
+计算可得
+\[
+    \begin{split}
+        \operatorname{E}[y_{\mathrm{nci}}] & = \sum_{p=1}^P \operatorname{E}\left[ |A e^{j \varphi_p} + n_p|^2 \right] = \sum_{p=1}^P \operatorname{E} \left[ |A|^2 + |n_p|^2 + A e^{j \varphi_p} \overline{n}_p + \overline{A} e^{-j \varphi_p} n_p \right] \\
+                                           & = \sum_{p=1}^P \left( |A|^2 + \operatorname{E}[|n_p|^2] \right)                                                                                                                                                 \\
+                                           & = P |A|^2 + P \sigma^2.
+    \end{split}
+\]
+由于复高斯噪声的模平方服从均值为\( \sigma^2 \)、方差为\( \sigma^4 \)的指数分布。因此，非相干积累后噪声的均值为
+\[
+    \begin{split}
+        \operatorname{E}[w_{\mathrm{nci}}] & = \sum_{p=1}^P \operatorname{E}\left[ |w_p|^2 \right] = P \sigma^2.
+    \end{split}
+\]
+同样，因为\( |w_p|^2 \)之间互相独立，所以噪声的方差为
+\[
+    \operatorname{Var}[w_{\mathrm{nci}}] = \operatorname{Var}\left[ \sum_{p=1}^P |w_p|^2\right] = \sum_{p=1}^P \operatorname{Var}\left[ |w_p|^2\right] = P \sigma^4.
+\]
+由此可得非相干积累后的信噪比为
+\[
+    \mathrm{SNR}_{\mathrm{nci}} = \frac{|P |A|^2 + P \sigma^2 - P \sigma^2|^2}{P \sigma^4} = \frac{P |A|^4}{\sigma^4}.
+\]
+注意到，非相干积累的输出实质上是各脉冲回波幅度平方的累加，因此在定义信噪比时，通常再取平方根作为最终结果：
+\[
+    \mathrm{SNR}_{\mathrm{nci}} = \frac{\sqrt{P} |A|^2}{\sigma^2}.
+\]
+
+综上所述，相干积累的增益为 \( P \) 倍，而非相干积累的增益仅为 \(\sqrt{P}\) 倍。前者理论增益更大，但实现上对相位同步的依赖更为苛刻；后者实现简单，因而在工程上被广泛采用。
 
 \section{目标检测}
 \subsection{虚警率与检测率}
 \subsection{门限选择与检测性能}
 \subsection{恒虚警率检测}
+
