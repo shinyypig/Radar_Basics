@@ -468,13 +468,66 @@
 \]
 其中\( \Phi(\cdot) \)为标准正态分布的累积分布函数
 \[
-    \Phi(x) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{x} e^{-\frac{t^2}{2}} dt
+    \Phi(x) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{x} e^{-\frac{t^2}{2}} dt.
 \]
-对\( a(\gamma) \)求导，得到
+方便起见，记标准正态分布的概率密度函数为
 \[
-    a'(\gamma) = P_{0} p_{0}(\gamma) - P_{1} p_{1}(\gamma) = 0
+    \phi(x) = \Phi'(x) = \frac{1}{\sqrt{2\pi}} e^{-\frac{x^2}{2}}.
 \]
-并令其为零，可以得到最优检测门限为
+此时，目标和噪声的概率密度函数分别为
+\[
+    p_0(x) = \frac{1}{\sigma}\phi\left( \frac{x - \mu_n}{\sigma} \right), \quad p_1(x) = \frac{1}{\sigma}\phi\left( \frac{x - \mu_s}{\sigma} \right).
+\]
+注意到对\( \Phi\left( \frac{\gamma - \mu_n}{\sigma} \right) \)求导有
+\[
+    \frac{d}{d\gamma} \Phi\left( \frac{\gamma - \mu_n}{\sigma} \right) = \frac{1}{\sigma}\phi\left( \frac{\gamma - \mu_n}{\sigma} \right) = p_0(\gamma),
+\]
+因此\( a(\gamma) \)关于\( \gamma \)的导数为
+\[
+    a'(\gamma) = P_{0} p_{0}(\gamma) - P_{1} p_{1}(\gamma).
+\]
+并令其为零，得到
+\[
+    \gamma = \frac{\mu_s^2 - \mu_n^2 + 2\sigma^2 \ln\frac{P_0}{P_1}}{2(\mu_s - \mu_n)}.
+\]
+如\cref{fig_dect_th}所示，最优检测门限对应于两条概率密度函数在出现概率加权后的交点，其横坐标即为最优阈值。此外，图中红色区域面积等于\( P_{tp} \)，蓝色区域面积等于\( P_{tn} \)。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                xmin=-6, xmax=6,
+                ymin=0, ymax=0.4,
+                xtick=\empty, ytick=\empty,
+                width=8cm, height=4cm,
+                grid=both,
+                clip=false,
+            ]
+
+            % 第一条曲线 (加 name path=A)
+            \addplot[name path=a, domain=-6:6, samples=200, thick, c1] {exp(-(x + 1)^2/2)/sqrt(2*pi)};
+
+            % 第二条曲线 (加 name path=B)
+            \addplot[name path=b, domain=-6:6, samples=200, thick, c2] {0.5*exp(-(x-1)^2/2)/sqrt(2*pi)};
+
+            % % 基准线 (x 轴右侧部分)
+            \path[name path=axis1] (axis cs:0.35,0) -- (axis cs:6,0);
+            \path[name path=axis2] (axis cs:-6,0) -- (axis cs:0.35,0);
+
+            % % 填充曲线 B 下方 (x>=0.35)
+            \addplot[c2!60, opacity=0.5] fill between[of=b and axis1, soft clip={domain=0.35:6}];
+
+            % % 填充曲线 A 下方 (x>=1.5)
+            \addplot[c1!60, opacity=0.5] fill between[of=a and axis2, soft clip={domain=-6:0.35}];
+
+            % % 竖线
+            \addplot[dashed, thick, black] coordinates {(0.35,0) (0.35,0.15)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{最优检测门限示意图}
+    \label{fig_dect_th}
+\end{figure}
 
 \subsection{恒虚警率检测}
+在雷达信号检测中，单纯追求检测准确率最大化并不一定合理。因为在实际应用中，目标出现的概率往往极低，如果仅以准确率为准则，检测器可能会倾向于判定“无目标”，从而错失真实目标。因此，工程实践中更希望在容忍一定虚警的前提下，尽可能保证目标被探测到。然而，若虚警率过高，又会导致大量无效告警，造成资源浪费。为此，引入了恒虚警率（Constant False Alarm Rate, CFAR）检测方法：通过预先设定一个可接受的虚警率，并自适应地调整检测门限，使得虚警率始终维持在设定水平以内。
 
