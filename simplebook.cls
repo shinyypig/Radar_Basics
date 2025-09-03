@@ -1383,15 +1383,9 @@
 \usepgfplotslibrary{patchplots}
 \usetikzlibrary{arrows.meta,angles,quotes,calc}
 \usetikzlibrary{decorations.markings}
+\usepgfplotslibrary{fillbetween}
 \pgfplotsset{compat=newest}
-\pgfplotsset{
-    layers/my layer set/.define layer set={
-            background,
-            main,
-            foreground
-        }{},
-    set layers=my layer set,
-}
+\pgfplotsset{set layers}
 \usetikzlibrary{matrix,calc}
 \RequirePackage{pgfplotstable}
 

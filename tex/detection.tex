@@ -65,7 +65,7 @@
     对\cref{fig_pc_eg1}中的接收信号进行匹配滤波处理。
     \begin{figure}[htb!]
         \centering
-        \includegraphics[width=.6\textwidth]{./img/detection/pc_eg1.tikz}
+        \includegraphics[width=.45\textwidth]{./img/detection/pc_eg1.tikz}
         \caption{接收信号示意图（仅绘制了实部）}
         \label{fig_pc_eg1}
     \end{figure}
@@ -74,7 +74,7 @@
     从原始回波信号可以看出，噪声干扰较为明显。若仅依靠脉冲的上升沿进行判别，只能大致识别出两个目标回波。而经过匹配滤波处理后，不仅能够清晰地区分出三个目标回波，而且噪声得到了有效抑制，其结果如\cref{fig_pc_eg2}所示。由于匹配滤波能够将宽脉冲在时域中压缩为尖锐的脉冲峰，这一过程通常也被称为脉冲压缩。
     \begin{figure}[htb!]
         \centering
-        \includegraphics[width=.6\textwidth]{./img/detection/pc_eg2.tikz}
+        \includegraphics[width=.45\textwidth]{./img/detection/pc_eg2.tikz}
         \caption{脉冲压缩结果}
         \label{fig_pc_eg2}
     \end{figure}
@@ -225,70 +225,256 @@
     = \frac{|A|^2}{\sigma^2}.
 \]
 
-相干积累的基本思想是对各脉冲进行相位补偿后再叠加，得到输出
+相干积累的基本思想是对各脉冲进行相位补偿后再求平均，因此目标对应的输出为
 \[
-    y_{\mathrm{ci}} = \sum_{p=1}^P y_p e^{-j \varphi_p} = PA + \sum_{p=1}^P n_p e^{-j \varphi_p}.
+    y_{\mathrm{ci}} = \frac{1}{P} \sum_{p=1}^P y_p e^{-j \varphi_p} = A + \frac{1}{P} \sum_{p=1}^P n_p e^{-j \varphi_p}.
 \]
 相应的噪声输出为
 \[
-    w_{\mathrm{ci}} = \sum_{p=1}^P w_p e^{-j \varphi_p}.
+    w_{\mathrm{ci}} = \frac{1}{P} \sum_{p=1}^P w_p e^{-j \varphi_p}.
 \]
 因此，相干积累后目标的均值为
 \[
-    \operatorname{E}[y_{\mathrm{ci}}] = PA + \operatorname{E}\left[ \sum_{p=1}^P n_p e^{-j \varphi_p} \right] = PA,
+    \operatorname{E}[y_{\mathrm{ci}}] = A + \operatorname{E}\left[ \frac{1}{P} \sum_{p=1}^P n_p e^{-j \varphi_p} \right] = A,
 \]
 噪声的均值为
 \[
-    \operatorname{E}[w_{\mathrm{ci}}] = \sum_{p=1}^P \operatorname{E}[w_p] e^{-j \varphi_p} = 0.
+    \operatorname{E}[w_{\mathrm{ci}}] = \frac{1}{P} \sum_{p=1}^P \operatorname{E}[w_p] e^{-j \varphi_p} = 0.
 \]
 由于各个噪声项相互独立，因此其方差为
 \[
-    \operatorname{Var}[w_{\mathrm{ci}}] =\operatorname{Var}\left[\sum_{p=1}^P w_p e^{-j \varphi_p} \right] = \sum_{p=1}^P \operatorname{Var}[w_p] = P \sigma^2.
+    \operatorname{Var}[w_{\mathrm{ci}}] =\operatorname{Var}\left[\frac{1}{P}\sum_{p=1}^P w_p e^{-j \varphi_p} \right] = \frac{1}{P^2}\sum_{p=1}^P \operatorname{Var}[w_p] = \frac{\sigma^2}{P}.
 \]
 由此可得相干积累后的信噪比为
 \[
-    \mathrm{SNR}_{\mathrm{ci}} = \frac{|PA|^2}{P \sigma^2} = \frac{P|A|^2}{\sigma^2}.
+    \mathrm{SNR}_{\mathrm{ci}} = \frac{|A - 0|^2}{\frac{\sigma^2}{P}} = \frac{P|A|^2}{\sigma^2}.
 \]
 
-这表明，当有\( P \)个脉冲时，通过相干积累可以将信噪比提升至原来的\( P \)倍。但相干积累要求能够精确地对齐各个脉冲的相位，这在实际应用中可能会难以实现。此时，可以考虑非相干积累的方法，其思想是直接对回波幅度平方进行累加，即
+这表明，当有\( P \)个脉冲时，通过相干积累可以将信噪比提升至原来的\( P \)倍。但相干积累要求能够精确地对齐各个脉冲的相位，这在实际应用中可能会难以实现。此时，可以考虑非相干积累的方法，其思想是直接对回波的模值平方取平均，即
 \[
-    y_{\mathrm{nci}} = \sum_{p=1}^P |y_p|^2 = \sum_{p=1}^P \left| A e^{j \varphi_p} + n_p \right|^2.
+    y_{\mathrm{nci}} = \frac{1}{P} \sum_{p=1}^P |y_p|^2 = \frac{1}{P} \sum_{p=1}^P \left| A e^{j \varphi_p} + n_p \right|^2.
 \]
 对应的噪声输出为
 \[
-    w_{\mathrm{nci}} = \sum_{p=1}^P |w_p|^2.
+    w_{\mathrm{nci}} = \frac{1}{P} \sum_{p=1}^P |w_p|^2.
 \]
 计算可得
 \[
     \begin{split}
-        \operatorname{E}[y_{\mathrm{nci}}] & = \sum_{p=1}^P \operatorname{E}\left[ |A e^{j \varphi_p} + n_p|^2 \right] = \sum_{p=1}^P \operatorname{E} \left[ |A|^2 + |n_p|^2 + A e^{j \varphi_p} \overline{n}_p + \overline{A} e^{-j \varphi_p} n_p \right] \\
-                                           & = \sum_{p=1}^P \left( |A|^2 + \operatorname{E}[|n_p|^2] \right)                                                                                                                                                 \\
-                                           & = P |A|^2 + P \sigma^2.
+        \operatorname{E}[y_{\mathrm{nci}}] & = \frac{1}{P} \sum_{p=1}^P \operatorname{E}\left[ |A e^{j \varphi_p} + n_p|^2 \right] = \frac{1}{P} \sum_{p=1}^P \operatorname{E} \left[ |A|^2 + |n_p|^2 + A e^{j \varphi_p} \overline{n}_p + \overline{A} e^{-j \varphi_p} n_p \right] \\
+                                           & = \frac{1}{P} \sum_{p=1}^P \left( |A|^2 + \operatorname{E}[|n_p|^2] \right)                                                                                                                                                             \\
+                                           & = |A|^2 + \sigma^2.
     \end{split}
 \]
 由于复高斯噪声的模平方服从均值为\( \sigma^2 \)、方差为\( \sigma^4 \)的指数分布。因此，非相干积累后噪声的均值为
 \[
     \begin{split}
-        \operatorname{E}[w_{\mathrm{nci}}] & = \sum_{p=1}^P \operatorname{E}\left[ |w_p|^2 \right] = P \sigma^2.
+        \operatorname{E}[w_{\mathrm{nci}}] & =\frac{1}{P}  \sum_{p=1}^P \operatorname{E}\left[ |w_p|^2 \right] = \sigma^2.
     \end{split}
 \]
 同样，因为\( |w_p|^2 \)之间互相独立，所以噪声的方差为
 \[
-    \operatorname{Var}[w_{\mathrm{nci}}] = \operatorname{Var}\left[ \sum_{p=1}^P |w_p|^2\right] = \sum_{p=1}^P \operatorname{Var}\left[ |w_p|^2\right] = P \sigma^4.
+    \operatorname{Var}[w_{\mathrm{nci}}] = \operatorname{Var}\left[ \frac{1}{P} \sum_{p=1}^P |w_p|^2\right] = \frac{1}{P^2}\sum_{p=1}^P \operatorname{Var}\left[ |w_p|^2\right] = \frac{\sigma^4}{P}.
 \]
 由此可得非相干积累后的信噪比为
 \[
-    \mathrm{SNR}_{\mathrm{nci}} = \frac{|P |A|^2 + P \sigma^2 - P \sigma^2|^2}{P \sigma^4} = \frac{P |A|^4}{\sigma^4}.
+    \mathrm{SNR}_{\mathrm{nci}} = \frac{\left||A|^2 + \sigma^2 - \sigma^2\right|^2}{\frac{\sigma^4}{P}} = \frac{P |A|^4}{\sigma^4}.
 \]
 注意到，非相干积累的输出实质上是各脉冲回波幅度平方的累加，因此在定义信噪比时，通常再取平方根作为最终结果：
 \[
     \mathrm{SNR}_{\mathrm{nci}} = \frac{\sqrt{P} |A|^2}{\sigma^2}.
 \]
+与此同时，也往往令非相干积累的输出为
+\[
+    y_{\mathrm{nci}} = \sqrt{\frac{1}{P} \sum_{p=1}^P |y_p|^2},
+\]
+从而保持与原始脉冲以及相干积累结果的可比性。
 
 综上所述，相干积累的增益为 \( P \) 倍，而非相干积累的增益仅为 \(\sqrt{P}\) 倍。前者理论增益更大，但实现上对相位同步的依赖更为苛刻；后者实现简单，因而在工程上被广泛采用。
 
+\cref{fig_ci_eg}展示了 10 个脉冲和 100 个脉冲积累的结果。可以看到，相干积累能够有效抑制噪声，使目标更加突出；而非相干积累虽然同样降低了噪声的方差，但会同时抬高噪声的均值。当脉冲数量增加时，脉冲积累的效果愈发明显。总体而言，相较于单个脉冲，这两种积累方式均能显著削弱噪声干扰，从而凸显目标回波。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.7\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/detection/ci_eg.tikz}
+        \caption{\( P = 10 \)}
+        \label{fig_ci_eg_1}
+    \end{subfigure}
+    \begin{subfigure}{.7\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/detection/ci_eg2.tikz}
+        \caption{\( P = 100 \)}
+        \label{fig_ci_eg_2}
+    \end{subfigure}
+    \caption{脉冲积累示意图}
+    \label{fig_ci_eg}
+\end{figure}
+
 \section{目标检测}
-\subsection{虚警率与检测率}
+
+在完成脉冲压缩与脉冲积累后，雷达系统需要对处理后的信号进行目标检测，以区分目标回波与噪声或杂波。目标检测通常被建模为一个二选一的假设检验问题，即在给定观测数据的情况下，判断其是来自仅含噪声（记作\( H_0 \)）还是包含目标（记作 \( H_1 \)）。基于统计决策理论，可以设计各种检测算法以优化检测性能。
+
 \subsection{门限选择与检测性能}
+在介绍检测算法之前，有必要先定义一些关键指标，以便更好地评估检测性能。对于二元假设检验问题，我们可以将检测结果分为四类：
+\begin{enumerate}
+    \item 真阳性（True Positive，TP）：正确地将目标判定为目标。
+    \item 假阳性（False Positive，FP）：错误地将噪声判定为目标。
+    \item 真阴性（True Negative，TN）：正确地将噪声判定为噪声。
+    \item 假阴性（False Negative，FN）：错误地将目标判定为噪声。
+\end{enumerate}
+不妨令\( P_{tp}, P_{fp}, P_{tn}, P_{fn} \) 分别表示检测器的真阳性、假阳性、真阴性和假阴性的概率。不难推导，目标出现的概率为
+\[
+    P_{1} = P_{tp} + P_{fn},
+\]
+而噪声出现的概率为
+\[
+    P_{0} = P_{fp} + P_{tn}.
+\]
+并且有\( P_{0} + P_{1} = P_{tp} + P_{fp} + P_{tn} + P_{fn} = 1 \)。
+
+检测率（Detection Rate，DR）是指在存在目标的情况下，正确地检测到目标的概率，其定义为
+\[
+    P_d = \frac{P_{tp}}{P_{tp} + P_{fn}}
+\]
+虚警率（False Alarm Rate，FAR）是指在仅含噪声的情况下，错误地将噪声判定为目标的概率，其定义为
+\[
+    P_{fa} = \frac{P_{fp}}{P_{fp} + P_{tn}}
+\]
+
+在大部分情况下，检测率（DR）与虚警率（FAR）之间存在一定的权衡关系。降低门限可以提高检测率，但噪声会更容易地被误判为目标，从而导致虚警率上升。因此，在实际应用中，需要根据具体场景和需求，合理选择检测门限，以达到最佳的检测性能。
+
+以高斯分布为例，考虑如下二元假设检验模型：
+\[
+    \begin{cases}
+        H_0:~ x \sim \mathcal{N}(\mu_n, \sigma^2), & \text{仅含噪声的情形},   \\
+        H_1:~ x \sim \mathcal{N}(\mu_s, \sigma^2), & \text{包含目标回波的情形}.
+    \end{cases}
+\]
+对应的概率密度函数如\cref{fig_dect_prob}所示，其中虚线代表检测门限，蓝色区域面积为虚警率，红色区域面积为检测率。
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=.4\textwidth]{./img/detection/roc_1.tikz}
+    \caption{二元假设检验的概率密度函数}
+    \label{fig_dect_prob}
+\end{figure}
+
+注意到，每一个检测门限都对应一对虚警率和检测率，因此通过连续调整检测门限，可以得到一条虚警率与检测率之间的关系曲线，称为接收操作特性（Receiver Operating Characteristic，ROC）曲线。当\( \mu_s - \mu_n = 1 \)，\( \sigma^2 = 1 \)时，ROC曲线如\cref{fig_roc_curve_1}所示。
+
+\begin{figure}[htb!]
+    \centering
+    % \includegraphics[width=.4\textwidth]{./img/detection/}
+    \begin{tikzpicture}[scale=0.7]
+        \begin{axis}[
+                xlabel=虚警率, ylabel=检测率,
+                ticklabel style={font=\small},
+                label style={font=\small},
+                grid, xmin=0, xmax=1, ymin=0, ymax=1, axis equal image,
+                legend cell align=left,
+                legend style={
+                        anchor=north east,
+                        font=\tiny,
+                        draw=none,
+                        fill=none
+                    }
+            ]
+            \addplot[
+                c1,
+                thick,
+            ] table[x=x1, y=y1, col sep=comma] {./img/detection/roc_curves.csv};
+            \addplot[black, dashed, thick] coordinates {(0,0) (1,1)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{ROC曲线示例}
+    \label{fig_roc_curve_1}
+\end{figure}
+
+不难看出，ROC 曲线越靠近左上角，检测性能就越优。这意味着在较低虚警率的条件下，仍能获得较高的检测率。理想状态下，最优的检测器应当在虚警率为零时即可实现检测率为一，即达到完美检测的效果。相反，最差的情形是 ROC 曲线与 \cref{fig_roc_curve_1} 中的虚线完全重合，此时检测器的表现与随机猜测无异，说明目标与噪声的概率分布完全重叠。
+
+进一步地，对于目标和噪声都服从相同方差的高斯分布来说，检测性能主要受均值差\( \mu_s - \mu_n \)和方差\(\sigma^2\)的影响。均值差越大，方差越小，越容易区分目标和噪声，检测性能也就越好。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.4\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/detection/roc_2.tikz}
+        \caption{\( \mu_s - \mu_n = 2, \sigma = 1 \)}
+        \label{fig_dect_prob_2_1}
+    \end{subfigure}
+    \begin{subfigure}{.4\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/detection/roc_3.tikz}
+        \caption{\( \mu_s - \mu_n = 1, \sigma = 0.5 \)}
+        \label{fig_dect_prob_2_2}
+    \end{subfigure}
+    \caption{不同均值差和方差下的二元假设检验概率密度函数}
+    \label{fig_dect_prob_2}
+\end{figure}
+
+事实上，可以证明，在高斯分布的假设下，ROC曲线仅受\( \frac{(\mu_s - \mu_n)^2}{\sigma^2} \)的影响，而\( \frac{(\mu_s - \mu_n)}{\sigma^2} \)正是本书所采用的信噪比定义。由此可见信噪比越大，ROC曲线越靠近左上角，检测性能越好，如\cref{fig_roc_curves}所示。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{tikzpicture}[scale=0.7]
+        \begin{axis}[
+                xlabel=虚警率, ylabel=检测率,
+                ticklabel style={font=\small},
+                label style={font=\small},
+                grid, xmin=0, xmax=1, ymin=0, ymax=1, axis equal image,
+                legend cell align=left,
+                legend style={
+                        at={(1.4,0.5)},
+                        font=\tiny,
+                        draw=none,
+                        fill=none
+                    }
+            ]
+            \addplot[
+                c1,
+                thick,
+            ] table[x=x1, y=y1, col sep=comma] {./img/detection/roc_curves.csv};
+            \addlegendentry{SNR = 1}
+            \addplot[
+                c2,
+                thick,
+            ] table[x=x2, y=y2, col sep=comma] {./img/detection/roc_curves.csv};
+            \addlegendentry{SNR = 4}
+            \addplot[
+                c3,
+                thick,
+            ] table[x=x3, y=y3, col sep=comma] {./img/detection/roc_curves.csv};
+            \addlegendentry{SNR = 9}
+            \addplot[
+                c4,
+                thick,
+            ] table[x=x4, y=y4, col sep=comma] {./img/detection/roc_curves.csv};
+            \addlegendentry{SNR = 16}
+            \addplot[black, dashed, thick] coordinates {(0,0) (1,1)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{不同信噪比下的ROC曲线}
+    \label{fig_roc_curves}
+\end{figure}
+
+在信噪比固定的情况下，该如何选择最优的检测门限呢？一种常见的方法是令总体检测准确率（Accuracy）\( P_{tp} + P_{tn} \)最大化。不妨令检测门限为\( \gamma \)，则有检测准确率为
+\[
+    a(\gamma) = P_{tp}(\gamma) + P_{tn}(\gamma) =  P_{0} \int_{-\infty}^{\gamma} p_{0}(x) dx + P_{1} \int_{\gamma}^{\infty} p_{1}(x) dx,
+\]
+其中\( p_0 \)和\( p_1 \)分别是目标和噪声的概率密度函数。以高斯分布为例，\( a(\gamma) \)可以表示为
+\[
+    a(\gamma) = P_{0} \Phi\left( \frac{\gamma - \mu_n}{\sigma} \right) + P_{1} \left[ 1 - \Phi\left( \frac{\gamma - \mu_s}{\sigma} \right) \right],
+\]
+其中\( \Phi(\cdot) \)为标准正态分布的累积分布函数
+\[
+    \Phi(x) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{x} e^{-\frac{t^2}{2}} dt
+\]
+对\( a(\gamma) \)求导，得到
+\[
+    a'(\gamma) = P_{0} p_{0}(\gamma) - P_{1} p_{1}(\gamma) = 0
+\]
+并令其为零，可以得到最优检测门限为
+
 \subsection{恒虚警率检测}
 

@@ -1,0 +1,29 @@
+\begin{tikzpicture}
+    \begin{axis}[
+            xmin=-6, xmax=6,
+            ymin=0, ymax=0.8,
+            xtick=\empty, ytick=\empty,
+            width=8cm, height=4cm,
+            grid=both,
+            clip=false,
+        ]
+
+        % 第一条曲线 (加 name path=A)
+        \addplot[name path=a, domain=-6:6, samples=200, thick, c1] {exp(-(x + 0.5)^2*2)/sqrt(2*pi)*2};
+
+        % 第二条曲线 (加 name path=B)
+        \addplot[name path=b, domain=-6:6, samples=200, thick, c2] {exp(-(x-0.5)^2*2)/sqrt(2*pi)*2};
+
+        % % % 基准线 (x 轴右侧部分)
+        % \path[name path=xaxis] (axis cs:1.5,0) -- (axis cs:6,0);
+
+        % % % 填充曲线 B 下方 (x>=1.5)
+        % \addplot[c2!60, opacity=0.5] fill between[of=b and xaxis, soft clip={domain=1.5:6}];
+
+        % % % 填充曲线 A 下方 (x>=1.5)
+        % \addplot[c1!60, opacity=0.5] fill between[of=a and xaxis, soft clip={domain=1.5:6}];
+
+        % % % 竖线
+        % \addplot[dashed, thick, black] coordinates {(1.5,0) (1.5,0.107981933)};
+    \end{axis}
+\end{tikzpicture}
