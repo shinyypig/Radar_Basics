@@ -176,7 +176,7 @@
     \Delta R = \frac{c}{2B}.
 \]
 
-\cref{fig_mf}展示了不同低频包络信号及其脉冲压缩结果，从中可以发现信号带宽越大，脉冲压缩后的波形越尖锐。
+\cref{fig_mf} 展示了不同低频包络信号及其脉冲压缩结果。可以看到，随着信号带宽的增加，压缩后的波形变得更加尖锐。但需要注意的是，脉冲压缩输出的尖峰仍具有一定的宽度，其中最高的部分称为主瓣（Mainlobe），而其余较低的部分则称为旁瓣（Sidelobe）。
 
 \begin{figure}[htb!]
     \centering
@@ -266,7 +266,7 @@
                                            & = |A|^2 + \sigma^2.
     \end{split}
 \]
-由于复高斯噪声的模平方服从均值为\( \sigma^2 \)、方差为\( \sigma^4 \)的指数分布。因此，非相干积累后噪声的均值为
+由于复高斯噪声的模平方服从均值为\( \sigma^2 \)、方差为\( \sigma^4 \)的指数分布（Exponential Distribution）。因此，非相干积累后噪声的均值为
 \[
     \begin{split}
         \operatorname{E}[w_{\mathrm{nci}}] & =\frac{1}{P}  \sum_{p=1}^P \operatorname{E}\left[ |w_p|^2 \right] = \sigma^2.
@@ -531,3 +531,167 @@
 \subsection{恒虚警率检测}
 在雷达信号检测中，单纯追求检测准确率最大化并不一定合理。因为在实际应用中，目标出现的概率往往极低，如果仅以准确率为准则，检测器可能会倾向于判定“无目标”，从而错失真实目标。因此，工程实践中更希望在容忍一定虚警的前提下，尽可能保证目标被探测到。然而，若虚警率过高，又会导致大量无效告警，造成资源浪费。为此，引入了恒虚警率（Constant False Alarm Rate, CFAR）检测方法：通过预先设定一个可接受的虚警率，并自适应地调整检测门限，使得虚警率始终维持在设定水平以内。
 
+设噪声（或干扰）的概率密度函数为\( p_n(x) \)，则给定门限\( \gamma \)时，虚警率为
+\[
+    P_{fa}(\gamma) = \int_{\gamma}^{\infty} p_n(x) dx.
+\]
+为了实现恒虚警率检测，需要根据预设的虚警率\( \hat{P}_{fa} \)求解门限\( \gamma \)。具体而言，需解方程
+\[
+    P_{fa}(\gamma) = \hat{P}_{fa}.
+\]
+
+注意到，脉冲压缩后的输出为复数信号。为了便于目标检测，通常需要先取其模长平方，再进行后续判决。因此，若假设噪声服从均值为零、方差为\( \sigma^2 \)的复高斯分布，则其模长平方服从指数分布（均值为\( \sigma^2 \)，方差为\( \sigma^4 \)），概率密度函数为
+\[
+    p_n(x) = \frac{1}{\sigma^2} e^{-\frac{x}{\sigma^2}}, \quad x \geq 0.
+\]
+此时，虚警率关于门限的函数为
+\[
+    P_{fa}(\gamma) = \int_{\gamma}^{\infty} \frac{1}{\sigma^2} e^{-\frac{x}{\sigma^2}} dx = e^{-\frac{\gamma}{\sigma^2}}.
+\]
+因此，给定虚警率\( \hat{P}_{fa} \)，可以求解门限\( \gamma \)为
+\[
+    \gamma = -\sigma^2 \ln \hat{P}_{fa}.
+\]
+
+然而，在实际应用中，噪声的统计特性无法提前获得，且可能随时间和空间发生变化。因此，需要自适应地对噪声进行建模和估计，以便动态调整检测门限。给定脉压并取模平方后的噪声观测样本 \( N \) 个，记作
+\[
+    X_1, X_2, \ldots, X_N,
+\]
+它们相互独立并且均服从均值为 \( \sigma^2 \) 的指数分布。令门限取值与观测均值成正比：
+\[
+    \gamma = \alpha \overline{X} = \alpha \frac{1}{N}\sum_{i=1}^{N} X_i,
+\]
+其中 \( \alpha \) 为可调节的比例系数。对于一个同样服从指数分布的随机变量 \( X_0 \)，以\( \overline{X} \)为先验的情况下，将其判为目标的概率（即虚警率）为
+\[
+    P_{fa}(\gamma \mid \overline{X}) = P(X_0 > \gamma \mid \overline{X})
+    = P(X_0 > \alpha \overline{X})
+    = e^{-\tfrac{\alpha \overline{X}}{\sigma^2}}.
+\]
+
+注意到 \( \overline{X} \) 是若干独立指数分布的均值，因此其服从均值为 \( \sigma^2 \) 的伽马分布，即
+\[
+    \overline{X} \sim \mathrm{Gamma}\!\left(N, \tfrac{N}{\sigma^2}\right),
+\]
+对应的概率密度函数为
+\[
+    p_{\overline{X}}(x) = \frac{\bigl(\tfrac{N}{\sigma^2}\bigr)^N}{\Gamma(N)}\,x^{N-1}
+    e^{-\tfrac{N}{\sigma^2}x}, \quad x>0,
+\]
+其中 \( \Gamma(N)=(N-1)! \) 为伽马函数。于是虚警率可写为
+\[
+    \begin{aligned}
+        P_{fa}(\gamma)
+         & = \int_{0}^{\infty} P_{fa}(\gamma \mid x)\,p_{\overline{X}}(x)\,dx \\
+         & = \frac{\bigl(\tfrac{N}{\sigma^2}\bigr)^N}{\Gamma(N)}
+        \int_{0}^{\infty} x^{N-1} e^{-\tfrac{N+\alpha}{\sigma^2}x}\,dx.
+    \end{aligned}
+\]
+利用 Gamma 积分公式
+\[
+    \int_{0}^{\infty} x^{N-1} e^{-\beta x}\,dx = \frac{\Gamma(N)}{\beta^N},
+\]
+可得
+\[
+    P_{fa}(\gamma) = \frac{\left(\frac{N}{\sigma^2}\right)^{N}}{\Gamma(N)} \frac{\Gamma(N)}{\left(\frac{N+\alpha}{\sigma^2}\right)^{N}} = \left(1+\frac{\alpha}{N}\right)^{-N}.
+\]
+
+因此，当比例系数为 \( \alpha \) 时，虚警率为
+\[
+    P_{fa}(\gamma) = \left(1+\frac{\alpha}{N}\right)^{-N}.
+\]
+反之，若预设虚警率为 \( \hat{P}_{fa} \)，则门限可写为
+\[
+    \gamma = \alpha \overline{X}
+    = N\!\left(\hat{P}_{fa}^{-1/N}-1\right)\overline{X}.
+\]
+
+给定一段脉冲压缩并取模平方后的离散序列
+\[
+    \cdots, X_{i-1},\, X_i,\, X_{i+1}, \cdots ,
+\]
+其中 \(X_i\) 为待检测样本（Cell Under Test, CUT）。最常见的 CFAR 算法是基于滑动窗口的单元平均恒虚警率检测（Cell Averaging CFAR, CA-CFAR）。该方法通过在 CUT 周围选取训练单元估计背景噪声功率，从而自适应调整检测门限。
+
+设滑动窗口长度为 \(2N+1\)，保护单元长度为 \(2G+1\)（其中 \(G<N\)）。则 CUT 左右两侧各有 \(N-G\) 个训练单元。训练单元的均值估计为
+\[
+    \overline{X}_i = \frac{1}{2(N-G)}
+    \left( \sum_{j=i-N}^{\,i-G-1} X_j \;+\; \sum_{j=i+G+1}^{\,i+N} X_j \right).
+\]
+在给定目标虚警率 \(\hat{P}_{fa}\) 的条件下，CA-CFAR 的检测门限可写为
+\[
+    \gamma_i = N\!\left(\hat{P}_{fa}^{-1/N}-1\right)\overline{X}_i.
+\]
+当 \(X_i > \gamma_i\) 时判定存在目标，否则判定为噪声。此外，之所以要设置保护单元，是因为脉压后的脉冲仍有一定的宽度，且往往存在旁瓣。如果不设置保护单元，目标主瓣或旁瓣的能量就会被误算进训练单元，导致背景噪声估计被抬高，阈值过高，从而削弱检测灵敏度甚至漏检目标。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.7\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xmin=-5, xmax=5,
+                    ymin=0,
+                    width=10cm, height=3cm,
+                    grid=none,
+                    xtick=\empty,ytick=\empty,
+                    clip=false,
+                ]
+                \addplot[
+                    c1,
+                ] table[x=t, y=y, col sep=comma] {./img/detection/cfar.csv};
+                \addplot[
+                    c2,
+                ] table[x=t, y=t1, col sep=comma] {./img/detection/cfar.csv};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{\( \hat{P}_{fa} = 10^{-1} \)}
+        \label{fig_cfar_test_1}
+    \end{subfigure}
+    \begin{subfigure}{.7\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xmin=-5, xmax=5,
+                    ymin=0,
+                    width=10cm, height=3cm,
+                    grid=none,
+                    xtick=\empty,ytick=\empty,
+                    clip=false,
+                ]
+                \addplot[
+                    c1,
+                ] table[x=t, y=y, col sep=comma] {./img/detection/cfar.csv};
+                \addplot[
+                    c2,
+                ] table[x=t, y=t2, col sep=comma] {./img/detection/cfar.csv};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{\( \hat{P}_{fa} = 10^{-2} \)}
+        \label{fig_cfar_test_2}
+    \end{subfigure}
+    \begin{subfigure}{.7\textwidth}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xmin=-5, xmax=5,
+                    ymin=0,
+                    width=10cm, height=3cm,
+                    grid=none,
+                    xtick=\empty,ytick=\empty,
+                    clip=false,
+                ]
+                \addplot[
+                    c1,
+                ] table[x=t, y=y, col sep=comma] {./img/detection/cfar.csv};
+                \addplot[
+                    c2,
+                ] table[x=t, y=t3, col sep=comma] {./img/detection/cfar.csv};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{\( \hat{P}_{fa} = 10^{-3} \)}
+        \label{fig_cfar_test_3}
+    \end{subfigure}
+    \caption{CA-CFAR检测示意图}
+    \label{fig_cfar_test}
+\end{figure}
+
+如\cref{fig_cfar_test} 所示，蓝色曲线表示脉压后信号的模平方，红色曲线表示 CA-CFAR 算法计算得到的检测门限，蓝色曲线高于红色曲线的部分则会被识别为目标。可以看到，蓝色曲线中的噪声水平随距离逐渐升高，若采用固定门限，则会产生大量误警。相比之下，CA-CFAR 能够根据背景噪声的变化自适应调整门限，从而有效抑制噪声影响。同时，通过合理设定虚警率参数，可以在保证检测灵敏度的前提下，将虚警率控制在可接受范围内，实现检测性能与可靠性的平衡。

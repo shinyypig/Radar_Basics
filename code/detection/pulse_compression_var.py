@@ -36,9 +36,11 @@ fig.add_trace(go.Scatter(x=t, y=np.real(x2), mode="lines", name="Signal 2"))
 fig.add_trace(go.Scatter(x=t, y=np.real(x3), mode="lines", name="Signal 3"))
 fig.show()
 
-r1 = signal.fftconvolve(np.real(x1), np.real(x1), mode="same")
-r2 = signal.fftconvolve(np.real(x2), np.real(x2), mode="same")
-r3 = signal.fftconvolve(np.real(x3), np.real(x3), mode="same")
+# x1 = np.abs(x1)
+
+r1 = signal.correlate(x1, x1, mode="same", method="direct")
+r2 = signal.correlate(x2, x2, mode="same", method="direct")
+r3 = signal.correlate(x3, x3, mode="same", method="direct")
 
 fig = go.Figure()
 fig.add_trace(go.Scatter(x=t, y=np.abs(r1), mode="lines", name="Result 1"))
