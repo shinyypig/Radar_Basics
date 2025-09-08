@@ -99,6 +99,41 @@
 \]
 这种``每条反对角线元素均相同''的矩阵称为 Hankel 矩阵。
 
+更进一步，卷积不仅可以写成\( \bm{y} = \mathbf{X} \bm{p} \)的形式，还可以写成
+\[
+    \bm{y} = \mathbf{P} \bm{x}.
+\]
+以有效卷积为例，其对应的矩阵为
+\[
+    \mathbf{P} =
+    \begin{bmatrix}
+        p_N    & p_{N-1} & \cdots & p_1    & 0       & \cdots & 0      \\
+        0      & p_N     & \cdots & p_2    & p_1     & \cdots & 0      \\
+        \vdots & \vdots  & \ddots & \ddots & \ddots  & \ddots & \vdots \\
+        0      & 0       & \cdots & p_N    & p_{N-1} & \cdots & p_1
+    \end{bmatrix}
+    \in \mathbb{C}^{(M-N+1) \times M}.
+\]
+类似地，相关也可以写成
+\[
+    \bm{y} = \mathbf{P}^{\mathrm{H}} \bm{x},
+\]
+其中
+\[
+    \mathbf{P} =
+    \begin{bmatrix}
+        p_1    & 0       & \cdots & 0      \\
+        p_2    & p_1     & \cdots & 0      \\
+        \vdots & \vdots  & \ddots & \vdots \\
+        p_N    & p_{N-1} & \ddots & p_1    \\
+        0      & p_N     & \ddots & p_2    \\
+        \vdots & \vdots  & \ddots & \vdots \\
+        0      & 0       & \cdots & p_N
+    \end{bmatrix}
+    \in \mathbb{C}^{M \times (M+N-1)}.
+\]
+这两种矩阵形式完全等价, 灵活地使用可以简化很多推导过程。
+
 \section{线性规划}
 
 

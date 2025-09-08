@@ -1,0 +1,55 @@
+\chapter{目标参数估计}
+
+在完成信号检测之后，雷达系统还需要进一步提取目标的关键参数，例如方位角、距离、多普勒频率以及极化特征等。这些参数的准确估计不仅关系到目标的定位与跟踪精度，也是后续态势感知与目标识别的重要基础。从算法发展的角度来看，目标参数估计大体经历了几个阶段：最初的经典波束形成方法，随后发展到最小方差处理方法，再到子空间方法和稀疏表示方法。近年来，随着多维观测手段的兴起，多域联合估计方法逐渐受到关注。这类方法能够同时利用空间、多普勒甚至极化等多维信息，从而实现更强的参数解耦和更高的估计精度。
+
+在\cref{sec_radar_signal_model}中，我们介绍了雷达的接收信号模型。对于一个阵列多普勒雷达系统，其接收信号可以表示为一个张量：
+\[
+    \begin{split}
+        \mathcal{X} = \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \times_4 \mathbf{P},
+    \end{split}
+\]
+其中，\( K \)为目标数，而矩阵\( \mathbf{R} \)、\( \mathbf{A} \)、\( \mathbf{B} \)和\( \mathbf{P} \)分别包含了目标的距离、方位角、俯仰角、多普勒信息。利用脉冲压缩技术，可以获取目标的距离信息，而本章的重点则是如何进一步从数据中提取目标的方位角和多普勒频率等参数。
+
+\section{波束形成与最小方差方法}
+考虑均匀线性阵列或单阵元在多脉冲下的观测情形。此时，接收信号退化为一个矩阵：
+\[
+    \mathbf{X} = \mathbf{R} \mathbf{A}^{\mathrm{T}} \in \mathbb{C}^{L \times M},
+\]
+其中\( \mathbf{R} = \begin{bsmallmatrix} \bm{r}_1 & \bm{r}_2 & \cdots & \bm{r}_K \end{bsmallmatrix} \in \mathbb{C}^{L \times K} \)为目标信号矩阵，\( \mathbf{A} = \begin{bsmallmatrix} \bm{a}_1 & \bm{a}_2 & \cdots & \bm{a}_K \end{bsmallmatrix} \in \mathbb{C}^{M \times K} \)为阵列流形矩阵（导向矢量矩阵），其列向量为目标的空间或多普勒流形向量，其第\( k \)列通常有如下形式：
+\[
+    \bm{a}_k = \begin{bmatrix}
+        1 & e^{j 2 \pi \omega_k} & \cdots & e^{j 2 \pi \omega_k (M-1)}
+    \end{bmatrix}^{\mathrm{T}}.
+\]
+其中，参数 $\omega_k$ 的物理意义取决于雷达体制：若为阵列雷达，则 $\omega_k = \tfrac{d}{\lambda}\sin \theta_k$，与目标的方位角 $\theta_k$ 相关；若为单阵元多脉冲雷达，则 $\omega_k = \tfrac{2 T_r v_k}{\lambda}$，与目标的径向速度 $v_k$ 相关。
+
+根据\cref{apx.conv-corr-mat}，对回波向量\( \bm{x}_k \)进行脉冲压缩可以写成如下的矩阵形式：
+\[
+    \bm{y}_k = \mathbf{S} \bm{x}_k,
+\]
+其中\( \mathbf{S} \)为参考向量构成的矩阵：
+\[
+    \mathbf{S} = \begin{bmatrix}
+        s
+    \end{bmatrix}^{\mathrm{H}}.
+\]
+
+\subsection{波束形成}
+
+\subsection{和差比幅测角}
+
+\subsection{最小方差估计}
+
+\section{子空间方法}
+
+\subsection{MUSIC方法}
+
+\subsection{ESPRIT方法}
+
+\section{稀疏表示方法}
+
+\section{多域联合估计}
+
+\subsection{空时自适应处理}
+
+\subsection{张量分解方法}

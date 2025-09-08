@@ -245,7 +245,7 @@
 \]
 由于 \( |\theta_k| \leq \tfrac{\pi}{2} \)，可得最大的频率为
 \[
-    |f_k| \leq \frac{f_c d}{c} = \frac{d}{\lambda},
+    |f_k| \leq \frac{f_c d}{c} = \frac{d}{\lambda_c},
 \]
 其中 \(\lambda = \tfrac{c}{f_c}\) 为载波波长。另一方面，\(\bm{a}_k\) 可以理解为以单位采样率（每阵元采样一次）对该复指数信号进行采样得到的向量。根据奈奎斯特采样定理，为避免频率混叠必须满足
 \[
@@ -273,8 +273,9 @@
 \]
 可以验证
 \[
-    \mathbf{X} = \mathbf{R} \mathbf{A}^{\mathrm{T}}.
+    \mathbf{X} = \mathbf{R} \mathbf{A}^{\mathrm{T}},
 \]
+其中\( \mathbf{R} \)被称为目标信号矩阵包含了目标的距离信息，\( \mathbf{A} \)被称为导向矢量矩阵（Steering Matrix）或阵列流形矩阵（Array Manifold Matrix）包含了目标的方位信息。
 
 \subsection{二维均匀线性阵列}
 为了能够在三维空间中对目标进行定位，通常需要使用二维均匀线性阵列。与一维阵列类似，二维阵列的接收信号模型也可以通过导向矢量来表示。
