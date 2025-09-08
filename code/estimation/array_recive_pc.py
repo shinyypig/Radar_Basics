@@ -67,40 +67,37 @@ mpimg.imsave("est_2.png", Z[:, ::-1, :], dpi=300, cmap="viridis")
 fig = go.Figure(go.Scatter(y=np.real(Y[:, 0]), mode="lines"))
 fig.show()
 
-# # %%
-# dt = np.linspace(0, 1, 50) * (-1e-4)
+# %%
+W = np.exp(
+    1j * 2 * np.pi * np.linspace(-0.5, 0.5, 200)[:, None] * np.arange(M)[None, :]
+)
+Y2 = X @ W.T
+Z = np.real(Y2)
 
-# X = []
+Z = (Z - Z.min()) / (Z.max() - Z.min())
 
-# for i in range(len(dt)):
-#     X.append(receive(t - dt[i]))
+cmap = matplotlib.colormaps["viridis"]
+Z = cmap(Z)[:, :, :3]  # 去掉 alpha
+mpimg.imsave("est_3.png", Z[:, ::-1, :], dpi=300, cmap="viridis")
 
-# go.Figure(data=go.Heatmap(z=np.real(X))).show()
 
-# Z = np.real(X)
+# %%
+Y2 = Y @ W.T
+Z = np.abs(Y2)
 
-# Z = (Z - Z.min()) / (Z.max() - Z.min())
+Z = (Z - Z.min()) / (Z.max() - Z.min())
 
-# cmap = matplotlib.colormaps["viridis"]
-# Z = cmap(Z)[:, :, :3]  # 去掉 alpha
+cmap = matplotlib.colormaps["viridis"]
+Z = cmap(Z)[:, :, :3]  # 去掉 alpha
+mpimg.imsave("est_4.png", Z[:, ::-1, :], dpi=300, cmap="viridis")
 
-# mpimg.imsave("array_angle_p.png", Z[:, ::-1, :], dpi=300, cmap="viridis")
+# %%
+import pandas as pd
 
-# # %%
-# dt = np.linspace(0, 1, 50) * (1e-4)
+p = np.mean(np.abs(Y2) ** 2, axis=0)
+p = p / np.max(p)
+fig = go.Figure(go.Scatter(y=p, mode="lines"))
+fig.show()
 
-# X = []
-
-# for i in range(len(dt)):
-#     X.append(receive(t - dt[i]))
-
-# go.Figure(data=go.Heatmap(z=np.real(X))).show()
-
-# Z = np.real(X)
-
-# Z = (Z - Z.min()) / (Z.max() - Z.min())
-
-# cmap = matplotlib.colormaps["viridis"]
-# Z = cmap(Z)[:, :, :3]  # 去掉 alpha
-
-# mpimg.imsave("array_angle_n.png", Z[:, ::-1, :], dpi=300, cmap="viridis")
+df = pd.DataFrame({"w": np.linspace(-0.5, 0.5, 200), "p": p[::-1]})
+df.to_csv("cbf.csv", index=False)
