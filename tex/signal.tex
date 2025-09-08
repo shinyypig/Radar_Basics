@@ -203,12 +203,12 @@
         \begin{bmatrix}
             1 & e^{j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
         \end{bmatrix}^{\mathrm{T}}                               \\
-         & = \bm{r}_k \bm{a}_k^{\mathrm{T}},
+         & = \bm{r}_k \bm{a}_{\theta_k}^{\mathrm{T}},
     \end{aligned}
 \]
 其中
 \[
-    \bm{a}_k =
+    \bm{a}_{\theta_k} =
     \begin{bmatrix}
         1 & e^{j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
     \end{bmatrix}^{\mathrm{T}}
@@ -247,7 +247,7 @@
 \[
     |f_k| \leq \frac{f_c d}{c} = \frac{d}{\lambda_c},
 \]
-其中 \(\lambda = \tfrac{c}{f_c}\) 为载波波长。另一方面，\(\bm{a}_k\) 可以理解为以单位采样率（每阵元采样一次）对该复指数信号进行采样得到的向量。根据奈奎斯特采样定理，为避免频率混叠必须满足
+其中 \(\lambda = \tfrac{c}{f_c}\) 为载波波长。另一方面，\(\bm{a}_{\theta_k}\) 可以理解为以单位采样率（每阵元采样一次）对该复指数信号进行采样得到的向量。根据奈奎斯特采样定理，为避免频率混叠必须满足
 \[
     |f_k| < \frac{1}{2}.
 \]
@@ -261,14 +261,14 @@
 \[
     \mathbf{X}
     = \sum_{k=1}^{K} \mathbf{X}_k
-    = \sum_{k=1}^{K} \bm{r}_k \, \bm{a}_k^{\mathrm{T}},
+    = \sum_{k=1}^{K} \bm{r}_k \, \bm{a}_{\theta_k}^{\mathrm{T}},
 \]
 这表明理想情况下，对于一维均匀线阵，接收信号矩阵是由多个秩一矩阵叠加而成的。记
 \[
     \mathbf{R} = \begin{bmatrix}
         \bm{r}_1 & \bm{r}_2 & \cdots & \bm{r}_K
     \end{bmatrix}, \quad \mathbf{A} = \begin{bmatrix}
-        \bm{a}_1 & \bm{a}_2 & \cdots & \bm{a}_K
+        \bm{a}_{\theta_1} & \bm{a}_{\theta_2} & \cdots & \bm{a}_{\theta_K}
     \end{bmatrix},
 \]
 可以验证
@@ -304,38 +304,38 @@
 \[
     \Delta d^{(m,n)}_k = \bm{u}_k^{\mathrm{T}} \bm{l}^{(m,n)} = m d_x \sin\theta_k \cos\phi_k + n d_y \sin\theta_k \sin\phi_k.
 \]
-记\( \vartheta = d_x \sin\theta_k \cos\phi_k \)，\( \varphi = d_y \sin\theta_k \sin\phi_k \)，则第\( (m,n) \)个阵元接收到的信号可以表示为
+记\( \vartheta_k = d_x \sin\theta_k \cos\phi_k \)，\( \varphi_k = d_y \sin\theta_k \sin\phi_k \)，则第\( (m,n) \)个阵元接收到的信号可以表示为
 \[
     \begin{split}
-        r^{(m,n)}_k(t) & = A_k s\left(t - \frac{2 R_k - m \vartheta - n \varphi}{c}\right)                                                                                                                                                                    \\
-                       & = A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k - m \vartheta - n \varphi}{c}}{T}\right) p\left(t - \frac{2 R_k - m \vartheta - n \varphi}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k - m \vartheta - n \varphi}{c}\right)} \\
-                       & \approx A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k}{c}}{T}\right) p\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k}{c}\right)} e^{j 2 \pi f_c \frac{m \vartheta + n \varphi}{c}}                       \\
-                       & = A_k s\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \frac{m \vartheta + n \varphi}{c}}                                                                                                                                            \\
-                       & = r_k(t) e^{j 2 \pi f_c \frac{m \vartheta + n \varphi}{c}}.
+                & r^{(m,n)}_k(t) = A_k s\left(t - \frac{2 R_k - m \vartheta_k - n \varphi_k}{c}\right)                                                                                                                                                           \\
+        =       & A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k - m \vartheta_k - n \varphi_k}{c}}{T}\right) p\left(t - \frac{2 R_k - m \vartheta_k - n \varphi_k}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k - m \vartheta_k - n \varphi_k}{c}\right)} \\
+        \approx & A_k \operatorname{rect}\left(\frac{t - \frac{2 R_k}{c}}{T}\right) p\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k}{c}\right)} e^{j 2 \pi f_c \frac{m \vartheta_k + n \varphi_k}{c}}                                     \\
+        =       & A_k s\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \frac{m \vartheta_k + n \varphi_k}{c}}                                                                                                                                                    \\
+        =       & r_k(t) e^{j 2 \pi f_c \frac{m \vartheta_k + n \varphi_k}{c}}.
     \end{split}
 \]
 同样地，令\( \bm{r}_k \) 为第\( (0,0) \)个阵元接收到的信号对应的离散向量，则第\( (m,n) \)个阵元接收到的信号向量可以表示为
 \[
-    \bm{r}_k^{(m,n)} = \bm{r}_k e^{j 2 \pi f_c \frac{m \vartheta + n \varphi}{c}} = \bm{r}_k e^{j 2 \pi f_c \frac{m \vartheta}{c}} e^{j 2 \pi f_c \frac{n \varphi}{c}}.
+    \bm{r}_k^{(m,n)} = \bm{r}_k e^{j 2 \pi f_c \frac{m \vartheta_k + n \varphi_k}{c}} = \bm{r}_k e^{j 2 \pi f_c \frac{m \vartheta_k}{c}} e^{j 2 \pi f_c \frac{n \varphi_k}{c}}.
 \]
 
 将所有阵元接收到的第\( k \)个目标反射的信号向量排列成一个\( L \times M \times N \)大小的张量\( \mathcal{X}_k \)，则该张量中的元素有如下表达式
 \[
-    \left( \mathcal{X}_k \right)_{lmn} = \left( \bm{r}_k \right)_l e^{j 2 \pi f_c \frac{m \vartheta}{c}} e^{j 2 \pi f_c \frac{n \varphi}{c}}.
+    \left( \mathcal{X}_k \right)_{lmn} = \left( \bm{r}_k \right)_l e^{j 2 \pi f_c \frac{m \vartheta_k}{c}} e^{j 2 \pi f_c \frac{n \varphi_k}{c}}.
 \]
 根据\cref{def:outer-product}中的外积定义，不难发现\( \mathcal{X}_k \)是由三个向量的外积构成的：
 \[
-    \mathcal{X}_k = \bm{r}_k \circ \bm{a}_k \circ \bm{b}_k,
+    \mathcal{X}_k = \bm{r}_k \circ \bm{a}_{\vartheta_k} \circ \bm{b}_{\varphi_k},
 \]
-其中\( \bm{a}_k \)和\( \bm{b}_k \)为两个导向矢量，有如下表达式：
+其中\( \bm{a}_{\vartheta_k} \)和\( \bm{b}_{\varphi_k} \)为两个导向矢量，有如下表达式：
 \[
     \begin{split}
-        \bm{a}_k & = \begin{bmatrix}
-                         1 & e^{j 2 \pi f_c \frac{\vartheta}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) \vartheta}{c}}
-                     \end{bmatrix}^{\mathrm{T}}, \\
-        \bm{b}_k & = \begin{bmatrix}
-                         1 & e^{j 2 \pi f_c \frac{\varphi}{c}} & \cdots & e^{j 2 \pi f_c \frac{(N-1) \varphi}{c}}
-                     \end{bmatrix}^{\mathrm{T}}.
+        \bm{a}_{\vartheta_k} & = \begin{bmatrix}
+                                     1 & e^{j 2 \pi f_c \frac{\vartheta_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) \vartheta_k}{c}}
+                                 \end{bmatrix}^{\mathrm{T}}, \\
+        \bm{b}_{\varphi_k}   & = \begin{bmatrix}
+                                     1 & e^{j 2 \pi f_c \frac{\varphi_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(N-1) \varphi_k}{c}}
+                                 \end{bmatrix}^{\mathrm{T}}.
     \end{split},
 \]
 
@@ -343,7 +343,7 @@
 \[
     \mathcal{X}
     = \sum_{k=1}^{K} \mathcal{X}_k
-    = \sum_{k=1}^{K} \bm{r}_k \circ \bm{a}_k \circ \bm{b}_k.
+    = \sum_{k=1}^{K} \bm{r}_k \circ \bm{a}_{\vartheta_k} \circ \bm{b}_{\varphi_k}.
 \]
 进一步地，根据\cref{prop:diag-kron}，张量\( \mathcal{X} \)可以写成如下形式：
 \[
@@ -357,10 +357,10 @@
         \bm{r}_1 & \cdots & \bm{r}_K
     \end{bmatrix}, \quad
     \mathbf{A} = \begin{bmatrix}
-        \bm{a}_1 & \cdots & \bm{a}_K
+        \bm{a}_{\vartheta_1} & \cdots & \bm{a}_{\vartheta_K}
     \end{bmatrix}, \quad
     \mathbf{B} = \begin{bmatrix}
-        \bm{b}_1 & \cdots & \bm{b}_K
+        \bm{b}_{\varphi_1} & \cdots & \bm{b}_{\varphi_K}
     \end{bmatrix}.
 \]
 
@@ -416,12 +416,12 @@
                      & = \bm{r}_k \begin{bmatrix}
                                       1 & e^{j 2 \pi f_c \frac{2 T_r v_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{2 (P-1) T_r v_k}{c}}
                                   \end{bmatrix}                 \\
-                     & = \bm{r}_k \bm{p}_k^{\mathrm{T}},
+                     & = \bm{r}_k \bm{p}_{v_k}^{\mathrm{T}},
     \end{split}
 \]
 其中
 \[
-    \bm{p}_k = \begin{bmatrix}
+    \bm{p}_{v_k} = \begin{bmatrix}
         1 & e^{j 2 \pi f_c \frac{2 T_r v_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{2 (P-1) T_r v_k}{c}}
     \end{bmatrix}^{\mathrm{T}},
 \]
@@ -455,14 +455,14 @@
 
 考虑所有的\( K \)个目标，最终总的接收信号可以表示为
 \[
-    \mathbf{X} = \sum_{k=1}^{K} \mathbf{X}_k = \sum_{k=1}^{K} \bm{r}_k \bm{p}_k^{\mathrm{T}} = \mathbf{R} \mathbf{P}^{\mathrm{T}},
+    \mathbf{X} = \sum_{k=1}^{K} \mathbf{X}_k = \sum_{k=1}^{K} \bm{r}_k \bm{p}_{v_k}^{\mathrm{T}} = \mathbf{R} \mathbf{P}^{\mathrm{T}},
 \]
 其中
 \[
     \mathbf{R} = \begin{bmatrix}
         \bm{r}_1 & \bm{r}_2 & \cdots & \bm{r}_K
     \end{bmatrix}, \quad \mathbf{P} = \begin{bmatrix}
-        \bm{p}_1 & \bm{p}_2 & \cdots & \bm{p}_K
+        \bm{p}_{v_1} & \bm{p}_{v_2} & \cdots & \bm{p}_{v_K}
     \end{bmatrix},
 \]
 分别表示目标的接收信号和导向矢量构成的矩阵。
@@ -475,42 +475,42 @@
 \[
     \begin{split}
         r^{(m,n,p)}_k(t)
-         & = A_k\, s\left(t - \frac{2 R_k - m\vartheta - n\varphi - p\nu}{c}\right) \\
+         & = A_k\, s\left(t - \frac{2 R_k - m\vartheta_k - n\varphi_k - p\nu_k}{c}\right) \\
          & \approx r_k(t)\,
-        e^{j 2 \pi f_c \tfrac{m \vartheta}{c}}\,
-        e^{j 2 \pi f_c \tfrac{n \varphi}{c}}\,
-        e^{j 2 \pi f_c \tfrac{p \nu}{c}},
+        e^{j 2 \pi f_c \tfrac{m \vartheta_k}{c}}\,
+        e^{j 2 \pi f_c \tfrac{n \varphi_k}{c}}\,
+        e^{j 2 \pi f_c \tfrac{p \nu_k}{c}},
     \end{split}
 \]
 其中，\(r_k(t)\) 为参考信号，即第 \((0,0)\) 个阵元在初始时刻接收到的回波；而
 \[
-    \vartheta = d_x \sin\theta_k \cos\phi_k,
+    \vartheta_k = d_x \sin\theta_k \cos\phi_k,
     \quad
-    \varphi = d_y \sin\theta_k \sin\phi_k,
+    \varphi_k = d_y \sin\theta_k \sin\phi_k,
     \quad
-    \nu = 2 T_r v_k
+    \nu_k = 2 T_r v_k
 \]
 分别表示目标在两个空间维度上的相位偏移量以及在慢时间维度上的多普勒相位偏移。令\( \bm{r}_k \in \mathbb{C}^{L} \) 为对 \(r_k(t)\) 进行离散采样所获得的向量，并构造如下导向矢量
 \[
     \begin{split}
-        \bm{a}_k & = \begin{bmatrix}
-                         1 & e^{j 2 \pi f_c \frac{\vartheta}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) \vartheta}{c}}
-                     \end{bmatrix}^{\mathrm{T}}, \\
-        \bm{b}_k & = \begin{bmatrix}
-                         1 & e^{j 2 \pi f_c \frac{\varphi}{c}} & \cdots & e^{j 2 \pi f_c \frac{(N-1) \varphi}{c}}
-                     \end{bmatrix}^{\mathrm{T}}, \\
-        \bm{p}_k & = \begin{bmatrix}
-                         1 & e^{j 2 \pi f_c \frac{\nu}{c}} & \cdots & e^{j 2 \pi f_c \frac{(P-1) \nu}{c}}
-                     \end{bmatrix}^{\mathrm{T}}.
+        \bm{a}_{\vartheta_k} & = \begin{bmatrix}
+                                     1 & e^{j 2 \pi f_c \frac{\vartheta_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) \vartheta_k}{c}}
+                                 \end{bmatrix}^{\mathrm{T}}, \\
+        \bm{b}_{\varphi_k}   & = \begin{bmatrix}
+                                     1 & e^{j 2 \pi f_c \frac{\varphi_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(N-1) \varphi_k}{c}}
+                                 \end{bmatrix}^{\mathrm{T}}, \\
+        \bm{p}_{\nu_k}       & = \begin{bmatrix}
+                                     1 & e^{j 2 \pi f_c \frac{\nu_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(P-1) \nu_k}{c}}
+                                 \end{bmatrix}^{\mathrm{T}}.
     \end{split}
 \]
 类似于二维阵列接收信号模型，多普勒二维阵列雷达系统整个接收到的第\( k \)个目标的回波数据可以排列为一个\( L \times M \times N \times P \) 的四维张量，有如下表达式
 \[
-    \mathcal{X}_k = \bm{r}_k \circ \bm{a}_k \circ \bm{b}_k \circ \bm{p}_k.
+    \mathcal{X}_k = \bm{r}_k \circ \bm{a}_{\vartheta_k} \circ \bm{b}_{\varphi_k} \circ \bm{p}_{\nu_k}.
 \]
 考虑所有的 \(K\) 个目标，最终总的接收信号张量可以表示为
 \[
-    \mathcal{X} = \sum_{k=1}^{K} \mathcal{X}_k = \sum_{k=1}^{K} \bm{r}_k \circ \bm{a}_k \circ \bm{b}_k \circ \bm{p}_k.
+    \mathcal{X} = \sum_{k=1}^{K} \mathcal{X}_k = \sum_{k=1}^{K} \bm{r}_k \circ \bm{a}_{\vartheta_k} \circ \bm{b}_{\varphi_k} \circ \bm{p}_{\nu_k}.
 \]
 
 构造如下的接收信号与导向矢量的矩阵：
@@ -520,13 +520,13 @@
                            \bm{r}_1 & \cdots & \bm{r}_K
                        \end{bmatrix}, \quad
         \mathbf{A} = \begin{bmatrix}
-                         \bm{a}_1 & \cdots & \bm{a}_K
-                     \end{bmatrix}, \quad   \\
+                         \bm{a}_{\vartheta_1} & \cdots & \bm{a}_{\vartheta_K}
+                     \end{bmatrix}, \quad \\
         \mathbf{B} & = \begin{bmatrix}
-                           \bm{b}_1 & \cdots & \bm{b}_K
+                           \bm{b}_{\varphi_1} & \cdots & \bm{b}_{\varphi_K}
                        \end{bmatrix}, \quad
         \mathbf{P} = \begin{bmatrix}
-                         \bm{p}_1 & \cdots & \bm{p}_K
+                         \bm{p}_{\nu_1} & \cdots & \bm{p}_{\nu_K}
                      \end{bmatrix}.
     \end{split}
 \]
