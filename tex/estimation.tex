@@ -32,20 +32,20 @@
 \subsection{经典波束形成}
 
 经典波束形成（Conventional Beamforming, CBF）方法利用了不同频率复指数信号在维度充分大时趋于正交的性质，即当 $M$ 足够大时，有
-\begin{equation}
+\[
     \frac{1}{M}\bm{a}_{\omega_i}^{\mathrm{H}} \bm{a}_{\omega_j} \approx
     \begin{cases}
         1, & \omega_i = \omega_j,     \\
         0, & \omega_i \neq \omega_j .
     \end{cases}
-\end{equation}
+\]
 因此，将滤波器权向量选为与目标流形向量相匹配的形式：
-\begin{equation}
+\[
     \bm{w}_{\omega} = \frac{1}{M} \overline{\bm{a}}
     = \frac{1}{M} \begin{bmatrix}
         1 & e^{j 2 \pi \omega} & \cdots & e^{j 2 \pi \omega (M-1)}
     \end{bmatrix}^{\mathrm{H}},
-\end{equation}
+\]
 即可有效提取出对应参数值 $\omega$ 的信号分量。该方法又称为 \textbf{Bartlett 波束形成}，是最经典的一种波束形成策略。
 
 进一步地，通过扫描不同的参数值\( \omega \)，将原始信号投影到不同的方向或速度上，则可以分别获得不同方向或速度上的信号分量。具体而言，对于阵列信号，可以构建如下矩阵：
@@ -77,9 +77,9 @@
 时，波束形成矩阵 $\mathbf{W}$ 正好对应于一个 $M \times M$ 的离散傅里叶变换（Discrete Fourier Transform，DFT）矩阵的前 $N$ 行。特别地，当 $M = N$ 时，$\mathbf{W}$ 即为标准的 DFT 矩阵。在这种情况下，波束形成过程等价于对接收信号在参数维度（慢时间维）上进行离散傅里叶变换，从而实现对多普勒频率的估计。
 
 此外，根据\cref{apx.conv-corr-mat}中的结论，对 $\mathbf{X}$ 的列向量 $\bm{x}_i$ 进行脉冲压缩同样可以写成矩阵乘法形式：
-\begin{equation}
+\[
     \bm{y}_i = \mathbf{S}^{\mathrm{H}}\bm{x}_i,
-\end{equation}
+\]
 其中，$\mathbf{S}$ 为由参考向量构造的矩阵，有如下形式：
 \[
     \mathbf{S} =
@@ -209,12 +209,12 @@
 \end{solution}
 
 在某些情况下，我们可能并不关心目标的距离信息，而仅希望获得其参数信息（如方位或速度）。此时，可以直接利用波束形成后的输出计算参数维度上的功率谱。具体地，对于参数值 $\omega$，对应输出的功率可表示为
-\begin{equation}
+\[
     p_{\omega} = \frac{1}{L}\|\bm{y}_{\omega}\|_2^2
     = \frac{1}{L}\|\mathbf{X}\bm{w}_{\omega}\|_2^2
     = \frac{1}{L}\bm{w}_{\omega}^{\mathrm{H}}\mathbf{X}^{\mathrm{H}}\mathbf{X}\bm{w}_{\omega}
     = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega},
-\end{equation}
+\]
 其中，$\mathbf{\Sigma}_{\mathbf{X}} = \tfrac{1}{L}\mathbf{X}^{\mathrm{H}}\mathbf{X}$ 为接收信号矩阵的协方差矩阵（一般假设接收信号均值为零）。通过对不同参数值 $\omega$ 进行扫描，即可得到参数维度的功率谱估计，从而实现目标参数的直接估计。
 
 对\cref{fig_data_x}中的数据进行波束形成处理，并计算参数维度的功率谱，结果如\cref{fig_spectrum_cbf}所示。可以看到，功率谱在目标参数值处出现了明显的峰值，并且峰值在参数维度上的位置与\cref{fig_compressed_3}中的目标水平位置一致。通过对功率谱进行峰值检测，即可实现目标参数的估计。
@@ -226,7 +226,7 @@
                 xlabel=参数维, ylabel=归一化功率谱,
                 ticklabel style={font=\small},
                 label style={font=\small},
-                xtick=\empty,ytick=\empty,
+                % xtick=\empty,ytick=\empty,
                 xmin = -0.5, xmax=0.5, ymin=0, ymax=1.2,
                 grid, width=8cm, height=4cm,
                 legend cell align=left,
@@ -454,7 +454,191 @@
 相较于无源相控阵雷达，和差比幅法需要额外增加一路模数转换器。但这一硬件代价带来的好处是，在主瓣范围内，目标角度能够得到更为精确的测量。此外，和差比幅法的计算复杂度也较低，主要涉及简单的加减运算和脉冲压缩处理，适合实时应用。
 
 \subsection{最小方差无失真响应}
-经典波束形成方法没有考虑噪声和干扰的影响，因而在复杂环境下性能有限。为此，最小方差无失真响应（Minimum Variance Distortionless Response, MVDR）方法引入了噪声与干扰的统计特性，通过优化滤波器权向量以最小化输出功率，同时保证对目标信号无失真响应。
+经典波束形成方法并未考虑噪声与干扰的统计特性，因此在复杂环境下性能往往受到限制。为此，最小方差无失真响应（Minimum Variance Distortionless Response, MVDR）方法在设计滤波器时引入了噪声与干扰的协方差矩阵，通过优化权向量以最小化输出功率，同时保证对目标信号无失真响应。该方法的发明者为 Jack Capon，因此有时也称为 Capon 算法。
+
+设 \( \bm{w}_{\omega} \) 为待设计的滤波器权向量，则对应的输出为
+\[
+    \bm{y}_{\omega} = \mathbf{X} \bm{w}_{\omega}.
+\]
+直观地，我们希望输出 \(\bm{y}_{\omega}\) 尽可能只包含参数值为 \(\omega\) 的目标信号，同时抑制其他信号与噪声干扰。注意到目标信号对应的导向向量为 \(\bm{a}_{\omega}\)，因此目标分量在输出中的占比与 \(|\bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega}|\) 成正比。由此可构造如下优化问题：
+\[
+    \max_{\bm{w}_{\omega}} \frac{|\bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega}|^2}{ \tfrac{1}{L} \|\bm{y}_{\omega}\|_2^2},
+\]
+即在保证输出功率尽可能小的前提下，使目标信号成分最大化。该问题可转化为如下形式的约束优化问题：
+\[
+    \begin{cases}
+        \min_{\bm{w}_{\omega}} \quad & \tfrac{1}{L} \|\bm{y}_{\omega}\|_2^2              \\
+        \text{s.t.} \quad            & \bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega} = 1,
+    \end{cases}
+\]
+其中约束条件保证了对目标信号的无失真响应。
+
+记接收信号的协方差矩阵为
+\[
+    \mathbf{\Sigma}_{\mathbf{X}} = \tfrac{1}{L} \mathbf{X}^{\mathrm{H}} \mathbf{X},
+\]
+则目标函数可重写为
+\[
+    \tfrac{1}{L} \|\bm{y}_{\omega}\|_2^2
+    = \tfrac{1}{L} \bm{w}_{\omega}^{\mathrm{H}} \mathbf{X}^{\mathrm{H}} \mathbf{X} \bm{w}_{\omega}
+    = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega}.
+\]
+利用拉格朗日乘子法可得该优化问题的闭式解为
+\[
+    \bm{w}_{\omega}
+    = \frac{\mathbf{\Sigma}_{\mathbf{X}}^{-1} \overline{\bm{a}}_{\omega}}
+    {\overline{\bm{a}}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}}^{-1} \overline{\bm{a}}_{\omega}}.
+\]
+
+遍历所有参数值 \(\omega\)，即可构造滤波器组矩阵
+\[
+    \mathbf{W} = \begin{bmatrix} \bm{w}_{\omega_1} & \bm{w}_{\omega_2} & \cdots \end{bmatrix},
+\]
+并由此得到波束形成的输出矩阵
+\[
+    \mathbf{Y} = \mathbf{X} \mathbf{W}.
+\]
+与经典波束形成类似，可通过计算各列向量的功率来获得参数维度的功率谱：
+\[
+    p_{\omega}
+    = \tfrac{1}{L} \|\bm{y}_{\omega}\|_2^2
+    = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega}
+    = \frac{1}{\overline{\bm{a}}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}}^{-1} \overline{\bm{a}}_{\omega}}.
+\]
+
+\begin{example}
+    对\cref{fig_noise_capon}中的包含噪声的数据分别进行 CBF 和 Capon 方法处理，计算对应的二维脉压结果和参数维度的功率谱估计。
+    \begin{figure}[htb!]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel={参数维},
+                    ylabel={时间维},
+                    enlargelimits=false,
+                    width=5cm, height=5cm,
+                    ytick=\empty,
+                    xtick=\empty,
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    axis on top
+                ]
+                \addplot graphics [
+                        xmin=-1, xmax=1, ymin=-1, ymax=1,
+                    ] {./img/estimation/capon_1.png};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{有噪声数据矩阵\( \mathbf{X} \)（仅绘制了实部）}
+        \label{fig_noise_capon}
+    \end{figure}
+\end{example}
+\begin{solution}
+    二维脉压结果如\cref{fig_compressed}所示。与经典波束形成相比，Capon 方法在参数维度上展现出更高的分辨率，两个目标在参数维上被压缩为更尖锐的脉冲，并且旁瓣水平显著降低，从而提升了目标的可分辨性和检测性能。
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.4\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数维},
+                        ylabel={时间维},
+                        enlargelimits=false,
+                        width=5cm, height=5cm,
+                        ytick=\empty,
+                        xtick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        axis on top
+                    ]
+                    \addplot graphics [
+                            xmin=-1, xmax=1, ymin=-1, ymax=1,
+                        ] {./img/estimation/capon_2.png};
+                \end{axis}
+            \end{tikzpicture}
+            \caption{CBF}
+            \label{fig_compressed_capon_1}
+        \end{subfigure}
+        \begin{subfigure}{.4\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数维},
+                        ylabel={时间维},
+                        enlargelimits=false,
+                        width=5cm, height=5cm,
+                        ytick=\empty,
+                        xtick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        axis on top
+                    ]
+                    \addplot graphics [
+                            xmin=-1, xmax=1, ymin=-1, ymax=1,
+                        ] {./img/estimation/capon_3.png};
+                \end{axis}
+            \end{tikzpicture}
+            \caption{Capon}
+            \label{fig_compressed_capon_2}
+        \end{subfigure}
+        \caption{CBF 和 Capon 方法处理后的数据矩阵的绝对值图}
+        \label{fig_compressed_capon}
+    \end{figure}
+
+    参数维度的功率谱估计如\cref{fig_compressed}所示。可以看到，Capon 方法在参数维度上展现出更高的分辨率，两个目标在参数维上被压缩为更尖锐的脉冲，并且旁瓣水平显著降低，有效提升了目标的可分辨性和检测性能。
+    \begin{figure}[htb!]
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel={参数维}, ylabel={归一化功率谱},
+                    ticklabel style={font=\small},
+                    xmin=-0.5, xmax=0.5, ymin=0, ymax=1.2,
+                    % xtick=\empty,ytick=\empty,
+                    width=8cm, height=4cm,
+                    label style={font=\small},
+                    grid,
+                    legend cell align=left,
+                    legend style={
+                            anchor=north east,
+                            font=\tiny,
+                            draw=none,
+                            fill=none
+                        }
+                ]
+                \addplot[
+                    c1,
+                    thick,
+                ] table[x=w, y=p1, col sep=comma] {./img/estimation/capon.csv};
+                \addlegendentry{CBF}
+                \addplot[
+                    c2,
+                    thick,
+                ] table[x=w, y=p2, col sep=comma] {./img/estimation/capon.csv};
+                \addlegendentry{Capon}
+            \end{axis}
+        \end{tikzpicture}
+        \caption{CBF 和 Capon 方法处理后的数据矩阵的绝对值图}
+        \label{fig_compressed}
+    \end{figure}
+\end{solution}
+
+
+在实际应用中，由于接收信号的样本数量有限，协方差矩阵的估计往往不够准确，甚至可能不可逆。为缓解这一问题，可以借鉴岭回归（Ridge Regression）的思想，在目标函数中加入权重向量的范数惩罚项，从而得到如下优化模型：
+\[
+    \begin{aligned}
+        \min_{\bm{w}_{\omega}} \quad &
+        \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega}
+        + \delta \|\bm{w}_{\omega}\|_2^2                                                 \\
+        \text{s.t.} \quad            & \bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega} = 1,
+    \end{aligned}
+\]
+其中 \(\delta > 0\) 为正则化参数。利用拉格朗日乘子法，可得其闭式解为
+\[
+    \bm{w}_{\omega}
+    = \frac{(\mathbf{\Sigma}_{\mathbf{X}} + \delta \mathbf{I})^{-1} \,\overline{\bm{a}}_{\omega}}
+    {\overline{\bm{a}}_{\omega}^{\mathrm{H}} (\mathbf{\Sigma}_{\mathbf{X}} + \delta \mathbf{I})^{-1} \,\overline{\bm{a}}_{\omega}}.
+\]
+
+由此可见，该方法等价于将原协方差矩阵替换为 \(\mathbf{\Sigma}_{\mathbf{X}} + \delta \mathbf{I}\)，在保证无失真约束的同时显著改善了矩阵的条件数，从而增强了算法的鲁棒性。这一技巧通常被称为对角加载（Diagonal Loading）。
+
 
 
 \section{子空间方法}
