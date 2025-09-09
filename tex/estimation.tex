@@ -10,7 +10,7 @@
 \]
 其中，\( K \)为目标数，而矩阵\( \mathbf{R} \)、\( \mathbf{A} \)、\( \mathbf{B} \)和\( \mathbf{P} \)分别包含了目标的距离、方位角、俯仰角、多普勒信息。利用脉冲压缩技术，可以获取目标的距离信息，而本章的重点则是如何进一步从数据中提取目标的方位角和多普勒频率等参数。
 
-\section{波束形成与最小方差方法}
+\section{波束形成方法}
 考虑均匀线性阵列或单阵元在多脉冲下的观测情形，此时，接收信号退化为一个矩阵：
 \[
     \mathbf{X} = \mathbf{R} \mathbf{A}^{\mathrm{T}} \in \mathbb{C}^{L \times M},
@@ -23,51 +23,233 @@
 \]
 其中，参数 $\omega_k$ 的物理意义取决于雷达体制：若为阵列雷达，则 $\omega_k = \tfrac{d}{\lambda}\sin \theta_k$，与目标的方位角 $\theta_k$ 相关；若为单阵元多脉冲雷达，则 $\omega_k = \tfrac{2 T_r v_k}{\lambda}$，与目标的径向速度 $v_k$ 相关。
 
-
-\subsection{波束形成}
 波束形成（Beamforming）是最经典的参数估计方法，其基本思想是通过对接收信号进行加权求和，形成一个指向特定方向的空间滤波器或指定速度的多普勒滤波器，从而增强该方向或速度上的信号分量。对于给定滤波器\( \bm{w}_{\omega} \)，波束形成的输出可以表示为：
 \[
     \bm{y}_{\omega} = \mathbf{X} \bm{w}_{\omega} \in \mathbb{C}^{L \times 1},
 \]
-可以看作是某个方向或速度上接收到的回波。由于不同频率的复指数信号趋于正交，即当\( M \)足够大时，有
-\[
-    \frac{1}{M}\bm{a}_{\omega_i}^{\mathrm{H}} \bm{a}_{\omega_j} \approx \begin{cases}
-        1, & \omega_i = \omega_j    \\
-        0, & \omega_i \neq \omega_j
-    \end{cases}.
-\]
-因此，通常将滤波器取为与目标流形向量相匹配的形式：
-\[
-    \bm{w}_{\omega} = \frac{1}{M} \overline{\bm{a}} =  \frac{1}{M} \begin{bmatrix}
+可以看作是某个方向或速度上接收到的回波。
+
+\subsection{经典波束形成}
+
+经典波束形成（Conventional Beamforming, CBF）方法利用了不同频率复指数信号在维度充分大时趋于正交的性质，即当 $M$ 足够大时，有
+\begin{equation}
+    \frac{1}{M}\bm{a}_{\omega_i}^{\mathrm{H}} \bm{a}_{\omega_j} \approx
+    \begin{cases}
+        1, & \omega_i = \omega_j,     \\
+        0, & \omega_i \neq \omega_j .
+    \end{cases}
+\end{equation}
+因此，将滤波器权向量选为与目标流形向量相匹配的形式：
+\begin{equation}
+    \bm{w}_{\omega} = \frac{1}{M} \overline{\bm{a}}
+    = \frac{1}{M} \begin{bmatrix}
         1 & e^{j 2 \pi \omega} & \cdots & e^{j 2 \pi \omega (M-1)}
-    \end{bmatrix}^{\mathrm{H}}.
-\]
-可以有效地提取出对应参数值\( \omega \)的信号分量。该波束形成方法也被称作Bartlett 波束形成或经典波束形成（Conventional Beamforming，CBF）。
+    \end{bmatrix}^{\mathrm{H}},
+\end{equation}
+即可有效提取出对应参数值 $\omega$ 的信号分量。该方法又称为 \textbf{Bartlett 波束形成}，是最经典的一种波束形成策略。
 
 进一步地，通过扫描不同的参数值\( \omega \)，将原始信号投影到不同的方向或速度上，则可以分别获得不同方向或速度上的信号分量。具体而言，对于阵列信号，可以构建如下矩阵：
 \[
     \mathbf{W} = \frac{1}{M}\begin{bmatrix}
-        1      & e^{j 2 \pi \frac{d \sin \theta_1}{\lambda}} & \cdots & e^{j 2 \pi \frac{(M-1)d \sin \theta_1 }{\lambda}} \\
-        1      & e^{j 2 \pi \frac{d \sin \theta_2}{\lambda}} & \cdots & e^{j 2 \pi \frac{(M-1)d \sin \theta_2 }{\lambda}} \\
-        \vdots & \vdots                                      & \cdots & \vdots                                            \\
-        1      & e^{j 2 \pi \frac{d \sin \theta_R}{\lambda}} & \cdots & e^{j 2 \pi \frac{(M-1)d \sin \theta_R }{\lambda}}
-    \end{bmatrix}^{\mathrm{H}} \in \mathbb{C}^{M \times R},
+        1                                                   & 1                                                    & \cdots & 1                                                   \\
+        e^{- j 2 \pi \frac{d \sin \theta_1}{\lambda}}       & e^{- j 2 \pi \frac{d \sin \theta_2}{\lambda}}        & \cdots & e^{- j 2 \pi \frac{d \sin \theta_N}{\lambda}}       \\
+        \vdots                                              & \vdots                                               & \cdots & \vdots                                              \\
+        e^{- j 2 \pi \frac{(M-1) d \sin \theta_1}{\lambda}} & e^{- j 2 \pi \frac{ (M-1) d \sin \theta_2}{\lambda}} & \cdots & e^{- j 2 \pi \frac{(M-1) d \sin \theta_N}{\lambda}}
+    \end{bmatrix}\in \mathbb{C}^{M \times N},
 \]
-其中，\( \theta_1, \theta_2, \ldots, \theta_R \)为扫描的角度值。对于多脉冲信号，可以构建类似的矩阵：
+其中，\( \theta_1, \theta_2, \cdots, \theta_N \)为扫描的角度值。对于多脉冲信号，可以构建类似的矩阵：
 \[
     \mathbf{W} = \frac{1}{M}\begin{bmatrix}
-        1      & e^{j 2 \pi \frac{2 T_r v_1}{\lambda}} & \cdots & e^{j 2 \pi \frac{2 (M-1) T_r v_1 }{\lambda}} \\
-        1      & e^{j 2 \pi \frac{2 T_r v_2}{\lambda}} & \cdots & e^{j 2 \pi \frac{2 (M-1) T_r v_2 }{\lambda}} \\
-        \vdots & \vdots                                & \cdots & \vdots                                       \\
-        1      & e^{j 2 \pi \frac{2 T_r v_R}{\lambda}} & \cdots & e^{j 2 \pi \frac{2 (M-1) T_r v_R }{\lambda}}
-    \end{bmatrix}^{\mathrm{H}} \in \mathbb{C}^{M \times R},
+        1                                             & 1                                             & \cdots & 1                                             \\
+        e^{- j 2 \pi \frac{2 T_r v_1}{\lambda}}       & e^{- j 2 \pi \frac{2 T_r v_2}{\lambda}}       & \cdots & e^{- j 2 \pi \frac{2 T_r v_N}{\lambda}}       \\
+        \vdots                                        & \vdots                                        & \cdots & \vdots                                        \\
+        e^{- j 2 \pi \frac{2 (M-1) T_r v_1}{\lambda}} & e^{- j 2 \pi \frac{2 (M-1) T_r v_2}{\lambda}} & \cdots & e^{- j 2 \pi \frac{2 (M-1) T_r v_N}{\lambda}}
+    \end{bmatrix} \in \mathbb{C}^{M \times N},
 \]
-其中，\( v_1, v_2, \ldots, v_R \)为扫描的速度值。对应的波束形成可以表示为如下的矩阵乘法：
+其中，\( v_1, v_2, \cdots, v_N \)为扫描的速度值。对应的波束形成可以表示为如下的矩阵乘法：
 \[
-    \mathbf{Y} = \mathbf{X} \mathbf{W} \in \mathbb{C}^{L \times R}.
+    \mathbf{Y} = \mathbf{X} \mathbf{W} \in \mathbb{C}^{L \times N}.
+\]
+有趣的是，对于多脉冲信号，当所选扫描速度 $v_n$ 满足
+\[
+    \frac{2 T_r v_n}{\lambda} = \frac{n-1}{M}, \quad n = 1, 2, \cdots, N
+\]
+时，波束形成矩阵 $\mathbf{W}$ 正好对应于一个 $M \times M$ 的离散傅里叶变换（Discrete Fourier Transform，DFT）矩阵的前 $N$ 行。特别地，当 $M = N$ 时，$\mathbf{W}$ 即为标准的 DFT 矩阵。在这种情况下，波束形成过程等价于对接收信号在参数维度（慢时间维）上进行离散傅里叶变换，从而实现对多普勒频率的估计。
+
+此外，根据\cref{apx.conv-corr-mat}中的结论，对 $\mathbf{X}$ 的列向量 $\bm{x}_i$ 进行脉冲压缩同样可以写成矩阵乘法形式：
+\begin{equation}
+    \bm{y}_i = \mathbf{S}^{\mathrm{H}}\bm{x}_i,
+\end{equation}
+其中，$\mathbf{S}$ 为由参考向量构造的矩阵，有如下形式：
+\[
+    \mathbf{S} =
+    \begin{bmatrix}
+        s_1    & 0       & \cdots & 0      \\
+        s_2    & s_1     & \cdots & 0      \\
+        \vdots & \vdots  & \ddots & \vdots \\
+        s_W    & s_{W-1} & \ddots & s_1    \\
+        0      & s_W     & \ddots & s_2    \\
+        \vdots & \vdots  & \ddots & \vdots \\
+        0      & 0       & \cdots & s_W
+    \end{bmatrix}.
+\]
+由此可见，当同时对接收信号矩阵 $\mathbf{X}$ 的行向量与列向量分别实施波束形成与脉冲压缩时，其结果可统一表示为
+\[
+    \mathbf{Z} = \mathbf{S}^{\mathrm{H}} \mathbf{X}\mathbf{W}.
 \]
 
-波束形成方法简单直观，但其分辨率和抗干扰能力有限，尤其在目标间距较近或存在强干扰时，性能会显著下降。对于一个特定的参数值\( \omega \)，波束形成的输出可以进一步表示为：
+在矩阵 $\mathbf{Z}$ 中，目标表现为显著的峰值，其位置对应目标的距离及其他参数（方位或径向速度）。换言之，波束形成可视为在参数维度上的匹配滤波，即对目标信号执行``参数域脉冲压缩''。结合距离维与参数维的双重脉冲压缩，便可实现目标的定位与参数估计。
+
+\begin{example}
+    对\cref{fig_data_x}中的接收数据矩阵\( \mathbf{X} \)进行脉冲压缩和波束形成处理。
+
+    \begin{figure}[htb!]
+        \centering
+        % \includegraphics[width=.4\textwidth]{./img}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel={参数维},
+                    ylabel={时间维},
+                    enlargelimits=false,
+                    width=4.5cm, height=4.5cm,
+                    ytick=\empty,
+                    xtick=\empty,
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    axis on top
+                ]
+                \addplot graphics [
+                        xmin=-1, xmax=1, ymin=-1, ymax=1,
+                    ] {./img/estimation/est_1.png};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{接收数据矩阵\( \mathbf{X} \)（仅绘制了实部）}
+        \label{fig_data_x}
+    \end{figure}
+\end{example}
+
+\begin{solution}
+    处理结果如\cref{fig_compressed}所示。\cref{fig_compressed_1} 给出了对 \( \mathbf{X} \) 的行向量进行脉冲压缩的结果：原本具有一定展宽的目标回波在压缩后转变为尖锐的脉冲，在图像中表现为水平直线；同时，由于两个目标对应的直线具有不同的频率起伏，说明其参数值（方位或速度）存在差异。
+
+    \cref{fig_compressed_2} 展示了对 \( \mathbf{X} \) 的行向量进行波束形成的结果：两个目标在参数维上也被压缩为尖锐的脉冲，在图像中对应两条垂直直线，并且这两条直线明显呈现出 Chirp 信号的特征。
+
+    \cref{fig_compressed_3} 则给出了在行向量和列向量上分别进行脉冲压缩与波束形成的联合结果：此时，两个目标在距离维和参数维均被压缩为尖锐脉冲，在图像中表现为两个亮点，其位置正好对应目标的距离和参数值。
+
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数维},
+                        ylabel={时间维},
+                        enlargelimits=false,
+                        width=4.5cm, height=4.5cm,
+                        ytick=\empty,
+                        xtick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        axis on top
+                    ]
+                    \addplot graphics [
+                            xmin=-1, xmax=1, ymin=-1, ymax=1,
+                        ] {./img/estimation/est_2.png};
+                \end{axis}
+            \end{tikzpicture}
+            \caption{\( \mathbf{S}\mathbf{X} \)实部}
+            \label{fig_compressed_1}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数维},
+                        ylabel={时间维},
+                        enlargelimits=false,
+                        width=4.5cm, height=4.5cm,
+                        ytick=\empty,
+                        xtick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        axis on top
+                    ]
+                    \addplot graphics [
+                            xmin=-1, xmax=1, ymin=-1, ymax=1,
+                        ] {./img/estimation/est_3.png};
+                \end{axis}
+            \end{tikzpicture}
+            \caption{\( \mathbf{X}\mathbf{W} \)实部}
+            \label{fig_compressed_2}
+        \end{subfigure}
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数维},
+                        ylabel={时间维},
+                        enlargelimits=false,
+                        width=4.5cm, height=4.5cm,
+                        ytick=\empty,
+                        xtick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        axis on top
+                    ]
+                    \addplot graphics [
+                            xmin=-1, xmax=1, ymin=-1, ymax=1,
+                        ] {./img/estimation/est_4.png};
+                \end{axis}
+            \end{tikzpicture}
+            \caption{\(  \mathbf{S}\mathbf{X}\mathbf{W} \)绝对值}
+            \label{fig_compressed_3}
+        \end{subfigure}
+        \caption{距离维和参数维二重脉冲压缩示意图}
+        \label{fig_compressed}
+    \end{figure}
+\end{solution}
+
+在某些情况下，我们可能并不关心目标的距离信息，而仅希望获得其参数信息（如方位或速度）。此时，可以直接利用波束形成后的输出计算参数维度上的功率谱。具体地，对于参数值 $\omega$，对应输出的功率可表示为
+\begin{equation}
+    p_{\omega} = \frac{1}{L}\|\bm{y}_{\omega}\|_2^2
+    = \frac{1}{L}\|\mathbf{X}\bm{w}_{\omega}\|_2^2
+    = \frac{1}{L}\bm{w}_{\omega}^{\mathrm{H}}\mathbf{X}^{\mathrm{H}}\mathbf{X}\bm{w}_{\omega}
+    = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega},
+\end{equation}
+其中，$\mathbf{\Sigma}_{\mathbf{X}} = \tfrac{1}{L}\mathbf{X}^{\mathrm{H}}\mathbf{X}$ 为接收信号矩阵的协方差矩阵（一般假设接收信号均值为零）。通过对不同参数值 $\omega$ 进行扫描，即可得到参数维度的功率谱估计，从而实现目标参数的直接估计。
+
+对\cref{fig_data_x}中的数据进行波束形成处理，并计算参数维度的功率谱，结果如\cref{fig_spectrum_cbf}所示。可以看到，功率谱在目标参数值处出现了明显的峰值，并且峰值在参数维度上的位置与\cref{fig_compressed_3}中的目标水平位置一致。通过对功率谱进行峰值检测，即可实现目标参数的估计。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+                xlabel=参数维, ylabel=归一化功率谱,
+                ticklabel style={font=\small},
+                label style={font=\small},
+                xtick=\empty,ytick=\empty,
+                xmin = -0.5, xmax=0.5, ymin=0, ymax=1.2,
+                grid, width=8cm, height=4cm,
+                legend cell align=left,
+                legend style={
+                        anchor=north east,
+                        font=\tiny,
+                        draw=none,
+                        fill=none
+                    }
+            ]
+            \addplot[
+                c1,
+                thick,
+            ] table[x=w, y=p, col sep=comma] {./img/estimation/cbf.csv};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{波束形成功率谱估计}
+    \label{fig_spectrum_cbf}
+\end{figure}
+
+对于阵列信号而言，波束形成的一大优势是可以直接通过移相器硬件实现。通过控制各阵元的相位，对原始模拟信号加权求和，即可在空间上实现对特定方向的滤波。这样只需一路模数转换器对波束形成后的信号进行采样与处理，便能显著节省硬件资源。参数扫描则通过调节移相器的相位来完成，对应的雷达系统称为无源相控阵雷达（Passive Phased Array Radar）。这种方式的缺点在于无法同时观测多个方向的信号分量，因此在目标数量较多或干扰复杂的环境下，性能容易受限。相比之下，若对各阵元的信号分别采样并数字化，再通过数字处理实现波束合成，则能够同时获得多个方向的信号分量，从而提升系统的灵活性与抗干扰能力，但也会增加硬件开销。这类系统即为有源相控阵雷达（Active Phased Array Radar）。
+
+尽管波束形成方法简单直观，但其分辨率和抗干扰能力有限，尤其在目标间距较近或存在强干扰时，性能会显著下降。对于一个特定的参数值\( \omega \)，波束形成的输出可以进一步表示为：
 \[
     \bm{y}_{\omega} = \mathbf{X} \bm{w}_{\omega} = \sum_{k=1}^{K} \bm{r}_k \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\omega} = \sum_{k=1}^{K} \bm{r}_k \frac{\bm{a}_{\omega_k}^{\mathrm{T}} \overline{\bm{a}}_{\omega}}{M}.
 \]
@@ -122,145 +304,135 @@
     \label{fig_weight}
 \end{figure}
 
-此外，根据\cref{apx.conv-corr-mat}中的结论，对 $\mathbf{X}$ 的列向量 $\bm{x}_i$ 进行脉冲压缩同样可以写成矩阵乘法形式：
-\begin{equation}
-    \bm{y}_i = \mathbf{S}\,\bm{x}_i,
-\end{equation}
-其中，$\mathbf{S}$ 为由参考向量构造的卷积矩阵。由此可见，当同时对接收信号矩阵 $\mathbf{X}$ 的行向量与列向量分别实施波束形成与脉冲压缩时，其结果可统一表示为
-\begin{equation}
-    \mathbf{Z} = \mathbf{S}\,\mathbf{X}\,\mathbf{W}.
-\end{equation}
-在矩阵 $\mathbf{Z}$ 中，目标表现为显著的峰值，其位置对应目标的距离及其他参数（方位或径向速度）。换言之，波束形成可视为在参数维度上的匹配滤波，即对目标信号执行``参数域脉冲压缩''。结合距离维与参数维的双重脉冲压缩，便可实现目标的定位与参数估计。
+\subsection{和差比幅测角}
+无源相控阵节约了硬件开销，但其无法同时观测多个方向的信号分量，有源相控阵虽然提升了灵活性，但硬件成本大大增加。为此，雷达系统中常采用一种折衷的方案，即和差比幅测角（Sum–Difference Amplitude Comparison）方法。 该方法通过将阵列划分为多个子阵，并对各子阵的输出进行加权组合，从而在一定程度上兼顾了硬件复杂度与参数估计性能。
 
-\begin{example}
-    对\cref{fig_data_x}中的接收数据矩阵\( \mathbf{X} \)进行脉冲压缩和波束形成处理。
+不妨考虑一个均匀线性阵列，其阵元总数为 $2M$，并将其划分为两个子阵，每个子阵包含 $M$ 个阵元。对于给定方位角 $\theta$，和差比幅测角方法构造如下两组滤波器：
+\[
+    \bm{w}_{\text{sum}} = \frac{1}{2M}
+    \begin{bmatrix}
+        \bm{w}_1 \\
+        \bm{w}_2
+    \end{bmatrix}, \quad  \bm{w}_{\text{diff}} = \frac{1}{2M}
+    \begin{bmatrix}
+        \bm{w}_1 \\
+        -\bm{w}_2
+    \end{bmatrix},
+\]
+其中，\( \bm{w}_1 \) 和 \( \bm{w}_2 \) 分别为前\( M \) 个阵元和后\( M \) 个阵元的权向量，有如下形式：
+\[
+    \bm{w}_1 = \begin{bmatrix}
+        1                                           \\
+        e^{- j 2 \pi \frac{d \sin \theta}{\lambda}} \\
+        \vdots                                      \\
+        e^{- j 2 \pi \frac{(M-1) d \sin \theta}{\lambda}}
+    \end{bmatrix}, \quad
+    \bm{w}_2 = \begin{bmatrix}
+        e^{- j 2 \pi \frac{M d \sin \theta}{\lambda}}     \\
+        e^{- j 2 \pi \frac{(M+1) d \sin \theta}{\lambda}} \\
+        \vdots                                            \\
+        e^{- j 2 \pi \frac{(2M-1) d \sin \theta}{\lambda}}
+    \end{bmatrix}.
+\]
+记 $\bm{w}_{\text{sum}}$ 为两个子阵的和波束，$\bm{w}_{\text{diff}}$ 为两个子阵的差波束。对于位于方位角 $\theta_k$ 的目标，其波束形成输出分别为
+\[
+    \bm{y}_{\text{sum}} =  \bm{r}_k \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{sum}},
+    \quad
+    \bm{y}_{\text{diff}} = \bm{r}_k \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{diff}}.
+\]
+可以看出，两者在时域波形上保持完全一致，仅在复数比例因子上有所不同，分别为$\bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{sum}}$ 和 $\bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{diff}}$。该比例因子同时包含幅度与相位信息，其比值正是和差比幅测角所利用的参数。
 
-    \begin{figure}[htb!]
-        \centering
-        % \includegraphics[width=.4\textwidth]{./img}
-        \begin{tikzpicture}
-            \begin{axis}[
-                    xlabel={参数维},
-                    ylabel={时间维},
-                    enlargelimits=false,
-                    width=4cm, height=4cm,
-                    ytick=\empty,
-                    xtick=\empty,
-                    ticklabel style={font=\small},
-                    label style={font=\small},
-                    axis on top
-                ]
-                \addplot graphics [
-                        xmin=-1, xmax=1, ymin=-1, ymax=1,
-                    ] {./img/estimation/est_1.png};
-            \end{axis}
-        \end{tikzpicture}
-        \caption{接收数据矩阵\( \mathbf{X} \)（仅绘制了实部）}
-        \label{fig_data_x}
-    \end{figure}
-\end{example}
+为了分析这两个幅度的关系，同样将\( \bm{a}_{\omega_k} \) 拆分为两部分：
+\[
+    \bm{a}_{\omega_k} =
+    \begin{bmatrix}
+        \bm{a}_{\omega_k,1} \\
+        \bm{a}_{\omega_k,2}
+    \end{bmatrix},
+\]
+其中，
+\[
+    \bm{a}_{\omega_k,1} = \begin{bmatrix}
+        1                                           \\
+        e^{j 2 \pi \frac{d \sin \theta_k}{\lambda}} \\
+        \vdots                                      \\
+        e^{j 2 \pi \frac{(M-1) d \sin \theta_k}{\lambda}}
+    \end{bmatrix}, \quad
+    \bm{a}_{\omega_k,2} = \begin{bmatrix}
+        e^{j 2 \pi \frac{M d \sin \theta_k}{\lambda}}     \\
+        e^{j 2 \pi \frac{(M+1) d \sin \theta_k}{\lambda}} \\
+        \vdots                                            \\
+        e^{j 2 \pi \frac{(2M-1) d \sin \theta_k}{\lambda}}
+    \end{bmatrix}.
+\]
+那么，对于和波束，我们有
+\[
+    \begin{split}
+        \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{sum}} & = \frac{1}{2M}\begin{bmatrix}
+                                                                               \bm{a}_{\omega_k,1}^{\mathrm{T}} & \bm{a}_{\omega_k,2}^{\mathrm{T}}
+                                                                           \end{bmatrix}
+        \begin{bmatrix}
+            \bm{w}_1 \\
+            \bm{w}_2
+        \end{bmatrix}                                                                                                                                                                                                                                                                                  \\
+                                                           & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1 + \frac{1}{2M} \bm{a}_{\omega_k,2}^{\mathrm{T}} \bm{w}_2                                                                                                                          \\
+                                                           & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1 + \frac{1}{2M} \left( e^{j 2 \pi \frac{M d \sin \theta_k}{\lambda}} \bm{a}_{\omega_k,1}^{\mathrm{T}} \right) \left( e^{-j 2 \pi \frac{M d \sin \theta}{\lambda}} \bm{w}_1 \right) \\
+                                                           & = \frac{1 + e^{j 2\pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda}}}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1.
+    \end{split}
+\]
+类似地，对于差波束，有
+\[
+    \begin{split}
+        \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{diff}} & = \frac{1}{2M}\begin{bmatrix}
+                                                                                \bm{a}_{\omega_k,1}^{\mathrm{T}} & \bm{a}_{\omega_k,2}^{\mathrm{T}}
+                                                                            \end{bmatrix}
+        \begin{bmatrix}
+            \bm{w}_1 \\
+            -\bm{w}_2
+        \end{bmatrix}                                                                                                                                                                                                                                                                                     \\
+                                                            & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1 - \frac{1}{2M} \bm{a}_{\omega_k,2}^{\mathrm{T}} \bm{w}_2                                                                                                                            \\
+                                                            & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1 - \frac{1}{2M} \left( e^{j 2 \pi \frac{M d \sin \theta_k}{\lambda}} \bm{a}_{\omega_k,1}^{\mathrm{T}} \right) \left( e^{-j 2 \pi \frac{M d \sin \theta_k}{\lambda}} \bm{w}_1 \right) \\
+                                                            & = = \frac{1 - e^{j 2\pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda}}}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1.
+    \end{split}
+\]
 
-\begin{solution}
-    处理结果如\cref{fig_compressed}所示。\cref{fig_compressed_1} 给出了对 \( \mathbf{X} \) 的行向量进行脉冲压缩的结果：原本具有一定展宽的目标回波在压缩后转变为尖锐的脉冲，在图像中表现为水平直线；同时，由于两个目标对应的直线具有不同的频率起伏，说明其参数值（方位或速度）存在差异。
+不妨令\( y_{\text{sum}} \)和\( y_{\text{diff}} \)分别为对\( \bm{y}_{\text{sum}} \)和\( \bm{y}_{\text{diff}} \)进行脉冲压缩后的峰值，则有
+\[
+    \frac{y_{\text{diff}}}{y_{\text{sum}}} = \frac{1 - e^{j 2\pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda}}}{1 + e^{j 2\pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda}}}.
+\]
+记\( \phi = \pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda} \)，则上式可化简为
+\[
+    \frac{y_{\text{diff}}}{y_{\text{sum}}} = \frac{1 - e^{j 2 \phi}}{1 + e^{j 2 \phi}} = \frac{e^{-j \phi} - e^{j \phi}}{e^{-j \phi} + e^{j \phi}} = \frac{-2j \sin \phi}{2 \cos \phi} =-j \tan \phi.
+\]
+因此，两个峰值的虚部之比为
+\[
+    r = \operatorname{Imag}\left( \frac{y_{\text{diff}}}{y_{\text{sum}}} \right) = - \tan \phi = - \tan \left( \pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda} \right).
+\]
 
-    \cref{fig_compressed_2} 展示了对 \( \mathbf{X} \) 的行向量进行波束形成的结果：两个目标在参数维上也被压缩为尖锐的脉冲，在图像中对应两条垂直直线，并且这两条直线明显呈现出 Chirp 信号的特征。
+注意到，在\( \theta_k \)与\( \theta \)接近的情况下，有
+\[
+    \sin \theta_k - \sin \theta = 2 \cos \left( \frac{\theta_k + \theta}{2} \right) \sin \left( \frac{\theta_k - \theta}{2} \right) \approx 2 \cos \theta  \frac{\theta_k - \theta}{2} = \cos \theta (\theta_k - \theta).
+\]
+将其代入上式，得到
+\[
+    r \approx - \tan \left( \pi \frac{M d \cos \theta}{\lambda} (\theta_k - \theta) \right),
+\]
+进一步推导，有
+\[
+    \theta_k \approx \theta + \frac{\lambda}{\pi M d \cos \theta} \arctan (-r).
+\]
 
-    \cref{fig_compressed_3} 则给出了在行向量和列向量上分别进行脉冲压缩与波束形成的联合结果：此时，两个目标在距离维和参数维均被压缩为尖锐脉冲，在图像中表现为两个亮点，其位置正好对应目标的距离和参数值。
-
-    \begin{figure}[htb!]
-        \centering
-        \begin{subfigure}{.3\textwidth}
-            \centering
-            \begin{tikzpicture}
-                \begin{axis}[
-                        xlabel={参数维},
-                        ylabel={时间维},
-                        enlargelimits=false,
-                        width=4cm, height=4cm,
-                        ytick=\empty,
-                        xtick=\empty,
-                        ticklabel style={font=\small},
-                        label style={font=\small},
-                        axis on top
-                    ]
-                    \addplot graphics [
-                            xmin=-1, xmax=1, ymin=-1, ymax=1,
-                        ] {./img/estimation/est_2.png};
-                \end{axis}
-            \end{tikzpicture}
-            \caption{\( \mathbf{S}\mathbf{X} \)实部}
-            \label{fig_compressed_1}
-        \end{subfigure}
-        \begin{subfigure}{.3\textwidth}
-            \centering
-            \begin{tikzpicture}
-                \begin{axis}[
-                        xlabel={参数维},
-                        ylabel={时间维},
-                        enlargelimits=false,
-                        width=4cm, height=4cm,
-                        ytick=\empty,
-                        xtick=\empty,
-                        ticklabel style={font=\small},
-                        label style={font=\small},
-                        axis on top
-                    ]
-                    \addplot graphics [
-                            xmin=-1, xmax=1, ymin=-1, ymax=1,
-                        ] {./img/estimation/est_3.png};
-                \end{axis}
-            \end{tikzpicture}
-            \caption{\( \mathbf{X}\mathbf{W} \)实部}
-            \label{fig_compressed_2}
-        \end{subfigure}
-        \begin{subfigure}{.3\textwidth}
-            \centering
-            \begin{tikzpicture}
-                \begin{axis}[
-                        xlabel={参数维},
-                        ylabel={时间维},
-                        enlargelimits=false,
-                        width=4cm, height=4cm,
-                        ytick=\empty,
-                        xtick=\empty,
-                        ticklabel style={font=\small},
-                        label style={font=\small},
-                        axis on top
-                    ]
-                    \addplot graphics [
-                            xmin=-1, xmax=1, ymin=-1, ymax=1,
-                        ] {./img/estimation/est_4.png};
-                \end{axis}
-            \end{tikzpicture}
-            \caption{\(  \mathbf{S}\mathbf{X}\mathbf{W} \)绝对值}
-            \label{fig_compressed_3}
-        \end{subfigure}
-        \caption{距离维和参数维二重脉冲压缩示意图}
-        \label{fig_compressed}
-    \end{figure}
-\end{solution}
-
-在某些情况下，我们可能并不关心目标的距离信息，而仅希望获得其参数信息（如方位或速度）。此时，可以直接利用波束形成后的输出计算参数维度上的功率谱。具体地，对于参数值 $\omega$，其功率谱可表示为
-\begin{equation}
-    p_{\omega} = \frac{1}{L}\|\bm{y}_{\omega}\|_2^2
-    = \frac{1}{L}\|\mathbf{X}\bm{w}_{\omega}\|_2^2
-    = \frac{1}{L}\bm{w}_{\omega}^{\mathrm{H}}\mathbf{X}^{\mathrm{H}}\mathbf{X}\bm{w}_{\omega}
-    = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega},
-\end{equation}
-其中，$\mathbf{\Sigma}_{\mathbf{X}} = \tfrac{1}{L}\mathbf{X}^{\mathrm{H}}\mathbf{X}$ 为接收信号矩阵的协方差矩阵（一般假设接收信号均值为零）。通过对不同参数值 $\omega$ 进行扫描，即可得到参数维度的功率谱估计，从而实现目标参数的直接估计。
-
-对\cref{fig_data_x}中的数据进行波束形成处理，并计算参数维度的功率谱，结果如\cref{fig_spectrum_cbf}所示。可以看到，功率谱在目标参数值处出现了明显的峰值，并且峰值在参数维度上的位置与\cref{fig_compressed_3}中的目标水平位置一致。通过对功率谱进行峰值检测，即可实现目标参数的估计。
+\cref{fig_ac}展示了\( \theta \)等于0时，目标角度\( \theta_k \)和和差比幅值\( r \)之间的关系曲线。可以看到，随着目标角度偏离扫描角度，和差比幅值呈现出非线性变化的趋势。通过测量和差比幅值\( r \)，并结合上述关系式，即可实现对目标方位角\( \theta_k \)的估计。
 
 \begin{figure}[htb!]
     \centering
     \begin{tikzpicture}
         \begin{axis}[
-                xlabel=参数维, ylabel=归一化功率谱,
+                xlabel=\( \theta_k(\text{度}) \), ylabel=\( r \),
                 ticklabel style={font=\small},
                 label style={font=\small},
-                xtick=\empty,ytick=\empty,
-                xmin = -0.5, xmax=0.5, ymin=0, ymax=1.2,
-                grid, width=8cm, height=6cm,
+                grid, xmin=-6, xmax=6,
+                width=6cm, height=6cm,
                 legend cell align=left,
                 legend style={
                         anchor=north east,
@@ -272,16 +444,18 @@
             \addplot[
                 c1,
                 thick,
-            ] table[x=w, y=p, col sep=comma] {./img/estimation/cbf.csv};
+            ] table[x=x, y=y, col sep=comma] {./img/estimation/ac.csv};
         \end{axis}
     \end{tikzpicture}
-    \caption{}
-    \label{fig_spectrum_cbf}
+    \caption{目标角度与和差比幅值关系曲线}
+    \label{fig_ac}
 \end{figure}
 
-\subsection{和差比幅测角}
+相较于无源相控阵雷达，和差比幅法需要额外增加一路模数转换器。但这一硬件代价带来的好处是，在主瓣范围内，目标角度能够得到更为精确的测量。此外，和差比幅法的计算复杂度也较低，主要涉及简单的加减运算和脉冲压缩处理，适合实时应用。
 
-\subsection{最小方差估计}
+\subsection{最小方差无失真响应}
+经典波束形成方法没有考虑噪声和干扰的影响，因而在复杂环境下性能有限。为此，最小方差无失真响应（Minimum Variance Distortionless Response, MVDR）方法引入了噪声与干扰的统计特性，通过优化滤波器权向量以最小化输出功率，同时保证对目标信号无失真响应。
+
 
 \section{子空间方法}
 
