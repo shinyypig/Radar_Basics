@@ -21,7 +21,7 @@
         1 & e^{j 2 \pi \omega_k} & \cdots & e^{j 2 \pi \omega_k (M-1)}
     \end{bmatrix}^{\mathrm{T}}.
 \]
-其中，参数 $\omega_k$ 的物理意义取决于雷达体制：若为阵列雷达，则 $\omega_k = \tfrac{d}{\lambda}\sin \theta_k$，与目标的方位角 $\theta_k$ 相关；若为单阵元多脉冲雷达，则 $\omega_k = \tfrac{2 T_r v_k}{\lambda}$，与目标的径向速度 $v_k$ 相关。
+其中，参数 $\omega_k$ 的物理意义取决于雷达体制：若为阵列雷达，则 $\omega_k = \frac{d}{\lambda}\sin \theta_k$，与目标的方位角 $\theta_k$ 相关；若为单阵元多脉冲雷达，则 $\omega_k = \frac{2 T_r v_k}{\lambda}$，与目标的径向速度 $v_k$ 相关。
 
 波束形成（Beamforming）是最经典的参数估计方法，其基本思想是通过对接收信号进行加权求和，形成一个指向特定方向的空间滤波器或指定速度的多普勒滤波器，从而增强该方向或速度上的信号分量。对于给定滤波器\( \bm{w}_{\omega} \)，波束形成的输出可以表示为：
 \[
@@ -200,7 +200,7 @@
                         ] {./img/estimation/est_4.png};
                 \end{axis}
             \end{tikzpicture}
-            \caption{\(  \mathbf{S}\mathbf{X}\mathbf{W} \)绝对值}
+            \caption{\(  \mathbf{S}\mathbf{X}\mathbf{W} \)幅度}
             \label{fig_compressed_3}
         \end{subfigure}
         \caption{距离维和参数维二重脉冲压缩示意图}
@@ -215,7 +215,7 @@
     = \frac{1}{L}\bm{w}_{\omega}^{\mathrm{H}}\mathbf{X}^{\mathrm{H}}\mathbf{X}\bm{w}_{\omega}
     = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega},
 \]
-其中，$\mathbf{\Sigma}_{\mathbf{X}} = \tfrac{1}{L}\mathbf{X}^{\mathrm{H}}\mathbf{X}$ 为接收信号矩阵的协方差矩阵（一般假设接收信号均值为零）。通过对不同参数值 $\omega$ 进行扫描，即可得到参数维度的功率谱估计，从而实现目标参数的直接估计。
+其中，$\mathbf{\Sigma}_{\mathbf{X}} = \frac{1}{L}\mathbf{X}^{\mathrm{H}}\mathbf{X}$ 为接收信号矩阵的协方差矩阵（一般假设接收信号均值为零）。通过对不同参数值 $\omega$ 进行扫描，即可得到参数维度的功率谱估计，从而实现目标参数的直接估计。
 
 对\cref{fig_data_x}中的数据进行波束形成处理，并计算参数维度的功率谱，结果如\cref{fig_spectrum_cbf}所示。可以看到，功率谱在目标参数值处出现了明显的峰值，并且峰值在参数维度上的位置与\cref{fig_compressed_3}中的目标水平位置一致。通过对功率谱进行峰值检测，即可实现目标参数的估计。
 
@@ -268,7 +268,7 @@
     \centering
     \begin{tikzpicture}
         \begin{axis}[
-                xlabel=$ \omega_k - \omega $, ylabel=权重绝对值,
+                xlabel=$ \omega_k - \omega $, ylabel=权重幅度,
                 ticklabel style={font=\small},
                 label style={font=\small},
                 grid, smooth,
@@ -462,12 +462,12 @@
 \]
 直观地，我们希望输出 \(\bm{y}_{\omega}\) 尽可能只包含参数值为 \(\omega\) 的目标信号，同时抑制其他信号与噪声干扰。注意到目标信号对应的导向向量为 \(\bm{a}_{\omega}\)，因此目标分量在输出中的占比与 \(|\bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega}|\) 成正比。由此可构造如下优化问题：
 \[
-    \max_{\bm{w}_{\omega}} \frac{|\bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega}|^2}{ \tfrac{1}{L} \|\bm{y}_{\omega}\|_2^2},
+    \max_{\bm{w}_{\omega}} \frac{|\bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega}|^2}{ \frac{1}{L} \|\bm{y}_{\omega}\|_2^2},
 \]
 即在保证输出功率尽可能小的前提下，使目标信号成分最大化。该问题可转化为如下形式的约束优化问题：
 \[
     \begin{cases}
-        \min_{\bm{w}_{\omega}} \quad & \tfrac{1}{L} \|\bm{y}_{\omega}\|_2^2              \\
+        \min_{\bm{w}_{\omega}} \quad & \frac{1}{L} \|\bm{y}_{\omega}\|_2^2               \\
         \text{s.t.} \quad            & \bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega} = 1,
     \end{cases}
 \]
@@ -475,12 +475,12 @@
 
 记接收信号的协方差矩阵为
 \[
-    \mathbf{\Sigma}_{\mathbf{X}} = \tfrac{1}{L} \mathbf{X}^{\mathrm{H}} \mathbf{X},
+    \mathbf{\Sigma}_{\mathbf{X}} = \frac{1}{L} \mathbf{X}^{\mathrm{H}} \mathbf{X},
 \]
 则目标函数可重写为
 \[
-    \tfrac{1}{L} \|\bm{y}_{\omega}\|_2^2
-    = \tfrac{1}{L} \bm{w}_{\omega}^{\mathrm{H}} \mathbf{X}^{\mathrm{H}} \mathbf{X} \bm{w}_{\omega}
+    \frac{1}{L} \|\bm{y}_{\omega}\|_2^2
+    = \frac{1}{L} \bm{w}_{\omega}^{\mathrm{H}} \mathbf{X}^{\mathrm{H}} \mathbf{X} \bm{w}_{\omega}
     = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega}.
 \]
 利用拉格朗日乘子法可得该优化问题的闭式解为
@@ -501,7 +501,7 @@
 与经典波束形成类似，可通过计算各列向量的功率来获得参数维度的功率谱：
 \[
     p_{\omega}
-    = \tfrac{1}{L} \|\bm{y}_{\omega}\|_2^2
+    = \frac{1}{L} \|\bm{y}_{\omega}\|_2^2
     = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega}
     = \frac{1}{\overline{\bm{a}}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}}^{-1} \overline{\bm{a}}_{\omega}}.
 \]
@@ -579,7 +579,7 @@
             \caption{Capon}
             \label{fig_compressed_capon_2}
         \end{subfigure}
-        \caption{CBF 和 Capon 方法处理后的数据矩阵的绝对值图}
+        \caption{CBF 和 Capon 方法处理后的数据矩阵的幅度图}
         \label{fig_compressed_capon}
     \end{figure}
 
@@ -615,7 +615,7 @@
                 \addlegendentry{Capon}
             \end{axis}
         \end{tikzpicture}
-        \caption{CBF 和 Capon 方法处理后的数据矩阵的绝对值图}
+        \caption{CBF 和 Capon 方法处理后的数据矩阵的幅度图}
         \label{fig_compressed_capon2}
     \end{figure}
 \end{solution}
@@ -645,38 +645,47 @@
 为突破 Capon 算法的分辨率瓶颈，研究者提出了基于子空间的高分辨率方法。其核心思想不再依赖滤波器权向量的设计，而是通过对接收信号协方差矩阵进行特征分解，将信号与噪声划分到互相正交的子空间中，并利用这种正交性实现参数估计。借助这一几何结构，子空间方法能够获得远超传统滤波框架的分辨能力。典型代表包括 MUSIC 和 ESPRIT 方法，它们利用信号子空间与噪声子空间的正交特性，实现了高分辨率的参数估计。
 
 \subsection{MUSIC方法}
-考虑有噪声的接收信号模型
+考虑含噪接收信号模型
 \[
-    \mathbf{X} = \mathbf{R} \mathbf{A}^{\mathrm{T}} + \mathbf{N} \in \mathbb{C}^{L \times M},
+    \mathbf{X} = \mathbf{R}\mathbf{A}^{\mathrm{T}} + \mathbf{N} \in \mathbb{C}^{L \times M},
 \]
-其中\( \mathbf{N} \)为加性噪声。假设噪声为零均值、方差为\( \sigma^2 \)的白噪声，则其协方差矩阵可以近似为一个对角矩阵：
+其中 \(\mathbf{N}\) 为加性噪声。若噪声为零均值、方差为 \(\sigma^2\) 的白噪声，则其协方差矩阵近似为对角矩阵：
 \[
-    \mathbf{\Sigma}_{\mathbf{N}} = \frac{1}{L} \mathbf{N}^{\mathrm{H}} \mathbf{N} \approx \sigma^2 \mathbf{I} \in \mathbb{C}^{M \times M}.
+    \mathbf{\Sigma}_{\mathbf{N}}
+    = \frac{1}{L}\mathbf{N}^{\mathrm{H}}\mathbf{N}
+    \approx \sigma^2 \mathbf{I} \in \mathbb{C}^{M \times M}.
 \]
-进一步地，对于信号部分，一般假设各目标对应的距离不同，即\( \mathbf{R} \)是列正交的，因此信号部分的协方差矩阵可以表示为
+
+对于信号部分，一般假设各目标对应的距离互不相同，即 \(\mathbf{R}\) 的列向量互相正交。此时信号协方差矩阵可写为
 \[
-    \mathbf{\Sigma}_{\mathbf{S}} = \frac{1}{L} \overline{\mathbf{A}} \mathbf{R}^{\mathrm{H}} \mathbf{R} \mathbf{A}^{\mathrm{T}} = \overline{\mathbf{A}}  \left( \frac{1}{L} \mathbf{R}^{\mathrm{H}} \mathbf{R} \right) \mathbf{A}^{\mathrm{T}} \approx \overline{\mathbf{A}} \mathbf{\Sigma}_{\mathbf{R}} \mathbf{A}^{\mathrm{T}},
+    \mathbf{\Sigma}_{\mathbf{S}}
+    = \frac{1}{L}\,\overline{\mathbf{A}}\,\mathbf{R}^{\mathrm{H}}\mathbf{R}\,\mathbf{A}^{\mathrm{T}}
+    = \overline{\mathbf{A}}
+    \left(\frac{1}{L}\mathbf{R}^{\mathrm{H}}\mathbf{R}\right)
+    \mathbf{A}^{\mathrm{T}}
+    \approx \overline{\mathbf{A}}\,\mathbf{\Sigma}_{\mathbf{R}}\,\mathbf{A}^{\mathrm{T}},
 \]
-其中，\( \mathbf{\Sigma}_{\mathbf{R}} = \frac{1}{L} \mathbf{R}^{\mathrm{H}} \mathbf{R} \)为一个对角矩阵，且其对角线元素为各目标的功率：
+其中
 \[
-    \mathbf{\Sigma}_{\mathbf{R}} = \begin{bmatrix}
-        \sigma_1^2 &            &        &            \\
-                   & \sigma_2^2 &        &            \\
-                   &            & \ddots &            \\
-                   &            &        & \sigma_K^2
-    \end{bmatrix}.
+    \mathbf{\Sigma}_{\mathbf{R}}
+    = \frac{1}{L}\mathbf{R}^{\mathrm{H}}\mathbf{R}
+    = \operatorname{diag}(\sigma_1^2,\sigma_2^2,\cdots,\sigma_K^2),
 \]
-又因为噪声与信号相互独立，即\( \mathbf{R}\mathbf{A}^{\mathrm{T}} \mathbf{N}^{\mathrm{H}} = \mathbf{0} \)，因此接收信号的协方差矩阵有如下结构：
+其对角元素即为各目标的功率。又因为信号与噪声独立，即满足\(\mathbf{R}\mathbf{A}^{\mathrm{T}}\mathbf{N}^{\mathrm{H}} \approx \mathbf{0}\)，则整个接收信号的协方差矩阵为
 \[
     \begin{split}
-        \mathbf{\Sigma}_{\mathbf{X}} & = \frac{1}{L} \left( \mathbf{R} \mathbf{A}^{\mathrm{T}} + \mathbf{N} \right)^{\mathrm{H}} \left( \mathbf{R} \mathbf{A}^{\mathrm{T}} + \mathbf{N} \right) \\
-                                     & = \frac{1}{L} \mathbf{A} \mathbf{R}^{\mathrm{H}} \mathbf{R} \mathbf{A}^{\mathrm{T}} + \frac{1}{L} \mathbf{N}^{\mathrm{H}} \mathbf{N}                     \\
-                                     & = \mathbf{\Sigma}_{\mathbf{S}} + \mathbf{\Sigma}_{\mathbf{N}}                                                                                            \\
-                                     & \approx \overline{\mathbf{A}} \mathbf{\Sigma}_{\mathbf{R}} \mathbf{A}^{\mathrm{T}} + \sigma^2 \mathbf{I}.
+        \mathbf{\Sigma}_{\mathbf{X}}
+         & = \frac{1}{L}\big(\mathbf{R}\mathbf{A}^{\mathrm{T}}+\mathbf{N}\big)^{\mathrm{H}}
+        \big(\mathbf{R}\mathbf{A}^{\mathrm{T}}+\mathbf{N}\big)                                   \\
+         & \approx \frac{1}{L}\mathbf{A}\mathbf{R}^{\mathrm{H}}\mathbf{R}\mathbf{A}^{\mathrm{T}}
+        + \frac{1}{L}\mathbf{N}^{\mathrm{H}}\mathbf{N}                                           \\
+         & = \mathbf{\Sigma}_{\mathbf{S}} + \mathbf{\Sigma}_{\mathbf{N}}                         \\
+         & \approx \overline{\mathbf{A}}\,\mathbf{\Sigma}_{\mathbf{R}}\,\mathbf{A}^{\mathrm{T}}
+        + \sigma^2 \mathbf{I}.
     \end{split}
 \]
 
-考虑到\( \mathbf{A} \)的列向量为不同频率的复指数信号，而不同频率的复指数信号随着\( M \)的增大趋于正交。因此，对于协方差矩阵\( \mathbf{\Sigma}_{\mathbf{X}} \)，不难验证，矩阵\( \mathbf{A} \)的列向量的共轭\( \overline{\bm{a}}_{\omega_k} \)为其特征向量，且对应的特征值为\( \sigma_k^2 M + \sigma^2 \)：
+考虑到矩阵 \(\mathbf{A}\) 的列向量由不同频率的复指数信号组成，而当阵元数 \(M\) 足够大时，不同频率的复指数信号近似正交。因此，对于协方差矩阵 \(\mathbf{\Sigma}_{\mathbf{X}}\)，不难验证 \(\mathbf{A}\) 的列向量的共轭 \(\overline{\bm{a}}_{\omega_k}\) 是其特征向量，对应的特征值为 \(\sigma_k^2 M + \sigma^2\)。具体推导如下：
 \[
     \begin{split}
         \mathbf{\Sigma}_{\mathbf{X}} \overline{\bm{a}}_{\omega_k}
@@ -699,39 +708,91 @@
         = \left( \sigma_k^2 M + \sigma^2 \right) \overline{\bm{a}}_{\omega_k}.
     \end{split}
 \]
-一般来说，\( M > K \)，因此矩阵\( \mathbf{\Sigma}_{\mathbf{X}} \)至少有\( M-K \)个特征向量不在\( \mathbf{A} \)的列空间内。记这些特征向量为\( \bm{e}_{K+1}, \bm{e}_{K+2}, \ldots, \bm{e}_M \)，且都与\( \mathbf{A} \)的列向量的共轭正交，可以验证，这些特征向量对应的特征值均为\( \sigma^2 \)：
+
+另一方面，一般有 \(M > K\)，因此 \(\mathbf{\Sigma}_{\mathbf{X}}\) 至少还存在 \(M-K\) 个不在 \(\mathbf{A}\) 列空间内的特征向量，记为 \(\bm{e}_{K+1},\bm{e}_{K+2},\dots,\bm{e}_M\)（方便起见，令\( \bm{e}_k \)的模长与\( \bm{a}_{\omega_k}\) 模长相同，都为\( M \)）。由于协方差矩阵为共轭对称矩阵，其特征向量必然正交，因此有：
 \[
-    \begin{split}
-        \mathbf{\Sigma}_{\mathbf{X}} \bm{e}_i
-         & \approx \left( \overline{\mathbf{A}} \mathbf{\Sigma}_{\mathbf{R}} \mathbf{A}^{\mathrm{T}} + \sigma^2 \mathbf{I} \right) \bm{e}_i
-        = \sigma^2 \bm{e}_i.
-    \end{split}
+    \mathbf{\Sigma}_{\mathbf{X}} \bm{e}_i
+    \approx \big(\overline{\mathbf{A}}\,\mathbf{\Sigma}_{\mathbf{R}}\,\mathbf{A}^{\mathrm{T}} + \sigma^2 \mathbf{I}\big)\bm{e}_i
+    = \sigma^2 \bm{e}_i,\qquad i=K+1,\dots,M.
 \]
 
-综上，矩阵\( \mathbf{\Sigma}_{\mathbf{X}} \)的特征向量和特征值可以划分为两组：\( \overline{\bm{a}}_{\omega_1}, \overline{\bm{a}}_{\omega_2}, \cdots, \overline{\bm{a}}_{\omega_K} \)对应的特征值为\( \sigma_1^2 M + \sigma^2, \sigma_2^2 M + \sigma^2, \ldots, \sigma_K^2 M + \sigma^2 \)；而\( \bm{e}_{K+1}, \bm{e}_{K+2}, \ldots, \bm{e}_M \)对应的特征值均为\( \sigma^2 \)。这两组特征向量张成的子空间分别被称作信号子空间和噪声子空间。而共轭对称矩阵的特征向量必然正交，因此信号子空间与噪声子空间之间同样是互相正交的。
+综上，\(\mathbf{\Sigma}_{\mathbf{X}}\) 的特征结构可分为两类：由 \(\overline{\bm{a}}_{\omega_1},\dots,\overline{\bm{a}}_{\omega_K}\) 张成的信号子空间，对应特征值为\(\sigma_1^2 M+\sigma^2,\dots,\sigma_K^2 M+\sigma^2\)；由 \(\bm{e}_{K+1},\dots,\bm{e}_M\) 张成的噪声子空间，对应特征值均为 \(\sigma^2\)；且信号子空间与噪声子空间彼此正交。
 
-此外，注意到信号对应的特征值\( \sigma^2_k M + \sigma^2 > \sigma^2 \)，因此可以通过对协方差矩阵进行特征分解，并提取最大的\( K \)个特征值及其对应的特征向量，用来作为信号子空间，剩余的部分作为噪声子空间。具体地，设协方差矩阵的特征分解为
+又因为信号对应的特征值满足\(\sigma_k^2 M + \sigma^2 > \sigma^2\)，故可通过对 \(\mathbf{\Sigma}_{\mathbf{X}}\) 进行特征分解，提取最大的 \(K\) 个特征值及其特征向量来构造信号子空间，其余部分即为噪声子空间。具体地，设
 \[
-    \mathbf{\Sigma}_{\mathbf{X}} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\mathrm{H}} = \begin{bmatrix}
+    \mathbf{\Sigma}_{\mathbf{X}}
+    = \mathbf{U}\mathbf{\Lambda}\mathbf{U}^{\mathrm{H}}
+    = \begin{bmatrix}
         \mathbf{U}_{s} & \mathbf{U}_{n}
-    \end{bmatrix} \begin{bmatrix}
+    \end{bmatrix}
+    \begin{bmatrix}
         \mathbf{\Lambda}_{s} & \mathbf{0}           \\
         \mathbf{0}           & \mathbf{\Lambda}_{n}
-    \end{bmatrix} \begin{bmatrix}
+    \end{bmatrix}
+    \begin{bmatrix}
         \mathbf{U}_{s}^{\mathrm{H}} \\
         \mathbf{U}_{n}^{\mathrm{H}}
     \end{bmatrix},
 \]
-其中，\( \mathbf{U}_{s} \)包含了前\( K \)个最大的特征值对应的特征向量，张成信号子空间；而\( \mathbf{U}_{n} \)包含了剩余的\( M-K \)个特征值对应的特征向量，张成噪声子空间。
+其中，\(\mathbf{U}_{s}\) 包含前 \(K\) 个最大特征值对应的特征向量，构成信号子空间；\(\mathbf{U}_{n}\) 包含剩余 \(M-K\) 个特征值对应的特征向量，构成噪声子空间。
 
-Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪声子空间的正交性，实现对目标参数的高分辨率估计。给定一个导向矢量\( \bm{a}_{\omega} \)，如果其对应的参数值\( \omega \)恰好是某个目标的参数值\( \omega_k \)，那么该导向矢量必然位于信号子空间内，因此与噪声子空间正交。反之，如果\( \omega \)不是任何目标的参数值，那么导向矢量\( \bm{a}_{\omega} \)将位于噪声子空间内。进一步地，可以通过将该导向矢量投影到噪声子空间来衡量其与噪声子空间的正交程度，即\( \|\mathbf{U}_{n}^{\mathrm{H}} \overline{\bm{a}}_{\omega}\|_2^2\)。如果该值接近于零，则说明\( \bm{a}_{\omega} \)与噪声子空间正交，进而推断出\( \omega \)可能是某个目标的参数值，反之亦然。基于这一思路，MUSIC 方法定义了如下的谱函数：
+% 考虑到\( \mathbf{A} \)的列向量为不同频率的复指数信号，而不同频率的复指数信号随着\( M \)的增大趋于正交。因此，对于协方差矩阵\( \mathbf{\Sigma}_{\mathbf{X}} \)，不难验证，矩阵\( \mathbf{A} \)的列向量的共轭\( \overline{\bm{a}}_{\omega_k} \)为其特征向量，且对应的特征值为\( \sigma_k^2 M + \sigma^2 \)：
+% \[
+%     \begin{split}
+%         \mathbf{\Sigma}_{\mathbf{X}} \overline{\bm{a}}_{\omega_k}
+%          & \approx \left( \overline{\mathbf{A}} \mathbf{\Sigma}_{\mathbf{R}} \mathbf{A}^{\mathrm{T}} + \sigma^2 \mathbf{I} \right) \overline{\bm{a}}_{\omega_k}
+%         = \overline{\mathbf{A}} \mathbf{\Sigma}_{\mathbf{R}} \left( \mathbf{A}^{\mathrm{T}} \overline{\bm{a}}_{\omega_k} \right) + \sigma^2 \overline{\bm{a}}_{\omega_k}                            \\
+%          & = \overline{\mathbf{A}} \mathbf{\Sigma}_{\mathbf{R}} \begin{bmatrix}
+%                                                                     0      \\
+%                                                                     \vdots \\
+%                                                                     M      \\
+%                                                                     \vdots \\
+%                                                                     0
+%                                                                 \end{bmatrix} + \sigma^2 \overline{\bm{a}}_{\omega_k} = \overline{\mathbf{A}} \begin{bmatrix}
+%                                                                                                                                                   0            \\
+%                                                                                                                                                   \vdots       \\
+%                                                                                                                                                   \sigma_k^2 M \\
+%                                                                                                                                                   \vdots       \\
+%                                                                                                                                                   0
+%                                                                                                                                               \end{bmatrix} + \sigma^2 \overline{\bm{a}}_{\omega_k} \\
+%          & = \sigma_k^2 M \overline{\bm{a}}_{\omega_k} + \sigma^2 \overline{\bm{a}}_{\omega_k}
+%         = \left( \sigma_k^2 M + \sigma^2 \right) \overline{\bm{a}}_{\omega_k}.
+%     \end{split}
+% \]
+% 一般来说，\( M > K \)，因此矩阵\( \mathbf{\Sigma}_{\mathbf{X}} \)至少有\( M-K \)个特征向量不在\( \mathbf{A} \)的列空间内。记这些特征向量为\( \bm{e}_{K+1}, \bm{e}_{K+2}, \ldots, \bm{e}_M \)，且都与\( \mathbf{A} \)的列向量的共轭正交，可以验证，这些特征向量对应的特征值均为\( \sigma^2 \)：
+% \[
+%     \begin{split}
+%         \mathbf{\Sigma}_{\mathbf{X}} \bm{e}_i
+%          & \approx \left( \overline{\mathbf{A}} \mathbf{\Sigma}_{\mathbf{R}} \mathbf{A}^{\mathrm{T}} + \sigma^2 \mathbf{I} \right) \bm{e}_i
+%         = \sigma^2 \bm{e}_i.
+%     \end{split}
+% \]
+
+% 综上，矩阵\( \mathbf{\Sigma}_{\mathbf{X}} \)的特征向量和特征值可以划分为两组：\( \overline{\bm{a}}_{\omega_1}, \overline{\bm{a}}_{\omega_2}, \cdots, \overline{\bm{a}}_{\omega_K} \)对应的特征值为\( \sigma_1^2 M + \sigma^2, \sigma_2^2 M + \sigma^2, \ldots, \sigma_K^2 M + \sigma^2 \)；而\( \bm{e}_{K+1}, \bm{e}_{K+2}, \ldots, \bm{e}_M \)对应的特征值均为\( \sigma^2 \)。这两组特征向量张成的子空间分别被称作信号子空间和噪声子空间。而共轭对称矩阵的特征向量必然正交，因此信号子空间与噪声子空间之间同样是互相正交的。
+
+% 此外，注意到信号对应的特征值\( \sigma^2_k M + \sigma^2 > \sigma^2 \)，因此可以通过对协方差矩阵进行特征分解，并提取最大的\( K \)个特征值及其对应的特征向量，用来作为信号子空间，剩余的部分作为噪声子空间。具体地，设协方差矩阵的特征分解为
+% \[
+%     \mathbf{\Sigma}_{\mathbf{X}} = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\mathrm{H}} = \begin{bmatrix}
+%         \mathbf{U}_{s} & \mathbf{U}_{n}
+%     \end{bmatrix} \begin{bmatrix}
+%         \mathbf{\Lambda}_{s} & \mathbf{0}           \\
+%         \mathbf{0}           & \mathbf{\Lambda}_{n}
+%     \end{bmatrix} \begin{bmatrix}
+%         \mathbf{U}_{s}^{\mathrm{H}} \\
+%         \mathbf{U}_{n}^{\mathrm{H}}
+%     \end{bmatrix},
+% \]
+% 其中，\( \mathbf{U}_{s} \)包含了前\( K \)个最大的特征值对应的特征向量，张成信号子空间；而\( \mathbf{U}_{n} \)包含了剩余的\( M-K \)个特征值对应的特征向量，张成噪声子空间。
+
+Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪声子空间的正交性，实现对目标参数的高分辨率估计。给定一个导向矢量\( \bm{a}_{\omega} \)，如果其对应的参数值\( \omega \)恰好是某个目标的参数值\( \omega_k \)，那么该导向矢量必然位于信号子空间内，因此与噪声子空间正交。反之，如果\( \omega \)不是任何目标的参数值，那么导向矢量\( \bm{a}_{\omega} \)将位于噪声子空间内。
+
+进一步地，可以通过将该导向矢量投影到噪声子空间来衡量其与噪声子空间的正交程度，即\( \|\mathbf{U}_{n}^{\mathrm{H}} \overline{\bm{a}}_{\omega}\|_2^2\)。如果该值接近于零，则说明\( \bm{a}_{\omega} \)与噪声子空间正交，进而推断出\( \omega \)可能是某个目标的参数值，反之亦然。基于这一思路，MUSIC 方法定义了如下的谱函数：
 \[
     p_{\omega} = \frac{1}{\|\mathbf{U}_{n}^{\mathrm{H}} \overline{\bm{a}}_{\omega}\|_2^2} = \frac{1}{\overline{\bm{a}}_{\omega}^{\mathrm{H}} \mathbf{U}_{n} \mathbf{U}_{n}^{\mathrm{H}} \overline{\bm{a}}_{\omega}}.
 \]
 遍历所有参数值\( \omega \)，即可得到参数维度的功率谱估计。谱函数在目标参数值处会出现尖锐的峰值，从而实现对目标参数的高分辨率估计。
 
-如\cref{fig_music_eg}所示，在强噪声环境下，CBF、Capon 与 MUSIC 三种方法的功率谱估计结果差异显著。可以观察到，MUSIC 方法的谱峰更加尖锐，旁瓣水平更低。由于引入了信号与噪声子空间的分解，MUSIC 方法能够有效抑制噪声，因此其谱底明显低于 CBF 与 Capon，对应的噪声水平更低，从而显著提升了目标的可检测性。
-
+如\cref{fig_music_eg}所示，在强噪声环境下，CBF、Capon 与 MUSIC 三种方法的功率谱估计结果差异显著。可以观察到，MUSIC 方法的谱峰更加尖锐，旁瓣水平更低。此外，由于引入了信号子空间与噪声子空间，MUSIC 方法能够有效抑制噪声，因此其功率谱中的底噪明显低于 CBF 与 Capon，显著提升了目标的可检测性。
 \begin{figure}[htb!]
     \centering
     \begin{tikzpicture}
@@ -772,29 +833,30 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
     \label{fig_music_eg}
 \end{figure}
 
-相较于CBF和Capon方法，MUSIC方法的推导过程中并未涉及滤波器权向量的设计，因此很难直接获得\cref{fig_compressed_capon}所示的二维脉压结果。不过注意到，MUSIC本质上是利用了接收信号矩阵的低秩结构，因此可以通过对接收信号矩阵进行截断奇异值分解（Truncated SVD），并保留前\( K \)个奇异值及其对应的奇异向量，来实现对信号成分的提取与噪声的抑制。
+与 CBF 和 Capon 方法不同，MUSIC 方法的推导过程中并未涉及滤波器权向量的设计，因此难以直接得到如 \cref{fig_compressed_capon} 所示的二维脉压结果。然而，MUSIC 的核心在于利用接收信号矩阵的低秩结构。基于这一点，可以通过对接收信号矩阵进行截断奇异值分解（Truncated SVD），即仅保留前 \(K\) 个奇异值及其对应的奇异向量，对数据进行重构，从而实现信号成分的提取与噪声的抑制。
 
 设接收信号矩阵的奇异值分解为
 \[
-    \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{V}^{\mathrm{H}}.
+    \mathbf{X} = \mathbf{U}\mathbf{\Lambda}\mathbf{V}^{\mathrm{H}},
 \]
-此时\( \mathbf{X} \)的协方差矩阵可以表示为
+则其协方差矩阵可表示为
 \[
-    \mathbf{\Sigma}_{\mathbf{X}} = \frac{1}{L} \mathbf{X}^{\mathrm{H}} \mathbf{X} = \frac{1}{L} \mathbf{V} \mathbf{\Lambda}^{\mathrm{H}} \mathbf{U}^{\mathrm{H}} \mathbf{U} \mathbf{\Lambda} \mathbf{V}^{\mathrm{H}} = \frac{1}{L} \mathbf{V} \mathbf{\Lambda}^{\mathrm{H}} \mathbf{\Lambda} \mathbf{V}^{\mathrm{H}}.
+    \mathbf{\Sigma}_{\mathbf{X}}
+    = \tfrac{1}{L}\mathbf{X}^{\mathrm{H}}\mathbf{X}
+    = \tfrac{1}{L}\mathbf{V}\mathbf{\Lambda}^{\mathrm{H}}\mathbf{\Lambda}\mathbf{V}^{\mathrm{H}}.
 \]
-注意到，矩阵\( \mathbf{\Lambda} \in \mathbb{C}^{L \times M} \)是一个对角矩阵，有如下形式：
+其中，\(\mathbf{\Lambda}\in\mathbb{R}^{L\times M}\) 为对角矩阵：
 \[
     \mathbf{\Lambda} = \begin{bmatrix}
-        \lambda_1 &           &        &           \\
-                  & \lambda_2 &        &           \\
-                  &           & \ddots &           \\
-                  &           &        & \lambda_M \\
-        0         & 0         & \cdots & 0         \\
-        \vdots    & \vdots    & \ddots & \vdots    \\
-        0         & 0         & \cdots & 0
+        \lambda_1 &        &           \\
+                  & \ddots &           \\
+                  &        & \lambda_M \\
+        0         & \cdots & 0         \\
+        \vdots    & \ddots & \vdots    \\
+        0         & \cdots & 0
     \end{bmatrix} \in \mathbb{R}^{L \times M},
 \]
-因此，有
+从而有
 \[
     \mathbf{\Lambda}^{\mathrm{H}} \mathbf{\Lambda} = \begin{bmatrix}
         \lambda_1^2 &             &        &             \\
@@ -804,21 +866,68 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
     \end{bmatrix} \in \mathbb{R}^{M \times M}.
 \]
 
-不难发现，SVD分解的右奇异向量\( \mathbf{V} \)即为协方差矩阵的特征向量，而奇异值的平方\( \lambda_i^2 \)与协方差矩阵的特征值成正比。因此，前\( K \)个最大的奇异值同样对应于信号子空间，而剩余的奇异值对应于噪声子空间。
-
-因此，可以通过保留前\( K \)个最大的奇异值及其对应的奇异向量，来近似地提取信号子空间，从而实现对信号成分的提取与噪声的抑制。具体地，降噪后的数据矩阵有如下形式：
+由此可见，右奇异向量矩阵 \(\mathbf{V}\) 正是协方差矩阵的特征向量，而奇异值的平方 \(\lambda_i^2\) 与协方差矩阵的特征值成正比。因此，前 \(K\) 个最大的奇异值对应于信号子空间，其余则对应于噪声子空间。据此，通过保留前 \(K\) 个奇异值及其对应的奇异向量，可近似提取信号子空间并抑制噪声。降噪后的数据矩阵为
 \[
     \hat{\mathbf{X}} = \mathbf{U}_K \mathbf{\Lambda}_K \mathbf{V}_K^{\mathrm{H}},
 \]
-其中\( \mathbf{U}_K \)为\( \mathbf{U} \)的前\( K \)列，\( \mathbf{V}_K \)为\( \mathbf{V} \)的前\( K \)列，\( \mathbf{\Lambda}_K \)为前\( K \)个奇异值构成的对角矩阵：
+其中，\(\mathbf{U}_K\) 与 \(\mathbf{V}_K\) 分别由 \(\mathbf{U}\)、\(\mathbf{V}\) 的前 \(K\) 列构成，\(\mathbf{\Lambda}_K\) 为前 \(K\) 个奇异值构成的对角矩阵：
 \[
-    \mathbf{\Lambda}_K = \begin{bmatrix}
+    \mathbf{\Lambda}_K =
+    \begin{bmatrix}
         \lambda_1 &           &        &           \\
                   & \lambda_2 &        &           \\
                   &           & \ddots &           \\
                   &           &        & \lambda_K
-    \end{bmatrix} \in \mathbb{R}^{K \times K}
+    \end{bmatrix} \in \mathbb{R}^{K\times K}.
 \]
+
+% 与 CBF 和 Capon 方法不同，MUSIC 方法的推导过程中并未涉及滤波器权向量的设计，因此难以直接得到如 \cref{fig_compressed_capon} 所示的二维脉压结果。不过需要指出的是，MUSIC 的核心在于利用接收信号矩阵的低秩结构。基于这一点，可以通过对接收信号矩阵进行截断奇异值分解（Truncated SVD），即仅保留前 \(K\) 个奇异值及其对应的奇异向量，对数据进行重构，从而实现信号成分的提取与噪声的有效抑制。
+
+% 设接收信号矩阵的奇异值分解为
+% \[
+%     \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{V}^{\mathrm{H}}.
+% \]
+% 此时\( \mathbf{X} \)的协方差矩阵可以表示为
+% \[
+%     \mathbf{\Sigma}_{\mathbf{X}} = \frac{1}{L} \mathbf{X}^{\mathrm{H}} \mathbf{X} = \frac{1}{L} \mathbf{V} \mathbf{\Lambda}^{\mathrm{H}} \mathbf{U}^{\mathrm{H}} \mathbf{U} \mathbf{\Lambda} \mathbf{V}^{\mathrm{H}} = \frac{1}{L} \mathbf{V} \mathbf{\Lambda}^{\mathrm{H}} \mathbf{\Lambda} \mathbf{V}^{\mathrm{H}}.
+% \]
+% 注意到，矩阵\( \mathbf{\Lambda} \in \mathbb{C}^{L \times M} \)是一个对角矩阵，有如下形式：
+% \[
+%     \mathbf{\Lambda} = \begin{bmatrix}
+%         \lambda_1 &           &        &           \\
+%                   & \lambda_2 &        &           \\
+%                   &           & \ddots &           \\
+%                   &           &        & \lambda_M \\
+%         0         & 0         & \cdots & 0         \\
+%         \vdots    & \vdots    & \ddots & \vdots    \\
+%         0         & 0         & \cdots & 0
+%     \end{bmatrix} \in \mathbb{R}^{L \times M},
+% \]
+% 因此，有
+% \[
+%     \mathbf{\Lambda}^{\mathrm{H}} \mathbf{\Lambda} = \begin{bmatrix}
+%         \lambda_1^2 &             &        &             \\
+%                     & \lambda_2^2 &        &             \\
+%                     &             & \ddots &             \\
+%                     &             &        & \lambda_M^2
+%     \end{bmatrix} \in \mathbb{R}^{M \times M}.
+% \]
+
+% 不难发现，SVD分解的右奇异向量\( \mathbf{V} \)即为协方差矩阵的特征向量，而奇异值的平方\( \lambda_i^2 \)与协方差矩阵的特征值成正比。因此，前\( K \)个最大的奇异值同样对应于信号子空间，而剩余的奇异值对应于噪声子空间。
+
+% 因此，可以通过保留前\( K \)个最大的奇异值及其对应的奇异向量，来近似地提取信号子空间，从而实现对信号成分的提取与噪声的抑制。具体地，降噪后的数据矩阵有如下形式：
+% \[
+%     \hat{\mathbf{X}} = \mathbf{U}_K \mathbf{\Lambda}_K \mathbf{V}_K^{\mathrm{H}},
+% \]
+% 其中\( \mathbf{U}_K \)为\( \mathbf{U} \)的前\( K \)列，\( \mathbf{V}_K \)为\( \mathbf{V} \)的前\( K \)列，\( \mathbf{\Lambda}_K \)为前\( K \)个奇异值构成的对角矩阵：
+% \[
+%     \mathbf{\Lambda}_K = \begin{bmatrix}
+%         \lambda_1 &           &        &           \\
+%                   & \lambda_2 &        &           \\
+%                   &           & \ddots &           \\
+%                   &           &        & \lambda_K
+%     \end{bmatrix} \in \mathbb{R}^{K \times K}
+% \]
 
 \begin{example}
     对\cref{fig_noise_music}中的包含噪声的数据进行SVD分解，并保留前\( K=2 \)个奇异值及其对应的奇异向量，计算降噪后的数据矩阵\( \hat{\mathbf{X}} \)。
@@ -846,7 +955,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
     \end{figure}
 \end{example}
 \begin{solution}
-    降噪后的数据矩阵如\cref{fig_denoised}所示。可以看到，经过截断奇异值分解后，数据矩阵中的噪声成分被显著抑制，目标信号得以更清晰地呈现。
+    降噪后的数据矩阵如\cref{fig_denoised}所示。可以看到，经过截断奇异值分解后，数据矩阵中的噪声成分被有效抑制，目标信号得以更清晰地呈现。
     \begin{figure}[htb!]
         \centering
         \begin{tikzpicture}
@@ -870,7 +979,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
         \label{fig_denoised}
     \end{figure}
 
-    可以对降噪后的数据矩阵利用匹配滤波和Capon算法进行二维脉压处理，获得更清晰的目标回波图像。但注意到，此时接收信号矩阵的协方差矩阵不再满秩，因此，可以使用对角加载技术来实现Capon算法。各算法处理后的数据矩阵的绝对值图如\cref{fig_compressed_music}所示。可以看到，经过降噪处理后，目标信号得以更清晰地呈现，旁瓣水平显著降低，从而提升了目标的可分辨性和检测性能。
+    可以对降噪后的数据矩阵先后采用匹配滤波和 Capon 算法进行二维脉压处理，从而获得更清晰的目标回波图像。需要注意的是，此时接收信号矩阵的协方差矩阵已不再满秩，因此在实现 Capon 算法时应引入对角加载技术。各算法处理结果的幅度图如\cref{fig_compressed_music}所示。由图可见，经过降噪处理后，目标信号得到更清晰的展现，旁瓣水平显著降低，从而有效提升了目标的分辨能力与检测性能。
 
     \begin{figure}[htb!]
         \centering
@@ -940,11 +1049,91 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
             \caption{SVD降噪}
             \label{fig_2d_compress_denoise_3}
         \end{subfigure}
-        \caption{不同方法处理后的数据矩阵的绝对值图}
+        \caption{不同方法处理后的数据矩阵的幅度图}
         \label{fig_compressed_music}
     \end{figure}
 \end{solution}
 
+接下来，我们定性地讨论一下 MUSIC 方法为何优于 Capon 方法。注意到，Capon 方法的功率谱输出为
+\[
+    p_{\omega}^{\text{Capon}} = \frac{1}{\overline{\bm{a}}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}}^{-1} \overline{\bm{a}}_{\omega}}.
+\]
+又因为
+\[
+    \mathbf{\Sigma}_{\mathbf{X}}
+    = \mathbf{U} \mathbf{\Lambda} \mathbf{U}^{\mathrm{H}},
+\]
+其中
+{
+\tiny
+\[
+    \mathbf{U} \approx \frac{1}{\sqrt{M}}\begin{bmatrix}
+        \overline{\bm{a}}_1 & \cdots & \overline{\bm{a}}_K & \bm{e}_{K+1} & \cdots & \bm{e}_M
+    \end{bmatrix}, \quad
+    \mathbf{\Lambda} \approx \begin{bmatrix}
+        \sigma_1^2 M + \sigma^2 &        &                         &          &        &          \\
+                                & \ddots &                         &          &        &          \\
+                                &        & \sigma_K^2 M + \sigma^2 &          &        &          \\
+                                &        &                         & \sigma^2 &        &          \\
+                                &        &                         &          & \ddots &          \\
+                                &        &                         &          &        & \sigma^2
+    \end{bmatrix}.
+\]
+}
+基于SVD分解，可以得到\( \mathbf{\Sigma}_{\mathbf{X}} \) 的逆为
+\[
+    \mathbf{\Sigma}_{\mathbf{X}}^{-1} \approx \mathbf{U} \mathbf{\Lambda}^{-1} \mathbf{U}^{\mathrm{H}}.
+\]
+
+因此，对于目标参数 \(\overline{\bm{a}}_{\omega_k}\)，Capon 方法的谱值为
+\[
+    p_{\omega_k}^{\text{Capon}}
+    \approx \frac{1}{\tfrac{M}{\sigma_k^2 M + \sigma^2}}
+    = \frac{\sigma_k^2 M + \sigma^2}{M},
+\]
+而对于非目标参数 \(\omega \neq \omega_k\)，有
+\[
+    p_{\omega}^{\text{Capon}}
+    \approx \frac{1}{\tfrac{M}{\sigma^2}}
+    = \frac{\sigma^2}{M}.
+\]
+由此可见，Capon 谱峰与底噪的比值为
+\[
+    \frac{p_{\omega_k}^{\text{Capon}}}{p_{\omega}^{\text{Capon}}}
+    \approx \frac{\sigma_k^2 M}{\sigma^2} + 1.
+\]
+
+对于 MUSIC 方法，其谱函数定义为
+\[
+    p_{\omega}^{\text{MUSIC}}
+    = \frac{1}{\overline{\bm{a}}_{\omega}^{\mathrm{H}}
+    \mathbf{U}_n \mathbf{U}_n^{\mathrm{H}}
+    \overline{\bm{a}}_{\omega}}.
+\]
+注意到
+\[
+    \mathbf{U}_n \mathbf{U}_n^{\mathrm{H}}
+    = \mathbf{U}\,\tilde{\mathbf{\Lambda}}\,\mathbf{U}^{\mathrm{H}}, \qquad
+    \tilde{\mathbf{\Lambda}}
+    = \operatorname{diag}(\underbrace{0,\dots,0}_{K},
+    \underbrace{1,\dots,1}_{M-K}),
+\]
+因此，对于目标参数 \(\overline{\bm{a}}_{\omega_k}\)，分母为零，
+\[
+    p_{\omega_k}^{\text{MUSIC}} \approx +\infty,
+\]
+而对于非目标参数值 \(\omega \neq \omega_k\)，有
+\[
+    p_{\omega}^{\text{MUSIC}} \approx \frac{1}{M}.
+\]
+故 MUSIC 谱峰与底噪之比趋于无穷大，其谱峰显著尖锐。
+
+综上，Capon 与 MUSIC 的谱函数可统一表示为
+\[
+    p_{\omega} = \frac{1}{\overline{\bm{a}}_{\omega}^{\mathrm{H}}
+        \mathbf{W}\,\overline{\bm{a}}_{\omega}},
+\]
+其中 Capon 方法对应 \(\mathbf{W} = \mathbf{\Sigma}_{\mathbf{X}}^{-1}\)，即对信号与噪声赋予与功率成反比的加权；而 MUSIC 方法对应 \(\mathbf{W} = \mathbf{U}_n \mathbf{U}_n^{\mathrm{H}}\)，是噪声子空间的投影矩阵，其权重仅取 \(0/1\)，本质上是一种非线性划分。正是这种权重结构的差异，使得 MUSIC 能够实现比 Capon 更高的分辨率。
 
 \subsection{ESPRIT方法}
 
