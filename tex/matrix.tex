@@ -389,7 +389,7 @@
               \end{cases}
               \label{eq:basis-pursuit}
           \end{equation}
-          在满足一定条件，如限制性等距条件（Restricted Isometry Property）时，该方法能够准确恢复原始的稀疏解。并且，可以通过成熟的线性规划等算法高效求解。
+          在满足一定条件，如限制性等距条件（Restricted Isometry Property）时，该方法能够准确恢复原始的稀疏解。并且，可以通过成熟的线性规划（Linear Programming）或二阶锥规划（Second-Order Cone Programming）等算法高效求解。
 
     \item \textbf{LASSO（Least Absolute Shrinkage and Selection Operator）}：通过引入 \( \ell_1 \)-范数正则项，构造如下优化模型：
           \begin{equation}

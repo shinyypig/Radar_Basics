@@ -1320,7 +1320,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
                         ticklabel style={font=\small},
                         label style={font=\small},
                         grid,width=5cm, height=4cm,
-                        xmin=0, xmax=40,
+                        xmin=0, xmax=39,
                         legend cell align=left,
                         legend style={
                                 anchor=north east,
@@ -1346,7 +1346,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
         \label{fig_svd_result}
     \end{figure}
 
-    利用ESPRIT方法估计出矩阵\( \mathbf{\hat{\Psi}} \)后，计算其特征分解\( \mathbf{\hat{\Psi}} = \mathbf{T}^{-1} \mathbf{\Phi} \mathbf{T}\)，并通过特征值反解出目标参数为\( \hat{\omega}_1 = 0.0999785 \)，\( \hat{\omega}_2 = -0.05001828 \)，与真实值\( \omega_1 = 0.1 \)，\( \omega_2 = -0.05 \)非常接近。将估计结果在归一化功率谱上标出，如\cref{fig_esprit_result}所示。可以看到，ESPRIT方法成功地分辨出了两个目标参数，并且其谱峰位置与CBF的峰值位置基本一致。
+    利用ESPRIT方法估计出矩阵\( \mathbf{\hat{\Psi}} \)后，计算其特征分解\( \mathbf{\hat{\Psi}} = \mathbf{T}^{-1} \mathbf{\hat{\Phi}} \mathbf{T}\)，并通过特征值反解出目标参数为\( \hat{\omega}_1 = 0.0999785 \)，\( \hat{\omega}_2 = -0.05001828 \)，与真实值\( \omega_1 = 0.1 \)，\( \omega_2 = -0.05 \)非常接近。将估计结果在归一化功率谱上标出，如\cref{fig_esprit_result}所示。可以看到，ESPRIT方法成功地分辨出了两个目标参数，并且其谱峰位置与CBF的峰值位置基本一致。
 
     \begin{figure}[htb!]
         \centering
@@ -1385,7 +1385,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
                 ] coordinates {(-0.05001828,0) (-0.05001828,1.2)};
             \end{axis}
         \end{tikzpicture}
-        \caption{}
+        \caption{ESPRIT估计结果}
         \label{fig_esprit_result}
     \end{figure}
 
@@ -1438,7 +1438,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
                         ticklabel style={font=\small},
                         label style={font=\small},
                         grid,width=5cm, height=4cm,
-                        xmin=0, xmax=40,
+                        xmin=0, xmax=39,
                         legend cell align=left,
                         legend style={
                                 anchor=north east,
@@ -1466,6 +1466,147 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \end{solution}
 
 \section{稀疏表示方法}
+
+给定接收信号矩阵\( \mathbf{X} = \mathbf{R} \mathbf{A}^{\mathrm{T}}  + \mathbf{N} \in \mathbb{C}^{L \times M} \)，其中导向矢量矩阵\( \mathbf{A} \in \mathbb{C}^{M \times K} \)中的列向量的形式已知，为
+\[
+    \bm{a}_{\omega_k}
+    = \begin{bmatrix}
+        1 & e^{j2\pi\omega_k} & \cdots & e^{j2\pi(M-1)\omega_k}
+    \end{bmatrix}^{\mathrm{T}}, \quad k=1,2,\cdots,K.
+\]
+因此，不妨构建一个超完备的参数空间的离散字典
+\[
+    \mathbf{D} = \begin{bmatrix}
+        \bm{a}_{\omega_1} & \bm{a}_{\omega_2} & \cdots & \bm{a}_{\omega_I}
+    \end{bmatrix} \in \mathbb{C}^{M \times I},
+\]
+其中\( I \gg K \)，且参数点\( \omega_i \)在参数空间内均匀分布。可以预见的是，只要\( I \)足够大，实际目标参数\( \omega_k \)必然包含在字典\( \mathbf{D} \)中或者与字典中的某个参数点非常接近。因此，利用字典\( \mathbf{D} \)可以将接收信号矩阵分解为
+\[
+    \mathbf{X} = \mathbf{S} \mathbf{D}^{\mathrm{T}} + \mathbf{N},
+\]
+而其中\( \mathbf{S} \in \mathbb{C}^{L \times I} \)为稀疏系数矩阵，其列向量\( \bm{s}_i \)表示参数点\( \omega_i \)对应的目标回波信号。显然，只有当\( \omega_i \)接近某个实际目标参数时，\( \bm{s}_i \)才可能非零，否则应为零。因此，系数矩阵\( \mathbf{S} \)的列向量是稀疏的。记向量\( \bm{p} \in \mathbb{C}^{I \times 1}\)为系数矩阵\( \mathbf{S} \)的列范数构成的向量，即
+\[
+    p_i = \|\bm{s}_i\|^2_2, \quad i=1,2,\cdots,I,
+\]
+则向量\( \bm{p} \)是稀疏的，且其非零分量对应的索引即为目标参数在字典中的位置。利用稀疏表示的思想，可以将参数估计问题转化为如下的稀疏恢复问题：
+\[
+    \begin{cases}
+        \min\limits_{\mathbf{S}} \quad & \|\bm{p}\|_0,                                                                   \\
+        \text{s.t.} \quad              & \|\mathbf{X} - \mathbf{S} \mathbf{D}^{\mathrm{T}}\|_{\mathrm{F}} \leq \epsilon, \\
+                                       & \| \bm{s}_i \|_2 = p_i, \quad i=1,2,\cdots,I,                                   \\
+    \end{cases}
+\]
+该稀疏恢复问题可以转换为一个二阶锥规划问题，并利用现有的凸优化工具进行求解。
+
+首先，将零范数放宽为一范数，同时注意到\( \bm{p} \)中的分量均非负，因此有
+\[
+    \|\bm{p}\|_1 = \sum_{i=1}^I p_i = \bm{1}^{\mathrm{T}} \bm{p} = \sum_{i=1}^I \|\bm{s}_i\|_2.
+\]
+与此同时，引入辅助变量\( \varepsilon \)并构造如下的优化问题：
+\[
+    \begin{cases}
+        \min \quad        & \epsilon + \lambda \varepsilon,                                                 \\
+        \text{s.t.} \quad & \|\mathbf{X} - \mathbf{S} \mathbf{D}^{\mathrm{T}}\|_{\mathrm{F}} \leq \epsilon, \\
+                          & \sum_{i=1}^I \|\bm{s}_i\|_2 \leq \varepsilon,                                   \\
+    \end{cases}
+\]
+其中\( \lambda > 0 \)为权衡参数，当\( \lambda \)较大时，更加注重系数向量的稀疏性，而当\( \lambda \)较小时，更加注重数据拟合的精度。
+
+\begin{example}
+    利用上述稀疏表示方法对\cref{fig_noise_esprit}所示的包含噪声的数据进行进行参数估计。
+\end{example}
+\begin{solution}
+    首先构建参数字典，取参数点\( \omega_i \)在区间\( [-0.5, 0.5] \)上均匀分布，共取\( I=200 \)个点。然后利用CVX工具箱求解上述的二阶锥规划问题，取权衡参数为\( \lambda = 3 \)。计算得到的矩阵\( \mathbf{S} \)以及对应的功率谱向量\( \bm{p} \)如\cref{fig_sparse_result}所示。
+
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.7\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数维},
+                        ylabel={时间维},
+                        enlargelimits=false,
+                        width=8cm, height=4cm,
+                        ytick=\empty,
+                        xtick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        axis on top
+                    ]
+                    \addplot graphics [
+                            xmin=-1, xmax=1, ymin=-1, ymax=1,
+                        ] {./img/estimation/l1svd_2.png};
+                \end{axis}
+            \end{tikzpicture}
+            \caption{矩阵\( \mathbf{S} \)（仅绘制了实部）}
+            \label{fig_sparse_result_1}
+        \end{subfigure}
+        \begin{subfigure}{.7\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数维}, ylabel={归一化功率谱（dB）},
+                        ticklabel style={font=\small},
+                        xmin=-0.5, xmax=0.5,
+                        ymax=50,
+                        % xtick=\empty,ytick=\empty,
+                        width=8cm, height=4cm,
+                        label style={font=\small},
+                        grid,
+                        legend cell align=left,
+                        legend style={
+                                anchor=north east,
+                                font=\tiny,
+                                draw=none,
+                                fill=none
+                            }
+                    ]
+                    \addplot[
+                        c1,
+                        thick,
+                        smooth,
+                    ] table[x=x, y=p1, col sep=comma] {./img/estimation/l1svd.csv};
+                    \addlegendentry{MUSIC}
+                    \addplot[
+                        c2,
+                        thick,
+                        smooth,
+                    ] table[x=x, y=p2, col sep=comma] {./img/estimation/l1svd.csv};
+                    \addlegendentry{Sparse}
+                \end{axis}
+            \end{tikzpicture}
+            \caption{归一化功率谱（dB）}
+            \label{fig_sparse_result_2}
+        \end{subfigure}
+        \caption{稀疏表示方法的估计结果}
+        \label{fig_sparse_result}
+    \end{figure}
+
+    从\cref{fig_sparse_result_1}可以看到，系数矩阵\( \mathbf{S} \)的列向量非常稀疏，只有两个分量显著非零，其余均接近于零。并且，非零的两个列向量就对应两个目标的回波信号。对应的功率谱如\cref{fig_sparse_result_2}所示，可以看到，稀疏表示方法成功地分辨出了两个目标参数，并且其谱峰位置与MUSIC方法的峰值位置基本一致，并且谱峰更加尖锐。
+\end{solution}
+
+需要注意的是，稀疏表示方法中权衡参数 \( \lambda \) 的选取对结果具有显著影响，通常需要通过多次实验进行调优。尽管稀疏表示方法在估计精度上往往优于传统方法，但其计算复杂度极高，运算耗时可能是 MUSIC 方法的数百甚至数千倍。为降低计算负担，可以对接收数据矩阵先行进行奇异值分解（SVD）降维，从而在一定程度上牺牲精度以换取复杂度的下降。设接收数据矩阵为\( \mathbf{X} \in \mathbb{C}^{L \times M} \)，其SVD分解为
+\[
+    \mathbf{X} = \mathbf{U} \mathbf{\Lambda} \mathbf{V}^{\mathrm{H}}
+    = \begin{bmatrix}
+        \mathbf{U}_s & \mathbf{U}_n
+    \end{bmatrix}
+    \begin{bmatrix}
+        \mathbf{\Lambda}_s & \mathbf{0}         \\
+        \mathbf{0}         & \mathbf{\Lambda}_n
+    \end{bmatrix}
+    \begin{bmatrix}
+        \mathbf{V}_s^{\mathrm{H}} \\
+        \mathbf{V}_n^{\mathrm{H}}
+    \end{bmatrix},
+\]
+其中，\( \mathbf{U}_s \in \mathbb{C}^{L \times K} \)，\( \mathbf{\Lambda}_s \in \mathbb{R}^{K \times K} \)，\( \mathbf{V}_s \in \mathbb{C}^{M \times K} \) 分别对应于前 \( K \) 个奇异值及其奇异向量。于是，可以构造降维后的数据矩阵：
+\[
+    \tilde{\mathbf{X}} = \mathbf{U}_s^{\mathrm{H}} \mathbf{X}
+    = \mathbf{\Lambda}_s \mathbf{V}_s^{\mathrm{H}} \in \mathbb{C}^{K \times M}.
+\]
+一般而言，\( K \) 为目标个数，其数值远小于采样点数 \( L \)，因此降维后的数据矩阵 \(\tilde{\mathbf{X}}\) 的行数显著减少，从而有效降低了稀疏恢复问题的计算复杂度。但与此同时，分解得到的稀疏系数矩阵 \(\mathbf{S}\) 将不再直接对应于原始目标回波信号。
 
 \section{多域联合估计}
 
