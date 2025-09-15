@@ -866,6 +866,8 @@
 
 除了图像以外，视频也可以看作是一个4阶张量，对应的四个模分别为高度、宽度、颜色通道和时间。比如，一段\( 10 \)秒的视频，分辨率为\( 1920 \times 1080 \)像素，帧率为\( 30 \)帧/秒，那么对应的张量可以表示为\( \mathcal{T} \in \mathbb{R}^{1920 \times 1080 \times 3 \times 300} \)。此外，本书涉及到的多域雷达数据也可以看作是高阶张量，利用张量的相关知识，可以对这些数据进行有效的分析和处理。
 
+张量的模-k展开还可以进一步推广为多模展开（Multi-Mode Flattening），即同时对多个模进行展开。具体而言，对于一个 $n$ 阶张量 $\mathcal{T} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_n}$，其模-$\{k_1, k_2, \cdots, k_m\}$展开可以表示为一个矩阵 $\mathbf{T}_{k_1k_2 \cdots k_m} \in \mathbb{R}^{(I_{k_1} I_{k_2} \cdots I_{k_m}) \times (I_{l_1} I_{l_2} \cdots I_{l_{n-m}})}$，其中 $\{l_1, l_2, \cdots, l_{n-m}\} = \{1, 2, \cdots, n\} \setminus \{k_1, k_2, \cdots, k_m\}$，即剩余的模。
+
 \subsection{张量的运算}
 
 本节首先介绍一种生成张量的运算，即外积（Outer Product），然后介绍张量与向量、矩阵之间的乘法，即 k 模积（k-Mode Product），以及张量乘法与克罗内克积（Kronecker Product）之间的关系。

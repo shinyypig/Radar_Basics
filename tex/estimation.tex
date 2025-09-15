@@ -1609,7 +1609,295 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 一般而言，\( K \) 为目标个数，其数值远小于采样点数 \( L \)，因此降维后的数据矩阵 \(\tilde{\mathbf{X}}\) 的行数显著减少，从而有效降低了稀疏恢复问题的计算复杂度。但与此同时，分解得到的稀疏系数矩阵 \(\mathbf{S}\) 将不再直接对应于原始目标回波信号。
 
 \section{多域联合估计}
+随着雷达探测技术的不断发展，现代雷达系统往往能够在多个维度上同时采集数据，例如方位、俯仰、多普勒等。这些多维信息天然适合组织为高阶张量形式。若仅截取其中某一维度的切片并采用传统参数估计方法进行处理，则不可避免地忽略其余维度所蕴含的结构特征，从而导致估计性能下降。为克服这一局限，近年来逐渐兴起了多域联合估计的方法，其核心思想是充分融合不同维度的信息，以实现更高精度和更强稳健性的目标参数估计。
 
 \subsection{空时自适应处理}
+考虑如下的接收信号张量模型：
+\[
+    \mathcal{X} = \mathcal{I}_{K} \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B},
+\]
+其中\( \mathcal{I}_{K} \in \mathbb{C}^{K \times K \times K} \)为一个单位张量，\( \mathbf{R} \in \mathbb{C}^{L \times K} \)为目标回波信号矩阵，\( \mathbf{A} \in \mathbb{C}^{M \times K} \)为第一个参数的导向矩阵，\( \mathbf{B} \in \mathbb{C}^{N \times K} \)为第二个参数的导向矩阵。并且，两个参数对应的导向矢量有如下形式
+\[
+    \begin{split}
+        \bm{a}_{\nu_k} = \begin{bmatrix}
+                             1 & e^{j2\pi\nu_k} & \cdots & e^{j2\pi(M-1)\nu_k}
+                         \end{bmatrix}^{\mathrm{T}}, \\
+        \bm{b}_{\mu_k} = \begin{bmatrix}
+                             1 & e^{j2\pi\mu_k} & \cdots & e^{j2\pi(N-1)\mu_k}
+                         \end{bmatrix}^{\mathrm{T}}.
+    \end{split}
+\]
+
+在经典波束形成（CBF）方法中，若同时对接收信号矩阵 \( \mathbf{X} \) 的行向量与列向量分别实施波束形成与脉冲压缩，则其输出可统一表示为
+\[
+    \mathbf{Z} = \mathbf{S}^{\mathrm{H}} \mathbf{X} \mathbf{W},
+\]
+其中\( \mathbf{S}  \)为匹配滤波矩阵，\( \mathbf{W} \)为``波束形成''矩阵。这一形式自然引出一个问题：是否存在 CBF 的推广，使其能够同时作用于接收信号张量 \( \mathcal{X} \) 的多个维度，实现所谓的“多维脉冲压缩”，并使目标在结果中表现为清晰的峰值。
+
+答案是肯定的。具体而言，除了匹配滤波矩阵\( \mathbf{S} \)之外，还需要分别构建如下两个``波束形成''矩阵：
+\[
+    \mathbf{V} = \begin{bmatrix}
+        \bm{v}_{\nu_1} & \bm{v}_{\nu_2} & \cdots & \bm{v}_{\nu_P}
+    \end{bmatrix} \in \mathbb{C}^{M \times P}, \quad
+    \mathbf{U} = \begin{bmatrix}
+        \bm{u}_{\mu_1} & \bm{u}_{\mu_2} & \cdots & \bm{u}_{\mu_Q}
+    \end{bmatrix} \in \mathbb{C}^{N \times Q},
+\]
+其中\( \nu_p \) 与\( \mu_q \)分别为第一个与第二个参数的扫描点，对应的列向量分别为
+\[
+    \begin{split}
+        \bm{v}_{\nu_p} = \frac{1}{M} \begin{bmatrix}
+                                         1 & e^{j2\pi\nu_p} & \cdots & e^{j2\pi(M-1)\nu_p}
+                                     \end{bmatrix}^{\mathrm{H}}, \\
+        \bm{u}_{\mu_q} = \frac{1}{N} \begin{bmatrix}
+                                         1 & e^{j2\pi\mu_q} & \cdots & e^{j2\pi(N-1)\mu_q}
+                                     \end{bmatrix}^{\mathrm{H}}.
+    \end{split}
+\]
+于是，可以定义多维脉冲压缩的输出张量为
+\[
+    \mathcal{Z} = \mathcal{X} \times_1 \mathbf{S}^{\mathrm{H}} \times_2 \mathbf{V}^{\mathrm{T}} \times_3 \mathbf{U}^{\mathrm{T}} \in \mathbb{C}^{L \times P \times Q}.
+\]
+
+不难发现，就形式上而言，张量 \( \mathcal{Z} \) 实际上是二维脉压矩阵 \( \mathbf{Z} \) 的升维扩展。目标在该三维张量中依然表现为一个峰值，其三维坐标分别对应目标的距离、参数一与参数二。以多普勒线性阵列雷达系统为例，通过该方法即可在同一框架下实现对目标距离、方位角和速度的联合检测。下面，让我们对张量\( \mathcal{Z} \)进行进一步地分析，以证明其确实能够实现多维脉冲压缩的功能。
+
+根据\cref{prop:associative}，有
+\[
+\begin{split}
+    \mathcal{Z} 
+    & = \mathcal{X} \times_1 \mathbf{S}^{\mathrm{H}} \times_2 \mathbf{V}^{\mathrm{T}} \times_3 \mathbf{U}^{\mathrm{T}} 
+      = \left( \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \right) 
+        \times_1 \mathbf{S}^{\mathrm{H}} \times_2 \mathbf{V}^{\mathrm{T}} \times_3 \mathbf{U}^{\mathrm{T}} \\
+    & = \mathcal{I}_K \times_1 \left( \mathbf{S}^{\mathrm{H}} \mathbf{R} \right) 
+                   \times_2 \left( \mathbf{V}^{\mathrm{T}} \mathbf{A} \right) 
+                   \times_3 \left( \mathbf{U}^{\mathrm{T}} \mathbf{B} \right).
+\end{split}
+\]
+注意到，矩阵 \( \tilde{\mathbf{R}} = \mathbf{S}^{\mathrm{H}} \mathbf{R} \in \mathbb{C}^{L \times K} \) 对应于对目标回波信号在距离维上的脉冲压缩。记其列向量为
+\[
+    \tilde{\bm{r}}_k = \mathbf{S}^{\mathrm{H}} \bm{r}_k, 
+    \quad k=1,2,\dots,K,
+\]
+根据脉冲压缩原理，\( \tilde{\bm{r}}_k \) 近似为一个稀疏向量，仅在目标距离处存在显著峰值，其余位置接近零：
+\[
+    \tilde{\bm{r}}_k[i] \approx 
+    \begin{cases}
+        A_k, & i = d_k, \\
+        0,   & i \neq d_k,
+    \end{cases}
+    \quad k=1,2,\dots,K,
+\]
+其中 \( A_k \) 表示目标的回波幅度与相位信息，\( d_k \) 为目标的距离索引。  
+
+而矩阵 \( \tilde{\mathbf{A}} =  \mathbf{V}^{\mathrm{T}} \mathbf{A} \in \mathbb{C}^{P \times K} \) 对应于对第一个参数维的波束形成。记其列向量为
+\[
+    \tilde{\bm{a}}_k = \mathbf{V}^{\mathrm{T}} \bm{a}_{\nu_k}, 
+    \quad k=1,2,\dots,K,
+\]
+由于不同频率的复指数向量之间近似正交，因此 \( \tilde{\bm{a}}_k \) 同样近似为一个稀疏向量，仅在目标参数一处出现显著峰值：
+\[
+    \tilde{\bm{a}}_k[p] \approx 
+    \begin{cases}
+        1, & p = \nu_k, \\
+        0, & p \neq \nu_k,
+    \end{cases}
+    \quad k=1,2,\dots,K,
+\]
+其中 \( \nu_k \) 为目标参数一的取值。类似地，矩阵 \(  \tilde{\mathbf{B}} = \mathbf{U}^{\mathrm{H}} \mathbf{B} \in \mathbb{C}^{Q \times K} \) 对应于对第二个参数维的波束形成。记其列向量为
+\[
+    \tilde{\bm{b}}_k = \mathbf{U}^{\mathrm{T}} \bm{b}_{\mu_k}, 
+    \quad k=1,2,\dots,K,
+\]
+则 \( \tilde{\bm{b}}_k \) 亦近似为一个稀疏向量，仅在目标参数二处存在显著峰值：
+\[
+    \tilde{\bm{b}}_k[q] \approx 
+    \begin{cases}
+        1, & q = \mu_k, \\
+        0, & q \neq \mu_k,
+    \end{cases}
+    \quad k=1,2,\dots,K,
+\]
+其中 \( \mu_k \) 为目标参数二的取值。
+
+利用如上近似以及\cref{prop:diag-kron}，可以进一步地将张量 \( \mathcal{Z} \) 表示为
+\[
+\begin{split}
+    \mathcal{Z} 
+    & \approx \mathcal{I}_K \times_1 \tilde{\mathbf{R}} \times_2 \tilde{\mathbf{A}} \times_3 \tilde{\mathbf{B}} \\
+    & = \sum_{k=1}^K \tilde{\bm{r}}_k \circ \tilde{\bm{a}}_k \circ \tilde{\bm{b}}_k,
+\end{split}
+\]
+记\( \mathcal{Z}_k = \tilde{\bm{r}}_k \circ \tilde{\bm{a}}_k \circ \tilde{\bm{b}}_k \) ，则张量 \( \mathcal{Z} \) 可视为 \( K \) 个秩一张量的叠加。并且，每个秩一张量 \( \mathcal{Z}_k \) 中的元素有如下表示：
+\[
+    (\mathcal{Z}_k)_{ipq} =  \tilde{\bm{r}}_k[i] \cdot \tilde{\bm{a}}_k[p] \cdot \tilde{\bm{b}}_k[q] = \begin{cases}
+        A_k, & i = d_k, p = \nu_k, q = \mu_k \\
+        0,   & \text{其他}
+    \end{cases},
+\]
+这表明每个秩一张量 \( \mathcal{Z}_k \) 仅在位置 \( (d_k, \nu_k, \mu_k) \) 处存在一个峰值，其余位置均为零。由此可见，张量 \( \mathcal{Z} \) 中的每个目标均对应于一个唯一的三维峰值，其坐标分别对应于目标的距离、参数一与参数二。类似地，计算张量 \( \mathcal{Z} \) 沿着第一个维度的功率，即
+\[
+    p_{pq} = \frac{1}{L} \sum_{i=1}^L |\mathcal{Z}_{ipq}|^2,
+\]
+则二维功率谱 \( \mathbf{P} \in \mathbb{R}^{P \times Q} \) 中同样会在每个目标的参数位置 \( (\nu_k, \mu_k) \) 处出现一个峰值。
+
+然而，CBF 方法未考虑噪声与干扰的影响，其分辨率与估计精度均受到限制。前述多维脉冲压缩作为 CBF 的推广，同样存在这一问题。为进一步提升估计性能，可以将 Capon 算法推广至张量情形。由于一般处理的数据往往包含方位维和多普勒维的信息，因此该方法又被称为空时自适应处理（Space-Time Adaptive Processing, STAP）。
+
+具体而言，STAP 方法对Capon算法进行拓展，构建了如下的优化模型
+\[
+    \begin{cases}
+        \min \quad        & \frac{1}{L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2                          \\
+        \text{s.t.} \quad & \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} = 1 \\
+                            & \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} = 1
+    \end{cases}.
+\]
+对于向量\( \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{b}_{\mu}^{\mathrm{T}} \in \mathbb{C}^{L \times 1} \)，其可以看作是分别利用两个参数维度的加权向量\( \bm{v}_{\nu} \)与\( \bm{u}_{\mu} \)对张量\( \mathcal{X} \)进行滤波后得到的滤波器输出。与Capon算法类似，该优化问题的目标函数同样为最小化滤波器输出的功率。与此同时，约束条件则确保对参数为 \( \nu \) 和 \( \mu \) 目标信号的响应不受损失。
+
+利用\cref{prop:kronecker-kron}，可以将滤波器的输出功率写成如下的形式：
+\[
+    \begin{split}
+        \frac{1}{L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2
+        & = \frac{1}{L} \left\| (\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{X}_{23}  \right\|^2 \\
+        & = \frac{1}{L}  ((\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{X}_{23}) \left((\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{X}_{23}\right)^{\mathrm{H}} \\
+        & = (\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{\Sigma}_{23} (\overline{\bm{v}}_{\nu} \otimes \overline{\bm{u}}_{\mu}),
+    \end{split}
+\]
+其中，\( \mathbf{X}_{23} \in \mathbb{C}^{MN \times L} \)为张量\( \mathcal{X} \)在第2与第3维的展开矩阵，\( \mathbf{\Sigma}_{23} = \frac{1}{L} \mathbf{X}_{23} \mathbf{X}_{23}^{\mathrm{H}} \in \mathbb{C}^{MN \times MN} \)为其协方差矩阵。
+
+在 STAP 算法中，可以通过放宽约束条件，将原有的两个约束合并为一个，从而直接求解两个滤波器的克罗内克积 \( \bm{v}_{\nu} \otimes \bm{u}_{\mu} \)。
+此时，优化模型可改写为
+\begin{equation}
+    \begin{cases}
+        \min \quad        & \bm{w}_{\nu\mu}^{\mathrm{T}} \mathbf{\Sigma}_{23} \bm{w}_{\nu\mu} \\
+        \text{s.t.} \quad & (\bm{a}_{\nu} \otimes \bm{b}_{\mu})^{\mathrm{T}} \bm{w}_{\nu\mu} = 1 ,
+    \end{cases}
+\end{equation}
+其中，\( \bm{w}_{\nu\mu} \in \mathbb{C}^{MN \times 1} \) 表示联合滤波器。
+该优化问题在形式上与传统 Capon 算法完全一致，因此可以直接得到解析解：
+\begin{equation}
+    \bm{w}_{\nu\mu}
+    = \frac{\mathbf{\Sigma}_{23}^{-1} (\bm{a}_{\nu} \otimes \bm{b}_{\mu})}
+    {(\bm{a}_{\nu} \otimes \bm{b}_{\mu})^{\mathrm{T}} \mathbf{\Sigma}_{23}^{-1} (\bm{a}_{\nu} \otimes \bm{b}_{\mu})}.
+\end{equation}
+类似于Capon方法，STAP方法得到的二维功率谱有如下表示：
+\[
+    p_{\nu\mu} =\frac{1}{(\bm{a}_{\nu} \otimes \bm{b}_{\mu})^{\mathrm{T}} \mathbf{\Sigma}_{23}^{-1} (\bm{a}_{\nu} \otimes \bm{b}_{\mu})}.
+\]
+然而，该方法并不能确保联合滤波器 \( \bm{w}_{\nu\mu} \) 能够分解为两个独立滤波器的克罗内克积形式，因此算法性能受到一定影响。为此，可以直接求解原始的优化模型，从而分别得到两个滤波器 \( \bm{v}_{\nu} \) 与 \( \bm{u}_{\mu} \)。
+
+尽管无法直接得到该优化问题的解析解，但可以通过交替迭代的方法进行求解。同样，利用拉格朗日乘子法，可以构建如下的拉格朗日函数：
+\[
+    \mathcal{L}(\bm{v}_{\nu}, \bm{u}_{\mu}, \lambda_1, \lambda_2)
+    = \frac{1}{2L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2
+      - \lambda_1 \left( \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} - 1 \right)
+      - \lambda_2 \left( \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} - 1 \right).
+\]
+如将\( \mathbf{\Sigma}_{23} \)转换为一个四阶张量\( \mathcal{S} \in \mathbb{C}^{M \times N \times M \times N} \)，则滤波器的输出功率可以进一步表示为
+\[
+    \frac{1}{L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2 = \mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}} \times_4 \bm{u}_{\mu}^{\mathrm{H}}.
+\]
+因此，拉格朗日函数可以写成
+\[
+    \mathcal{L}(\bm{v}_{\nu}, \bm{u}_{\mu}, \lambda_1, \lambda_2)
+    = \frac{1}{2}\mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}} \times_4 \bm{u}_{\mu}^{\mathrm{H}}
+      - \lambda_1 \left( \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} - 1 \right)
+      - \lambda_2 \left( \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} - 1 \right).
+\]
+方便起见，将\(\mathcal{S} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_4 \bm{u}_{\mu}^{\mathrm{H}}\) 重塑为一个矩阵\( \mathbf{S}_{1} \in \mathbb{C}^{M \times M} \)，则\(  \mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}} \times_4 \bm{u}_{\mu}^{\mathrm{H}} \)可以表示为\(\bm{v}_{\nu}^{\mathrm{H}} \mathbf{S}_1 \bm{v}_{\nu}\)。类似地，将\(\mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}}\)重塑为一个矩阵\( \mathbf{S}_{2} \in \mathbb{C}^{N \times N} \)，则\(  \mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}} \times_4 \bm{u}_{\mu}^{\mathrm{H}} \)可以表示为\(\bm{u}_{\mu}^{\mathrm{H}} \mathbf{S}_2 \bm{u}_{\mu}\)。
+接下来，分别对 \( \bm{v}_{\nu} \) 与 \( \bm{u}_{\mu} \) 求偏导数，并令其为零，可得
+\[
+    \begin{cases}
+        \frac{\partial \mathcal{L}}{\partial \bm{v}_{\nu}} 
+        & = \mathbf{S}_1 \bm{v}_{\nu} - \lambda_1 \overline{\bm{a}}_{\nu} = 0, \\
+        \frac{\partial \mathcal{L}}{\partial \bm{u}_{\mu}} 
+        & = \mathbf{S}_2 \bm{u}_{\mu} - \lambda_2 \overline{\bm{b}}_{\mu} = 0.
+    \end{cases}
+\]
+将上式联立约束条件，可得
+\[
+    \begin{cases}
+        \bm{v}_{\nu} & = \frac{\mathbf{S}_1^{-1} \overline{\bm{a}}_{\nu}}{\bm{a}_{\nu}^{\mathrm{T}} \mathbf{S}_1^{-1} \overline{\bm{a}}_{\nu}}, \\
+        \bm{u}_{\mu} & = \frac{\mathbf{S}_2^{-1} \overline{\bm{b}}_{\mu}}{\bm{b}_{\mu}^{\mathrm{T}} \mathbf{S}_2^{-1} \overline{\bm{b}}_{\mu}}.
+    \end{cases}
+\]
+由于 \( \mathbf{S}_1 \) 与 \( \mathbf{S}_2 \) 均依赖于 \( \bm{u}_{\mu} \) 与 \( \bm{v}_{\nu} \)，因此上述方程组无法直接求解。为此，可以采用交替迭代的方法，交替更新 \( \bm{v}_{\nu} \) 与 \( \bm{u}_{\mu} \)，直至收敛为止。初始时，可以将 \( \bm{u}_{\mu} \) 与 \( \bm{v}_{\nu} \) 分别设为随机向量。
+
+三种方法的二维功率谱比较如\cref{fig_stap_compare}所示。可以看到，相较于多维CBF方法，STAP方法的谱峰更加尖锐。而交替迭代STAP方法由于求解的滤波器满足更严格的约束条件，因此其谱峰更加集中，估计精度更高。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.32\textwidth}
+        \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数一},
+                        ylabel={参数二},
+                        enlargelimits=false,
+                        width=4.5cm, height=4.5cm,
+                        ytick=\empty,
+                        xtick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        axis on top
+                    ]
+                    \addplot graphics [
+                            xmin=-1, xmax=1, ymin=-1, ymax=1,
+                        ] {./img/estimation/stap1.png};
+                \end{axis}
+            \end{tikzpicture}
+        \caption{多维CBF}
+        \label{fig_stap_compare_1}
+    \end{subfigure}
+    \begin{subfigure}{.32\textwidth}
+        \centering
+                    \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数一},
+                        ylabel={参数二},
+                        enlargelimits=false,
+                        width=4.5cm, height=4.5cm,
+                        ytick=\empty,
+                        xtick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        axis on top
+                    ]
+                    \addplot graphics [
+                            xmin=-1, xmax=1, ymin=-1, ymax=1,
+                        ] {./img/estimation/stap2.png};
+                \end{axis}
+            \end{tikzpicture}
+        \caption{STAP}
+        \label{fig_stap_compare_2}
+    \end{subfigure}
+    \begin{subfigure}{.32\textwidth}
+        \centering
+                    \begin{tikzpicture}
+                \begin{axis}[
+                        xlabel={参数一},
+                        ylabel={参数二},
+                        enlargelimits=false,
+                        width=4.5cm, height=4.5cm,
+                        ytick=\empty,
+                        xtick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        axis on top
+                    ]
+                    \addplot graphics [
+                            xmin=-1, xmax=1, ymin=-1, ymax=1,
+                        ] {./img/estimation/stap3.png};
+                \end{axis}
+            \end{tikzpicture}
+        \caption{交替迭代STAP}
+        \label{fig_stap_compare_3}
+    \end{subfigure}
+    \caption{三种方法的二维功率谱比较}
+    \label{fig_stap_compare}
+\end{figure}
 
 \subsection{张量分解方法}
+正如前文所述，多域联合接收到的数据张量
+\[
+    \mathcal{X} = \mathcal{I}_{K} \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} = \sum_{k=1}^K \bm{r}_k \circ \bm{a}_{\nu_k} \circ \bm{b}_{\mu_k},
+\]
+可以看作是 \( K \) 个秩一张量的叠加。因此，作为SVD分解的推广，张量CP分解方法同样可以直接对接收数据张量进行处理，从而实现对目标参数的联合估计。
