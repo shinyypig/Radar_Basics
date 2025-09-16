@@ -1896,8 +1896,71 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \end{figure}
 
 \subsection{张量分解方法}
-正如前文所述，多域联合接收到的数据张量
+正如前文所述，考虑噪声的情况下，多域联合接收到的数据张量有如下模型：
 \[
-    \mathcal{X} = \mathcal{I}_{K} \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} = \sum_{k=1}^K \bm{r}_k \circ \bm{a}_{\nu_k} \circ \bm{b}_{\mu_k},
+    \mathcal{X} = \mathcal{I}_{K} \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} + \mathcal{N} = \sum_{k=1}^K \bm{r}_k \circ \bm{a}_{\nu_k} \circ \bm{b}_{\mu_k} + \mathcal{N},
 \]
-可以看作是 \( K \) 个秩一张量的叠加。因此，作为SVD分解的推广，张量CP分解方法同样可以直接对接收数据张量进行处理，从而实现对目标参数的联合估计。
+其中信号buff可以看作是 \( K \) 个秩一张量的叠加。因此，作为SVD分解的推广，张量CP分解方法同样可以直接对接收数据张量进行处理，从而实现对目标参数的联合估计。对应的优化模型为
+\[
+        \min \quad \left\| \mathcal{X} - \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \right\|_{\mathrm{F}}^2
+\]
+方便起见，将待求解的矩阵同样记作\( \mathbf{R} \in \mathbb{C}^{L \times K} \)，\( \mathbf{A} \in \mathbb{C}^{M \times K} \)，\( \mathbf{B} \in \mathbb{C}^{N \times K} \)。该优化问题可以通过交替最小二乘法（Alternating Least Squares, ALS）进行求解。具体而言，固定其中两个矩阵，仅对另一个矩阵进行优化。以优化矩阵 \( \mathbf{R} \) 为例，固定矩阵 \( \mathbf{A} \) 与 \( \mathbf{B} \) 后，根据\cref{prop:apx_kron_kprod}，有
+\[
+    (\mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B})_1 = \mathbf{R} (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_1
+\]
+其中\( (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_1 \in \mathbb{C}^{K \times M N} \)表示张量\( \mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B} \)的模-1展开矩阵。进一步地，利用 \cref{prop:kronecker-kron}，有
+\[
+    (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_{23} =  (\mathbf{B} \otimes \mathbf{A}) (\mathcal{I}_K)_{23} \in \mathbb{C}^{M N \times K}.
+\]
+记\( \mathbf{B} = \begin{bmatrix} \bm{b}_1 & \bm{b}_2 & \cdots & \bm{b}_K \end{bmatrix} \in \mathbb{C}^{N \times K} \)，以及\( \mathbf{A} = \begin{bmatrix} \bm{a}_1 & \bm{a}_2 & \cdots & \bm{a}_K \end{bmatrix} \in \mathbb{C}^{M \times K} \)，则有
+\[
+    \mathbf{B} \otimes \mathbf{A} = \begin{bmatrix}
+        \mathbf{B} \otimes \bm{a}_1 & \mathbf{B} \otimes \bm{a}_2 & \cdots & \mathbf{B} \otimes \bm{a}_K
+    \end{bmatrix} \in \mathbb{C}^{M N \times K^2}.
+\]
+与此同时，\( (\mathcal{I}_K)_{23} \)的形式为
+\[
+    (\mathcal{I}_K)_{23} = \begin{bmatrix}
+        \mathbf{E}_1  \\ \mathbf{E}_2  \\ \vdots \\ \mathbf{E}_K
+    \end{bmatrix} \in \mathbb{R}^{K^2 \times K},
+\]
+其中，\( \mathbf{E}_k \in \mathbb{R}^{K \times K} \)为一个稀疏矩阵，仅在第\( k \)列的第\( k \)行处取值为一，其余位置均为零。由此可见，矩阵 \( (\mathcal{I}_K)_{23} \) 实际上是一个选择矩阵，其作用是从矩阵 \( \mathbf{B} \otimes \mathbf{A} \) 的 \( K^2 \) 列中选择出其中的 \( K \) 列。因此，有
+\[
+    (\mathbf{B} \otimes \mathbf{A}) (\mathcal{I}_K)_{23} \in \mathbb{C}^{M N \times K} = \sum_{k=1}^K (\mathbf{B} \otimes \bm{a}_k) \mathbf{E}_k,
+\]
+而\( (\mathbf{B} \otimes \bm{a}_k) \mathbf{E}_k \)仅选择出矩阵 \( \mathbf{B} \otimes \bm{a}_k \) 的第 \( k \) 列，因此有
+\[
+    (\mathbf{B} \otimes \mathbf{A}) (\mathcal{I}_K)_{23} = \begin{bmatrix}
+        0 & \cdots& \bm{b}_k \otimes \bm{a}_k & 0 & \cdots & 0
+    \end{bmatrix}.
+\]
+所以，矩阵 \( (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_{1} \) 可以表示为
+\[
+    (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_{1} = \begin{bmatrix}
+        \bm{b}_1 \otimes \bm{a}_1 & \bm{b}_2 \otimes \bm{a}_2 & \cdots & \bm{b}_K \otimes \bm{a}_K
+    \end{bmatrix}^{\mathrm{T}} \in \mathbb{C}^{K \times M N}.
+\]
+通常也被记作为
+\[
+    \mathbf{B} \ast  \mathbf{A} = \begin{bmatrix}
+        \bm{b}_1 \otimes \bm{a}_1 & \bm{b}_2 \otimes \bm{a}_2 & \cdots & \bm{b}_K \otimes \bm{a}_K
+    \end{bmatrix} \in \mathbb{C}^{M N \times K},
+\]
+称为 Khatri-Rao 积（Khatri-Rao Product）。
+
+此外，不难验证\( (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_1 \in \mathbb{C}^{K \times M N} \)与\( \mathbf{B} \ast  \mathbf{A} = (\mathbf{B} \otimes \mathbf{A}) (\mathcal{I}_K)_{23} \in \mathbb{C}^{M N \times K} \)之间是转置关系。因此，优化矩阵 \( \mathbf{R} \) 的子问题可写成   
+\[
+    \min \quad \left\| \mathbf{X}_{1} - \mathbf{R} (\mathbf{B} \ast  \mathbf{A})^{\mathrm{T}} \right\|_{\mathrm{F}}^2,
+\]
+其中，\( \mathbf{X}_{1} \in \mathbb{C}^{L \times M N} \)为张量\( \mathcal{X} \)的模-1展开矩阵。该问题是一个标准的最小二乘问题，对应的闭式解为
+\[
+    \mathbf{R} = \mathbf{X}_{1} (\mathbf{B} \ast  \mathbf{A}) \left( (\mathbf{B} \ast  \mathbf{A})^{\mathrm{T}} (\mathbf{B} \ast  \mathbf{A}) \right)^{-1}.
+\]
+类似地，可以分别对矩阵 \( \mathbf{A} \) 与 \( \mathbf{B} \) 进行优化，得到如下的闭式解：
+\[
+    \begin{cases}
+        \mathbf{A} = \mathbf{X}_{2} (\mathbf{B} \ast \mathbf{R}) \left( (\mathbf{B} \ast \mathbf{R})^{\mathrm{T}} (\mathbf{B} \ast  \mathbf{R}) \right)^{-1}, \\
+        \mathbf{B} = \mathbf{X}_{3} (\mathbf{A} \ast  \mathbf{R}) \left( (\mathbf{A} \ast  \mathbf{R})^{\mathrm{T}} (\mathbf{A} \ast  \mathbf{R}) \right)^{-1},
+    \end{cases}
+\]
+其中，\( \mathbf{X}_{2} \in \mathbb{C}^{M \times L N} \)与\( \mathbf{X}_{3} \in \mathbb{C}^{N \times L M} \)分别为张量\( \mathcal{X} \)的模-2与模-3展开矩阵。交替迭代上述三个子问题，直至收敛为止，即可得到最终的估计结果。
