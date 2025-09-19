@@ -11,7 +11,7 @@
 \[
     \bm{z}_t = \mathbf{H} \bm{x}_t + \bm{v}_t,
 \]
-其中，$\mathbf{H} \in \mathbb{R}^{N \times M}$ 为待估计的观测矩阵，用于刻画状态向量与观测向量之间的线性映射关系；$\bm{v}_t$ 为观测噪声，通常假设其服从零均值高斯分布。最小均方（Least Mean Square, LMS）滤波的目标是在对观测数据进行处理时，最小化估计误差的均方值，从而获得对目标状态的最优估计。若共获得 $T$ 次观测，则相应的优化问题可表述为：
+其中，$\mathbf{H} \in \mathbb{R}^{N \times M}$ 为待估计的观测矩阵，用于刻画状态向量与观测向量之间的线性映射关系；$\bm{v}_t$ 为观测噪声，通常假设其服从零均值高斯分布。最小二乘算法（Least Squares, LS）的目标是在对观测数据进行处理时，最小化估计误差的均方值，从而获得对目标状态的最优估计。若共获得 $T$ 次观测，则相应的优化问题可表述为：
 \[
     \min_{\mathbf{H}_T} \ \frac{1}{T}\sum_{t=1}^{T} \big\| \mathbf{H}_T\bm{x}_t - \bm{z}_t \big\|^2,
 \]
@@ -49,9 +49,25 @@
     \mathbf{H}_T = \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} \left( \mathbf{X}_T \mathbf{X}_T^{\mathrm{T}} \right)^{-1}.
 \]
 
-注意到，随着观测次数 \( T \) 的增加，矩阵 \( \mathbf{X}_T \) 的规模不断增大，从而导致计算复杂度迅速提升。另一方面，目标的运动状态也可能随时间变化，因此没有必要始终依赖全部历史观测数据来估计观测矩阵 \( \mathbf{H}_T \)。为此，可以采用递推的方式来更新观测矩阵 \( \mathbf{H}_T \)，即递推最小均方（Recursive Least Mean Square, RLMS）算法。
+注意到，随着观测次数 \(T\) 的增加，观测矩阵 \(\mathbf{X}_T\) 的规模不断增大，从而导致计算复杂度迅速提升。另一方面，目标的运动状态也可能随时间发生变化，因此没有必要始终依赖全部历史观测数据来估计观测矩阵 \(\mathbf{H}_T\)。基于此，可以考虑采用递推方式对观测矩阵进行逐步更新。假设在时刻 \(T\) 已经得到了估计矩阵 \(\mathbf{H}_{T}\)，当引入第 \(T+1\) 次观测后，仅利用该次观测来修正已有估计。相应的优化问题为
+\[
+    \min_{\mathbf{H}_{T}} \ \big\| \mathbf{H}_{T} \bm{x}_{T+1} - \bm{z}_{T+1} \big\|^2.
+\]
+该目标函数关于 \(\mathbf{H}_{T}\) 的梯度为
+\[
+    \nabla_{\mathbf{H}_{T}} = 2\big(\mathbf{H}_{T} \bm{x}_{T+1} - \bm{z}_{T+1}\big)\bm{x}_{T+1}^{\mathrm{T}}.
+\]
+其中，\(\mathbf{H}_{T}\bm{x}_{T+1}-\bm{z}_{T+1}\) 即为利用当前估计矩阵对最新观测进行预测时所产生的误差。记作
+\[
+    \bm{e}_{T} = \mathbf{H}_{T}\bm{x}_{T+1} - \bm{z}_{T+1},
+\]
+则可采用梯度下降法更新观测矩阵：
+\[
+    \mathbf{H}_{T+1} = \mathbf{H}_{T} + \mu\, \bm{e}_{T}\bm{x}_{T+1}^{\mathrm{T}},
+\]
+其中 \(\mu > 0\) 为步长参数。这种利用随机梯度下降（Stochastic Gradient Descent, SGD）的进行更新方法被称为最小均方（Least Mean Square, LMS）算法。可以发现其核心思想在于：每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与当前观测对观测矩阵进行修正，从而实现动态更新。
 
-RLMS 在每次获得新的观测数据后，直接利用新数据来更新 \( \mathbf{H}_T \)，而不是再次求解完整的优化问题。并引入遗忘因子 \( \lambda \in (0,1] \)，以减小对较早观测数据的依赖。具体而言，在时刻 \( T \) 时，优化问题可表述为
+在实际应用中，步长参数 \(\mu\) 的选取对算法的收敛性与稳定性具有重要影响。若 \(\mu\) 过大，可能导致算法发散；若 \(\mu\) 过小，则收敛速度较慢。而递推最小均方（Recursive Least Mean Square, RLMS）算法，一方面通过引入遗忘因子\( \lambda \in (0,1] \)来减小对早期观测数据的依赖，另一方面通过巧妙地利用伍德伯里矩阵恒等式（Woodbury Matrix Identity, 见\cref{cor:woodbury-matrix-identity}）来高效地更新估计矩阵，无需选取步长参数，从而提升了算法的性能与鲁棒性。具体而言，在时刻 \( T \) 时，优化问题可表述为
 \[
     \min_{\mathbf{H}_T} \ \sum_{t=1}^{T} \lambda^{T-t} \big\| \mathbf{H}_T\bm{x}_t - \bm{z}_t \big\|^2.
 \]
@@ -131,19 +147,351 @@ RLMS 在每次获得新的观测数据后，直接利用新数据来更新 \( \m
 \]
 因此，\( \mathbf{H}_{T+1} \)可以进一步简化为
 \[
-    \mathbf{H}_{T+1} = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{w}_T^{\mathrm{T}}  + \bm{z}_{T+1} \bm{w}_T^{\mathrm{T}} = \mathbf{H}_T + (\bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1}) \bm{w}_T^{\mathrm{T}}.
+    \begin{split}
+        \mathbf{H}_{T+1} & = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{w}_T^{\mathrm{T}}  + \bm{z}_{T+1} \bm{w}_T^{\mathrm{T}} = \mathbf{H}_T + (\bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1}) \bm{w}_T^{\mathrm{T}} \\
+                         & = \mathbf{H}_T + \bm{e}_{T} \bm{w}_T^{\mathrm{T}}.
+    \end{split}
 \]
-有趣的是，\( \bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1} \)可以看作是，在时刻\( T + 1 \)时，使用上一时刻的观测矩阵\( \mathbf{H}_T \)对新观测数据进行预测时所产生的预测误差。记\( \bm{e}_k = \bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1} \)，则最终的递推更新公式为
+综上，递推最小均方（RLMS）算法的更新公式为
 \[
-    \mathbf{H}_{T+1} = \mathbf{H}_T + \bm{e}_k \bm{w}_T^{\mathrm{T}}.
+    \begin{cases}
+        \bm{w}_{T+1} = \frac{\mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}},                   \\
+        \mathbf{\Sigma}_{T+1}^{-1} = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{w}_T^{\mathrm{T}} \right), \\
+        \bm{e}_{T} = \mathbf{H}_{T}\bm{x}_{T+1} - \bm{z}_{T+1},                                                                                             \\
+        \mathbf{H}_{T+1} = \mathbf{H}_T + \bm{e}_{T} \bm{w}_T^{\mathrm{T}}.                                                                                 \\
+    \end{cases}
 \]
-由此可见，整个递推过程可理解为：在每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与增益向量对观测矩阵进行修正，从而实现动态更新。当\(  \lambda = 1 \) 时，该递推公式退化为经典的最小均方（LMS）算法，可见二者本质上均遵循``先预测、后修正''的思想。
+
+由此可见，整个递推过程同样可以理解为：在每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与增益向量对观测矩阵进行修正，从而实现动态更新。当\(  \lambda = 1 \) 时，该递推公式退化为经典的最小二乘算法，再结合最小均方滤波算法的迭代公式，可见三者本质上均遵循``先预测、后修正''的思想，区别仅在于增益向量\( \bm{w}_T \)的取值不同。
 
 \begin{example}
-
+    利用最小二乘（LS）、最小均方（LMS）与递推最小均方（RLMS）算法对目标轨迹进行预测，目标轨迹如\cref{fig_trace_gt}所示。
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.3\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        xtick=\empty, ytick=\empty,
+                        grid, axis equal image,
+                        legend cell align=left,
+                        height=4cm,
+                        legend style={
+                                at={(1,1)},
+                                anchor=north east,
+                                font=\tiny,
+                                draw=none,
+                                fill=none
+                            }
+                    ]
+                    \addplot[
+                        c1,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c1, fill=c1!60}
+                    ] table[x=x, y=y, col sep=comma] {./img/tracking/tracking_2.csv};
+                \end{axis}
+            \end{tikzpicture}
+            \caption{}
+            \label{fig_trace_gt_1}
+        \end{subfigure}
+        \begin{subfigure}{.65\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        xtick=\empty, ytick=\empty,
+                        grid, axis equal image,
+                        legend cell align=left,
+                        width=8cm,
+                        legend style={
+                                at={(0,1)},
+                                anchor=north west,
+                                font=\tiny,
+                                draw=none,
+                                fill=none
+                            }
+                    ]
+                    \addplot[
+                        c1,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c1, fill=c1!60}
+                    ] table[x=x, y=y, col sep=comma] {./img/tracking/tracking_1.csv};
+                \end{axis}
+            \end{tikzpicture}
+            \caption{}
+            \label{fig_trace_gt_2}
+        \end{subfigure}
+        \caption{目标轨迹示意图}
+        \label{fig_trace_gt}
+    \end{figure}
 \end{example}
 
+\begin{solution}
+    设\( t \)时刻目标的坐标为\( \bm{p}_{t} \)，则可以将历史坐标作为状态向量，而当前坐标作为观测向量，即
+    \[
+        \bm{x}_t = \begin{bmatrix} \bm{p}_{t-1} \\ \vdots \\ \bm{p}_{t-k} \end{bmatrix} \in \mathbb{R}^{2k}, \quad \bm{z}_t = \bm{p}_t \in \mathbb{R}^2,
+    \]
+    其中，\( k \)为使用的历史坐标数。利用前 \( T \) 次观测数据，可以估计出观测矩阵 \( \mathbf{H}_T \)，进而对第 \( T + 1 \) 时刻的目标位置进行预测。预测结果如\cref{fig_trace1,fig_trace2}所示。
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.32\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        xtick=\empty, ytick=\empty,
+                        grid, axis equal image,
+                        legend cell align=left,
+                        width=5.8cm,
+                        legend style={
+                                at={(1,1)},
+                                anchor=north east,
+                                font=\tiny,
+                                draw=none,
+                                fill=none
+                            }
+                    ]
+                    \addplot[
+                        c1,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c1, fill=c1!60}
+                    ] table[x=x, y=y, col sep=comma] {./img/tracking/tracking_2.csv};
+                    \addlegendentry{真实轨迹}
+                    \addplot[
+                        c2,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c2, fill=c2!60}
+                    ] table[x=x1, y=y1, col sep=comma] {./img/tracking/tracking_2_.csv};
+                    \addlegendentry{LS预测}
+                \end{axis}
+            \end{tikzpicture}
+            \caption{}
+            \label{fig_trace1_1}
+        \end{subfigure}
+        \begin{subfigure}{.32\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        xtick=\empty, ytick=\empty,
+                        grid, axis equal image,
+                        legend cell align=left,
+                        width=5.8cm,
+                        legend style={
+                                at={(1,1)},
+                                anchor=north east,
+                                font=\tiny,
+                                draw=none,
+                                fill=none
+                            }
+                    ]
+                    \addplot[
+                        c1,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c1, fill=c1!60}
+                    ] table[x=x, y=y, col sep=comma] {./img/tracking/tracking_2.csv};
+                    \addlegendentry{真实轨迹}
+                    \addplot[
+                        c3,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c3, fill=c3!60}
+                    ] table[x=x2, y=y2, col sep=comma] {./img/tracking/tracking_2_.csv};
+                    \addlegendentry{LMS预测}
+                \end{axis}
+            \end{tikzpicture}
+            \caption{}
+            \label{fig_trace1_2}
+        \end{subfigure}
+        \begin{subfigure}{.32\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        xtick=\empty, ytick=\empty,
+                        grid, axis equal image,
+                        legend cell align=left,
+                        width=5.8cm,
+                        legend style={
+                                at={(1,1)},
+                                anchor=north east,
+                                font=\tiny,
+                                draw=none,
+                                fill=none
+                            }
+                    ]
+                    \addplot[
+                        c1,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c1, fill=c1!60}
+                    ] table[x=x, y=y, col sep=comma] {./img/tracking/tracking_2.csv};
+                    \addlegendentry{真实轨迹}
+                    \addplot[
+                        c4,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c4, fill=c4!60}
+                    ] table[x=x3, y=y3, col sep=comma] {./img/tracking/tracking_2_.csv};
+                    \addlegendentry{RLMS预测}
+                \end{axis}
+            \end{tikzpicture}
+            \caption{}
+            \label{fig_trace1_3}
+        \end{subfigure}
+        \caption{轨迹一预测结果}
+        \label{fig_trace1}
+    \end{figure}
+
+    可以看到，对于螺旋曲线这样的简单可预测的轨迹，直接利用LS算法即可获得良好的预测效果。利用LMS算法则可以大大降低计算复杂度，但从\cref{fig_trace1_2}中可以发现，其收敛速度较慢。进一步利用RLMS算法，则可以在较快收敛的同时，获得与LS算法相当的预测效果。
+
+    \begin{figure}[htb!]
+        \centering
+        \begin{subfigure}{.7\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xtick=\empty, ytick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        grid, axis equal image,
+                        legend cell align=left,
+                        width=8cm,
+                        legend style={
+                                at={(0,1)},
+                                anchor=north west,
+                                font=\tiny,
+                                draw=none,
+                                fill=none
+                            }
+                    ]
+                    \addplot[
+                        c1,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c1, fill=c1!60}
+                    ] table[x=x, y=y, col sep=comma] {./img/tracking/tracking_1.csv};
+                    \addlegendentry{真实轨迹}
+                    \addplot[
+                        c2,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c2, fill=c2!60}
+                    ] table[x=x1, y=y1, col sep=comma] {./img/tracking/tracking_1_.csv};
+                    \addlegendentry{LS预测}
+                \end{axis}
+            \end{tikzpicture}
+            \caption{}
+            \label{fig_trace2_1}
+        \end{subfigure}
+        \begin{subfigure}{.6\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xtick=\empty, ytick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        grid, axis equal image,
+                        legend cell align=left,
+                        width=8cm,
+                        legend style={
+                                at={(0,1)},
+                                anchor=north west,
+                                font=\tiny,
+                                draw=none,
+                                fill=none
+                            }
+                    ]
+                    \addplot[
+                        c1,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c1, fill=c1!60}
+                    ] table[x=x, y=y, col sep=comma] {./img/tracking/tracking_1.csv};
+                    \addlegendentry{真实轨迹}
+                    \addplot[
+                        c3,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c3, fill=c3!60}
+                    ] table[x=x2, y=y2, col sep=comma] {./img/tracking/tracking_1_.csv};
+                    \addlegendentry{LMS预测}
+                \end{axis}
+            \end{tikzpicture}
+            \caption{}
+            \label{fig_trace2_2}
+        \end{subfigure}
+        \begin{subfigure}{.7\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \begin{axis}[
+                        xtick=\empty, ytick=\empty,
+                        ticklabel style={font=\small},
+                        label style={font=\small},
+                        grid, axis equal image,
+                        width=8cm,
+                        legend cell align=left,
+                        legend style={
+                                at={(0,1)},
+                                anchor=north west,
+                                font=\tiny,
+                                draw=none,
+                                fill=none
+                            }
+                    ]
+                    \addplot[
+                        c1,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c1, fill=c1!60}
+                    ] table[x=x, y=y, col sep=comma] {./img/tracking/tracking_1.csv};
+                    \addlegendentry{真实轨迹}
+                    \addplot[
+                        c4,
+                        thick,
+                        mark=*,
+                        mark size=0.5pt,
+                        mark options={c4, fill=c4!60}
+                    ] table[x=x3, y=y3, col sep=comma] {./img/tracking/tracking_1_.csv};
+                    \addlegendentry{RLMS预测}
+                \end{axis}
+            \end{tikzpicture}
+            \caption{轨迹二预测结果}
+            \label{fig_trace2_3}
+        \end{subfigure}
+        \caption{}
+        \label{fig_trace2}
+    \end{figure}
+
+    对于复杂难以预测的轨迹，如\cref{fig_trace_gt_2}所示，直接利用LS算法进行预测效果较差。从\cref{fig_trace2_1}中可以看到，当轨迹出现突变时，LS算法无法及时跟踪。LMS算法收敛速度较慢，因此其预测效果\cref{fig_trace2_2}也不理想。而RLMS算法则可以较快地适应轨迹的变化，从而获得较好的预测效果\cref{fig_trace2_3}。
+\end{solution}
+
 \subsection{卡尔曼滤波}
+在实际场景中，目标的运动状态受制于物理规律，因此其状态转移通常具有一定的连续性与相关性。卡尔曼滤波（Kalman Filter, KF）算法正是利用这一点，通过引入状态转移模型来对目标状态进行预测与更新，从而提升估计的准确性与鲁棒性。
 
 \section{数据关联}
 \subsection{联合概率数据关联（JPDA）}
