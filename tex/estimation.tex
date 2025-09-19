@@ -1663,56 +1663,56 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 
 根据\cref{prop:associative}，有
 \[
-\begin{split}
-    \mathcal{Z} 
-    & = \mathcal{X} \times_1 \mathbf{S}^{\mathrm{H}} \times_2 \mathbf{V}^{\mathrm{T}} \times_3 \mathbf{U}^{\mathrm{T}} 
-      = \left( \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \right) 
-        \times_1 \mathbf{S}^{\mathrm{H}} \times_2 \mathbf{V}^{\mathrm{T}} \times_3 \mathbf{U}^{\mathrm{T}} \\
-    & = \mathcal{I}_K \times_1 \left( \mathbf{S}^{\mathrm{H}} \mathbf{R} \right) 
-                   \times_2 \left( \mathbf{V}^{\mathrm{T}} \mathbf{A} \right) 
-                   \times_3 \left( \mathbf{U}^{\mathrm{T}} \mathbf{B} \right).
-\end{split}
+    \begin{split}
+        \mathcal{Z}
+         & = \mathcal{X} \times_1 \mathbf{S}^{\mathrm{H}} \times_2 \mathbf{V}^{\mathrm{T}} \times_3 \mathbf{U}^{\mathrm{T}}
+        = \left( \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \right)
+        \times_1 \mathbf{S}^{\mathrm{H}} \times_2 \mathbf{V}^{\mathrm{T}} \times_3 \mathbf{U}^{\mathrm{T}}                  \\
+         & = \mathcal{I}_K \times_1 \left( \mathbf{S}^{\mathrm{H}} \mathbf{R} \right)
+        \times_2 \left( \mathbf{V}^{\mathrm{T}} \mathbf{A} \right)
+        \times_3 \left( \mathbf{U}^{\mathrm{T}} \mathbf{B} \right).
+    \end{split}
 \]
 注意到，矩阵 \( \tilde{\mathbf{R}} = \mathbf{S}^{\mathrm{H}} \mathbf{R} \in \mathbb{C}^{L \times K} \) 对应于对目标回波信号在距离维上的脉冲压缩。记其列向量为
 \[
-    \tilde{\bm{r}}_k = \mathbf{S}^{\mathrm{H}} \bm{r}_k, 
+    \tilde{\bm{r}}_k = \mathbf{S}^{\mathrm{H}} \bm{r}_k,
     \quad k=1,2,\dots,K,
 \]
 根据脉冲压缩原理，\( \tilde{\bm{r}}_k \) 近似为一个稀疏向量，仅在目标距离处存在显著峰值，其余位置接近零：
 \[
-    \tilde{\bm{r}}_k[i] \approx 
+    \tilde{\bm{r}}_k[i] \approx
     \begin{cases}
-        A_k, & i = d_k, \\
+        A_k, & i = d_k,    \\
         0,   & i \neq d_k,
     \end{cases}
     \quad k=1,2,\dots,K,
 \]
-其中 \( A_k \) 表示目标的回波幅度与相位信息，\( d_k \) 为目标的距离索引。  
+其中 \( A_k \) 表示目标的回波幅度与相位信息，\( d_k \) 为目标的距离索引。
 
 而矩阵 \( \tilde{\mathbf{A}} =  \mathbf{V}^{\mathrm{T}} \mathbf{A} \in \mathbb{C}^{P \times K} \) 对应于对第一个参数维的波束形成。记其列向量为
 \[
-    \tilde{\bm{a}}_k = \mathbf{V}^{\mathrm{T}} \bm{a}_{\nu_k}, 
+    \tilde{\bm{a}}_k = \mathbf{V}^{\mathrm{T}} \bm{a}_{\nu_k},
     \quad k=1,2,\dots,K,
 \]
 由于不同频率的复指数向量之间近似正交，因此 \( \tilde{\bm{a}}_k \) 同样近似为一个稀疏向量，仅在目标参数一处出现显著峰值：
 \[
-    \tilde{\bm{a}}_k[p] \approx 
+    \tilde{\bm{a}}_k[p] \approx
     \begin{cases}
-        1, & p = \nu_k, \\
+        1, & p = \nu_k,    \\
         0, & p \neq \nu_k,
     \end{cases}
     \quad k=1,2,\dots,K,
 \]
 其中 \( \nu_k \) 为目标参数一的取值。类似地，矩阵 \(  \tilde{\mathbf{B}} = \mathbf{U}^{\mathrm{H}} \mathbf{B} \in \mathbb{C}^{Q \times K} \) 对应于对第二个参数维的波束形成。记其列向量为
 \[
-    \tilde{\bm{b}}_k = \mathbf{U}^{\mathrm{T}} \bm{b}_{\mu_k}, 
+    \tilde{\bm{b}}_k = \mathbf{U}^{\mathrm{T}} \bm{b}_{\mu_k},
     \quad k=1,2,\dots,K,
 \]
 则 \( \tilde{\bm{b}}_k \) 亦近似为一个稀疏向量，仅在目标参数二处存在显著峰值：
 \[
-    \tilde{\bm{b}}_k[q] \approx 
+    \tilde{\bm{b}}_k[q] \approx
     \begin{cases}
-        1, & q = \mu_k, \\
+        1, & q = \mu_k,    \\
         0, & q \neq \mu_k,
     \end{cases}
     \quad k=1,2,\dots,K,
@@ -1721,11 +1721,11 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 
 利用如上近似以及\cref{prop:diag-kron}，可以进一步地将张量 \( \mathcal{Z} \) 表示为
 \[
-\begin{split}
-    \mathcal{Z} 
-    & \approx \mathcal{I}_K \times_1 \tilde{\mathbf{R}} \times_2 \tilde{\mathbf{A}} \times_3 \tilde{\mathbf{B}} \\
-    & = \sum_{k=1}^K \tilde{\bm{r}}_k \circ \tilde{\bm{a}}_k \circ \tilde{\bm{b}}_k,
-\end{split}
+    \begin{split}
+        \mathcal{Z}
+         & \approx \mathcal{I}_K \times_1 \tilde{\mathbf{R}} \times_2 \tilde{\mathbf{A}} \times_3 \tilde{\mathbf{B}} \\
+         & = \sum_{k=1}^K \tilde{\bm{r}}_k \circ \tilde{\bm{a}}_k \circ \tilde{\bm{b}}_k,
+    \end{split}
 \]
 记\( \mathcal{Z}_k = \tilde{\bm{r}}_k \circ \tilde{\bm{a}}_k \circ \tilde{\bm{b}}_k \) ，则张量 \( \mathcal{Z} \) 可视为 \( K \) 个秩一张量的叠加。并且，每个秩一张量 \( \mathcal{Z}_k \) 中的元素有如下表示：
 \[
@@ -1745,9 +1745,9 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 具体而言，STAP 方法对Capon算法进行拓展，构建了如下的优化模型
 \[
     \begin{cases}
-        \min \quad        & \frac{1}{L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2                          \\
-        \text{s.t.} \quad & \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} = 1 \\
-                            & \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} = 1
+        \min \quad        & \frac{1}{L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2 \\
+        \text{s.t.} \quad & \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} = 1                                                                       \\
+                          & \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} = 1
     \end{cases}.
 \]
 对于向量\( \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{b}_{\mu}^{\mathrm{T}} \in \mathbb{C}^{L \times 1} \)，其可以看作是分别利用两个参数维度的加权向量\( \bm{v}_{\nu} \)与\( \bm{u}_{\mu} \)对张量\( \mathcal{X} \)进行滤波后得到的滤波器输出。与Capon算法类似，该优化问题的目标函数同样为最小化滤波器输出的功率。与此同时，约束条件则确保对参数为 \( \nu \) 和 \( \mu \) 目标信号的响应不受损失。
@@ -1756,9 +1756,9 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \[
     \begin{split}
         \frac{1}{L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2
-        & = \frac{1}{L} \left\| (\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{X}_{23}  \right\|^2 \\
-        & = \frac{1}{L}  ((\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{X}_{23}) \left((\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{X}_{23}\right)^{\mathrm{H}} \\
-        & = (\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{\Sigma}_{23} (\overline{\bm{v}}_{\nu} \otimes \overline{\bm{u}}_{\mu}),
+         & = \frac{1}{L} \left\| (\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{X}_{23}  \right\|^2                                                                           \\
+         & = \frac{1}{L}  ((\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{X}_{23}) \left((\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{X}_{23}\right)^{\mathrm{H}} \\
+         & = (\bm{v}_{\nu} \otimes \bm{u}_{\mu})^{\mathrm{T}} \mathbf{\Sigma}_{23} (\overline{\bm{v}}_{\nu} \otimes \overline{\bm{u}}_{\mu}),
     \end{split}
 \]
 其中，\( \mathbf{X}_{23} \in \mathbb{C}^{MN \times L} \)为张量\( \mathcal{X} \)在第2与第3维的展开矩阵，\( \mathbf{\Sigma}_{23} = \frac{1}{L} \mathbf{X}_{23} \mathbf{X}_{23}^{\mathrm{H}} \in \mathbb{C}^{MN \times MN} \)为其协方差矩阵。
@@ -1767,7 +1767,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 此时，优化模型可改写为
 \begin{equation}
     \begin{cases}
-        \min \quad        & \bm{w}_{\nu\mu}^{\mathrm{T}} \mathbf{\Sigma}_{23} \bm{w}_{\nu\mu} \\
+        \min \quad        & \bm{w}_{\nu\mu}^{\mathrm{T}} \mathbf{\Sigma}_{23} \bm{w}_{\nu\mu}      \\
         \text{s.t.} \quad & (\bm{a}_{\nu} \otimes \bm{b}_{\mu})^{\mathrm{T}} \bm{w}_{\nu\mu} = 1 ,
     \end{cases}
 \end{equation}
@@ -1788,8 +1788,8 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \[
     \mathcal{L}(\bm{v}_{\nu}, \bm{u}_{\mu}, \lambda_1, \lambda_2)
     = \frac{1}{2L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2
-      - \lambda_1 \left( \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} - 1 \right)
-      - \lambda_2 \left( \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} - 1 \right).
+    - \lambda_1 \left( \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} - 1 \right)
+    - \lambda_2 \left( \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} - 1 \right).
 \]
 如将\( \mathbf{\Sigma}_{23} \)转换为一个四阶张量\( \mathcal{S} \in \mathbb{C}^{M \times N \times M \times N} \)，则滤波器的输出功率可以进一步表示为
 \[
@@ -1799,17 +1799,17 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \[
     \mathcal{L}(\bm{v}_{\nu}, \bm{u}_{\mu}, \lambda_1, \lambda_2)
     = \frac{1}{2}\mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}} \times_4 \bm{u}_{\mu}^{\mathrm{H}}
-      - \lambda_1 \left( \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} - 1 \right)
-      - \lambda_2 \left( \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} - 1 \right).
+    - \lambda_1 \left( \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} - 1 \right)
+    - \lambda_2 \left( \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} - 1 \right).
 \]
 方便起见，将\(\mathcal{S} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_4 \bm{u}_{\mu}^{\mathrm{H}}\) 重塑为一个矩阵\( \mathbf{S}_{1} \in \mathbb{C}^{M \times M} \)，则\(  \mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}} \times_4 \bm{u}_{\mu}^{\mathrm{H}} \)可以表示为\(\bm{v}_{\nu}^{\mathrm{H}} \mathbf{S}_1 \bm{v}_{\nu}\)。类似地，将\(\mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}}\)重塑为一个矩阵\( \mathbf{S}_{2} \in \mathbb{C}^{N \times N} \)，则\(  \mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}} \times_4 \bm{u}_{\mu}^{\mathrm{H}} \)可以表示为\(\bm{u}_{\mu}^{\mathrm{H}} \mathbf{S}_2 \bm{u}_{\mu}\)。
 接下来，分别对 \( \bm{v}_{\nu} \) 与 \( \bm{u}_{\mu} \) 求偏导数，并令其为零，可得
 \[
     \begin{cases}
-        \frac{\partial \mathcal{L}}{\partial \bm{v}_{\nu}} 
-        & = \mathbf{S}_1 \bm{v}_{\nu} - \lambda_1 \overline{\bm{a}}_{\nu} = 0, \\
-        \frac{\partial \mathcal{L}}{\partial \bm{u}_{\mu}} 
-        & = \mathbf{S}_2 \bm{u}_{\mu} - \lambda_2 \overline{\bm{b}}_{\mu} = 0.
+        \frac{\partial \mathcal{L}}{\partial \bm{v}_{\nu}}
+         & = \mathbf{S}_1 \bm{v}_{\nu} - \lambda_1 \overline{\bm{a}}_{\nu} = 0, \\
+        \frac{\partial \mathcal{L}}{\partial \bm{u}_{\mu}}
+         & = \mathbf{S}_2 \bm{u}_{\mu} - \lambda_2 \overline{\bm{b}}_{\mu} = 0.
     \end{cases}
 \]
 将上式联立约束条件，可得
@@ -1827,67 +1827,67 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
     \centering
     \begin{subfigure}{.32\textwidth}
         \centering
-            \begin{tikzpicture}
-                \begin{axis}[
-                        xlabel={参数一},
-                        ylabel={参数二},
-                        enlargelimits=false,
-                        width=4.5cm, height=4.5cm,
-                        ytick=\empty,
-                        xtick=\empty,
-                        ticklabel style={font=\small},
-                        label style={font=\small},
-                        axis on top
-                    ]
-                    \addplot graphics [
-                            xmin=-1, xmax=1, ymin=-1, ymax=1,
-                        ] {./img/estimation/stap1.png};
-                \end{axis}
-            \end{tikzpicture}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel={参数一},
+                    ylabel={参数二},
+                    enlargelimits=false,
+                    width=4.5cm, height=4.5cm,
+                    ytick=\empty,
+                    xtick=\empty,
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    axis on top
+                ]
+                \addplot graphics [
+                        xmin=-1, xmax=1, ymin=-1, ymax=1,
+                    ] {./img/estimation/stap1.png};
+            \end{axis}
+        \end{tikzpicture}
         \caption{多维CBF}
         \label{fig_stap_compare_1}
     \end{subfigure}
     \begin{subfigure}{.32\textwidth}
         \centering
-                    \begin{tikzpicture}
-                \begin{axis}[
-                        xlabel={参数一},
-                        ylabel={参数二},
-                        enlargelimits=false,
-                        width=4.5cm, height=4.5cm,
-                        ytick=\empty,
-                        xtick=\empty,
-                        ticklabel style={font=\small},
-                        label style={font=\small},
-                        axis on top
-                    ]
-                    \addplot graphics [
-                            xmin=-1, xmax=1, ymin=-1, ymax=1,
-                        ] {./img/estimation/stap2.png};
-                \end{axis}
-            \end{tikzpicture}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel={参数一},
+                    ylabel={参数二},
+                    enlargelimits=false,
+                    width=4.5cm, height=4.5cm,
+                    ytick=\empty,
+                    xtick=\empty,
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    axis on top
+                ]
+                \addplot graphics [
+                        xmin=-1, xmax=1, ymin=-1, ymax=1,
+                    ] {./img/estimation/stap2.png};
+            \end{axis}
+        \end{tikzpicture}
         \caption{STAP}
         \label{fig_stap_compare_2}
     \end{subfigure}
     \begin{subfigure}{.32\textwidth}
         \centering
-                    \begin{tikzpicture}
-                \begin{axis}[
-                        xlabel={参数一},
-                        ylabel={参数二},
-                        enlargelimits=false,
-                        width=4.5cm, height=4.5cm,
-                        ytick=\empty,
-                        xtick=\empty,
-                        ticklabel style={font=\small},
-                        label style={font=\small},
-                        axis on top
-                    ]
-                    \addplot graphics [
-                            xmin=-1, xmax=1, ymin=-1, ymax=1,
-                        ] {./img/estimation/stap3.png};
-                \end{axis}
-            \end{tikzpicture}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel={参数一},
+                    ylabel={参数二},
+                    enlargelimits=false,
+                    width=4.5cm, height=4.5cm,
+                    ytick=\empty,
+                    xtick=\empty,
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    axis on top
+                ]
+                \addplot graphics [
+                        xmin=-1, xmax=1, ymin=-1, ymax=1,
+                    ] {./img/estimation/stap3.png};
+            \end{axis}
+        \end{tikzpicture}
         \caption{交替迭代STAP}
         \label{fig_stap_compare_3}
     \end{subfigure}
@@ -1902,7 +1902,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \]
 其中信号buff可以看作是 \( K \) 个秩一张量的叠加。因此，作为SVD分解的推广，张量CP分解方法同样可以直接对接收数据张量进行处理，从而实现对目标参数的联合估计。对应的优化模型为
 \[
-        \min \quad \left\| \mathcal{X} - \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \right\|_{\mathrm{F}}^2
+    \min \quad \left\| \mathcal{X} - \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \right\|_{\mathrm{F}}^2
 \]
 方便起见，将待求解的矩阵同样记作\( \mathbf{R} \in \mathbb{C}^{L \times K} \)，\( \mathbf{A} \in \mathbb{C}^{M \times K} \)，\( \mathbf{B} \in \mathbb{C}^{N \times K} \)。该优化问题可以通过交替最小二乘法（Alternating Least Squares, ALS）进行求解。具体而言，固定其中两个矩阵，仅对另一个矩阵进行优化。以优化矩阵 \( \mathbf{R} \) 为例，固定矩阵 \( \mathbf{A} \) 与 \( \mathbf{B} \) 后，根据\cref{prop:apx_kron_kprod}，有
 \[
@@ -1921,7 +1921,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 与此同时，\( (\mathcal{I}_K)_{23} \)的形式为
 \[
     (\mathcal{I}_K)_{23} = \begin{bmatrix}
-        \mathbf{E}_1  \\ \mathbf{E}_2  \\ \vdots \\ \mathbf{E}_K
+        \mathbf{E}_1 \\ \mathbf{E}_2  \\ \vdots \\ \mathbf{E}_K
     \end{bmatrix} \in \mathbb{R}^{K^2 \times K},
 \]
 其中，\( \mathbf{E}_k \in \mathbb{R}^{K \times K} \)为一个稀疏矩阵，仅在第\( k \)列的第\( k \)行处取值为一，其余位置均为零。由此可见，矩阵 \( (\mathcal{I}_K)_{23} \) 实际上是一个选择矩阵，其作用是从矩阵 \( \mathbf{B} \otimes \mathbf{A} \) 的 \( K^2 \) 列中选择出其中的 \( K \) 列。因此，有
@@ -1931,7 +1931,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 而\( (\mathbf{B} \otimes \bm{a}_k) \mathbf{E}_k \)仅选择出矩阵 \( \mathbf{B} \otimes \bm{a}_k \) 的第 \( k \) 列，因此有
 \[
     (\mathbf{B} \otimes \mathbf{A}) (\mathcal{I}_K)_{23} = \begin{bmatrix}
-        0 & \cdots& \bm{b}_k \otimes \bm{a}_k & 0 & \cdots & 0
+        0 & \cdots & \bm{b}_k \otimes \bm{a}_k & 0 & \cdots & 0
     \end{bmatrix}.
 \]
 所以，矩阵 \( (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_{1} \) 可以表示为
@@ -1948,7 +1948,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \]
 称为 Khatri-Rao 积（Khatri-Rao Product）。
 
-此外，不难验证\( (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_1 \in \mathbb{C}^{K \times M N} \)与\( \mathbf{B} \ast  \mathbf{A} = (\mathbf{B} \otimes \mathbf{A}) (\mathcal{I}_K)_{23} \in \mathbb{C}^{M N \times K} \)之间是转置关系。因此，优化矩阵 \( \mathbf{R} \) 的子问题可写成   
+此外，不难验证\( (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_1 \in \mathbb{C}^{K \times M N} \)与\( \mathbf{B} \ast  \mathbf{A} = (\mathbf{B} \otimes \mathbf{A}) (\mathcal{I}_K)_{23} \in \mathbb{C}^{M N \times K} \)之间是转置关系。因此，优化矩阵 \( \mathbf{R} \) 的子问题可写成
 \[
     \min \quad \left\| \mathbf{X}_{1} - \mathbf{R} (\mathbf{B} \ast  \mathbf{A})^{\mathrm{T}} \right\|_{\mathrm{F}}^2,
 \]
@@ -1960,7 +1960,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \[
     \begin{cases}
         \mathbf{R} = \mathbf{X}_{1} (\mathbf{B} \ast  \mathbf{A}) \left( (\mathbf{B} \ast  \mathbf{A})^{\mathrm{T}} (\mathbf{B} \ast  \mathbf{A}) \right)^{-1}, \\
-        \mathbf{A} = \mathbf{X}_{2} (\mathbf{B} \ast \mathbf{R}) \left( (\mathbf{B} \ast \mathbf{R})^{\mathrm{T}} (\mathbf{B} \ast  \mathbf{R}) \right)^{-1}, \\
+        \mathbf{A} = \mathbf{X}_{2} (\mathbf{B} \ast \mathbf{R}) \left( (\mathbf{B} \ast \mathbf{R})^{\mathrm{T}} (\mathbf{B} \ast  \mathbf{R}) \right)^{-1},   \\
         \mathbf{B} = \mathbf{X}_{3} (\mathbf{A} \ast  \mathbf{R}) \left( (\mathbf{A} \ast  \mathbf{R})^{\mathrm{T}} (\mathbf{A} \ast  \mathbf{R}) \right)^{-1},
     \end{cases}
 \]
@@ -1969,33 +1969,33 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
     \centering
     \begin{subfigure}{.6\textwidth}
         \centering
-            \begin{tikzpicture}
-                \begin{axis}[
-                        xlabel={时间维}, ylabel={实部},
-                        ticklabel style={font=\small},
-                        label style={font=\small},
-                        grid, width=7cm, height=4cm,
-                        xmin=-2, xmax=2,
-                        legend cell align=left,
-                        legend style={
-                                anchor=north east,
-                                font=\tiny,
-                                draw=none,
-                                fill=none
-                            }
-                    ]
-                    \addplot[
-                        c1,
-                        thick,
-                        smooth,
-                    ] table[x=x, y=r1, col sep=comma] {./img/estimation/cp_r.csv};
-                    \addplot[
-                        c2,
-                        thick,
-                        smooth,
-                    ] table[x=x, y=r2, col sep=comma] {./img/estimation/cp_r.csv};
-                \end{axis}
-            \end{tikzpicture}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel={时间维}, ylabel={实部},
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    grid, width=7cm, height=4cm,
+                    xmin=-2, xmax=2,
+                    legend cell align=left,
+                    legend style={
+                            anchor=north east,
+                            font=\tiny,
+                            draw=none,
+                            fill=none
+                        }
+                ]
+                \addplot[
+                    c1,
+                    thick,
+                    smooth,
+                ] table[x=x, y=r1, col sep=comma] {./img/estimation/cp_r.csv};
+                \addplot[
+                    c2,
+                    thick,
+                    smooth,
+                ] table[x=x, y=r2, col sep=comma] {./img/estimation/cp_r.csv};
+            \end{axis}
+        \end{tikzpicture}
         \caption{矩阵\( \mathbf{R} \)的列向量实部}
         \label{fig_cp_de_1}
     \end{subfigure}
@@ -2003,60 +2003,60 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
     \begin{subfigure}{.45\textwidth}
         \centering
         \begin{tikzpicture}
-                \begin{axis}[
-                        xlabel={参数一},
-                        ticklabel style={font=\small},
-                        label style={font=\small},
-                        grid,width=5cm, height=4cm,
-                        xmin=0, xmax=49,
-                        legend cell align=left,
-                        legend style={
-                                anchor=north east,
-                                font=\tiny,
-                                draw=none,
-                                fill=none
-                            }
-                    ]
-                    \addplot[
-                        c1,
-                        thick,
-                    ] table[x=x, y=a1, col sep=comma] {./img/estimation/cp_a.csv};
-                    \addplot[
-                        c2,
-                        thick,
-                    ] table[x=x, y=a2, col sep=comma] {./img/estimation/cp_a.csv};
-                \end{axis}
-            \end{tikzpicture}
+            \begin{axis}[
+                    xlabel={参数一},
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    grid,width=5cm, height=4cm,
+                    xmin=0, xmax=49,
+                    legend cell align=left,
+                    legend style={
+                            anchor=north east,
+                            font=\tiny,
+                            draw=none,
+                            fill=none
+                        }
+                ]
+                \addplot[
+                    c1,
+                    thick,
+                ] table[x=x, y=a1, col sep=comma] {./img/estimation/cp_a.csv};
+                \addplot[
+                    c2,
+                    thick,
+                ] table[x=x, y=a2, col sep=comma] {./img/estimation/cp_a.csv};
+            \end{axis}
+        \end{tikzpicture}
         \caption{矩阵\( \mathbf{A} \)的列向量实部}
         \label{fig_cp_de_2}
     \end{subfigure}
     \begin{subfigure}{.45\textwidth}
         \centering
-                \begin{tikzpicture}
-                \begin{axis}[
-                        xlabel={参数一},
-                        ticklabel style={font=\small},
-                        label style={font=\small},
-                        grid,width=5cm, height=4cm,
-                        xmin=0, xmax=49,
-                        legend cell align=left,
-                        legend style={
-                                anchor=north east,
-                                font=\tiny,
-                                draw=none,
-                                fill=none
-                            }
-                    ]
-                    \addplot[
-                        c1,
-                        thick,
-                    ] table[x=x, y=b1, col sep=comma] {./img/estimation/cp_b.csv};
-                    \addplot[
-                        c2,
-                        thick,
-                    ] table[x=x, y=b2, col sep=comma] {./img/estimation/cp_b.csv};
-                \end{axis}
-            \end{tikzpicture}
+        \begin{tikzpicture}
+            \begin{axis}[
+                    xlabel={参数一},
+                    ticklabel style={font=\small},
+                    label style={font=\small},
+                    grid,width=5cm, height=4cm,
+                    xmin=0, xmax=49,
+                    legend cell align=left,
+                    legend style={
+                            anchor=north east,
+                            font=\tiny,
+                            draw=none,
+                            fill=none
+                        }
+                ]
+                \addplot[
+                    c1,
+                    thick,
+                ] table[x=x, y=b1, col sep=comma] {./img/estimation/cp_b.csv};
+                \addplot[
+                    c2,
+                    thick,
+                ] table[x=x, y=b2, col sep=comma] {./img/estimation/cp_b.csv};
+            \end{axis}
+        \end{tikzpicture}
         \caption{矩阵\( \mathbf{B} \)的列向量实部}
         \label{fig_cp_de_3}
     \end{subfigure}
@@ -2074,23 +2074,23 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 
 \begin{figure}[htb!]
     \centering
-        \begin{tikzpicture}
-            \begin{axis}[
-                    xlabel={参数一},
-                    ylabel={参数二},
-                    enlargelimits=false,
-                    width=4.5cm, height=4.5cm,
-                    ytick=\empty,
-                    xtick=\empty,
-                    ticklabel style={font=\small},
-                    label style={font=\small},
-                    axis on top
-                ]
-                \addplot graphics [
-                        xmin=-1, xmax=1, ymin=-1, ymax=1,
-                    ] {./img/estimation/cp_music.png};
-            \end{axis}
-        \end{tikzpicture}
+    \begin{tikzpicture}
+        \begin{axis}[
+                xlabel={参数一},
+                ylabel={参数二},
+                enlargelimits=false,
+                width=4.5cm, height=4.5cm,
+                ytick=\empty,
+                xtick=\empty,
+                ticklabel style={font=\small},
+                label style={font=\small},
+                axis on top
+            ]
+            \addplot graphics [
+                    xmin=-1, xmax=1, ymin=-1, ymax=1,
+                ] {./img/estimation/cp_music.png};
+        \end{axis}
+    \end{tikzpicture}
     \caption{CP分解结合MUSIC方法得到的二维谱函数}
     \label{fig_cp_music}
 \end{figure}

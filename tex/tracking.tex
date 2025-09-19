@@ -1,14 +1,150 @@
-\chapter{目标跟踪与数据融合}
-\section{目标跟踪的基本概念}
-\section{状态空间模型与卡尔曼滤波}
-\subsection{线性状态空间模型}
-\subsection{卡尔曼滤波与协方差传播}
-\subsection{扩展卡尔曼滤波与无迹卡尔曼滤波}
-\section{多目标数据关联}
-\subsection{数据关联基础}
+\chapter{目标跟踪}
+
+目标跟踪（Target Tracking）是雷达信号处理与信息融合中的核心任务，其目标是在连续时间序列的量测数据中，对运动目标的状态进行实时估计与更新，并在存在多目标和杂波干扰的情况下实现可靠的航迹维持。通常而言，目标跟踪面临两个基本问题：其一是状态估计，即在噪声环境下对目标的动力学状态（位置、速度、加速度等隐含量）进行递推估计；其二是数据关联，即在多目标与虚警并存的量测环境中，判断每个观测量应当归属于哪一条目标航迹。本章将围绕这两个关键问题展开，首先介绍状态估计方法，然后讨论数据关联方法，以此构建目标跟踪的基本理论框架。
+
+\section{状态估计}
+在前述目标检测与参数估计的基础上，可以获得目标的多种观测信息，如距离、方位与速度等。然而在实际应用中，这些观测量不可避免地受到噪声与干扰的影响，因而存在偏差与不确定性。为了提升信息的可靠性，需要综合利用历史量测进行处理，实现对观测序列的降噪与平滑，并进一步完成对目标未来状态的预测。这便构成了状态估计问题的核心任务，也是实现高精度目标跟踪的前提。
+
+\subsection{最小均方滤波}
+
+不妨假设在第\( t \)时刻，目标的状态向量为\( \bm{x}_t \in \mathbb{R}^M \)，其可包含目标的速度、加速度等多种状态变量。同时，假设在该时刻可以获得一个观测向量\( \bm{z}_t \in \mathbb{R}^N \)，其可能是目标的距离、方位等测量值。在线性假设下，观测向量与目标状态向量之间的关系通常可以使用如下模型来描述：
+\[
+    \bm{z}_t = \mathbf{H} \bm{x}_t + \bm{v}_t,
+\]
+其中，$\mathbf{H} \in \mathbb{R}^{N \times M}$ 为待估计的观测矩阵，用于刻画状态向量与观测向量之间的线性映射关系；$\bm{v}_t$ 为观测噪声，通常假设其服从零均值高斯分布。最小均方（Least Mean Square, LMS）滤波的目标是在对观测数据进行处理时，最小化估计误差的均方值，从而获得对目标状态的最优估计。若共获得 $T$ 次观测，则相应的优化问题可表述为：
+\[
+    \min_{\mathbf{H}_T} \ \frac{1}{T}\sum_{t=1}^{T} \big\| \mathbf{H}_T\bm{x}_t - \bm{z}_t \big\|^2,
+\]
+其中，\( \mathbf{H}_T \) 表示利用前 \( T \) 次观测数据估计得到的观测矩阵。
+
+记
+\[
+    \mathbf{X}_T = \begin{bmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_T \end{bmatrix} \in \mathbb{R}^{M \times T},
+    \quad
+    \mathbf{Z}_T = \begin{bmatrix} \bm{z}_1 & \bm{z}_2 & \cdots & \bm{z}_T \end{bmatrix} \in \mathbb{R}^{N \times T},
+\]
+则上述优化问题可进一步简化为（方便起见，常数项\( \frac{1}{T} \) 被省略）
+\[
+    \min_{\mathbf{H}} \big\| \mathbf{H}_T \mathbf{X}_T - \mathbf{Z}_T \big\|_{\mathrm{F}}^2.
+\]
+利用克罗内克积的相关性质（\cref{cor:kronecker-vec}）, \( \mathbf{H}_T \mathbf{X}_T \)可以改写为如下的矩阵乘向量的形式：
+\[
+    \operatorname{vec}(\mathbf{H}_T \mathbf{X}_T) = \operatorname{vec}(\mathbf{I} \mathbf{H}_T \mathbf{X}_T)  = (\mathbf{X}_T^{\mathrm{T}} \otimes \mathbf{I}) \operatorname{vec}(\mathbf{H}_T),
+\]
+其中，\( \mathbf{I} \in \mathbb{R}^{N \times N} \) 为单位矩阵。于是，优化问题可转化为
+\[
+    \min_{\operatorname{vec}(\mathbf{H}_T)} \left\| (\mathbf{X}_T^{\mathrm{T}} \otimes \mathbf{I}) \operatorname{vec}(\mathbf{H}_T) - \operatorname{vec}(\mathbf{Z}_T) \right\|^2.
+\]
+该问题为标准的线性最小二乘问题，其解析解为
+\[
+    \begin{split}
+        \operatorname{vec}(\mathbf{H}_T) & = \left( (\mathbf{X}_T^{\mathrm{T}} \otimes \mathbf{I})^{\mathrm{T}} (\mathbf{X}_T^{\mathrm{T}} \otimes \mathbf{I}) \right)^{-1} (\mathbf{X}_T^{\mathrm{T}} \otimes \mathbf{I})^{\mathrm{T}} \operatorname{vec}(\mathbf{Z}_T ) \\
+                                         & = \left( \left( \mathbf{X}_T \mathbf{X}_T^{\mathrm{T}} \right)\otimes \mathbf{I} \right)^{-1} (\mathbf{X}_T \otimes \mathbf{I}) \operatorname{vec}(\mathbf{Z}_T)                                                               \\
+                                         & = \left( \left( \mathbf{X}_T \mathbf{X}_T^{\mathrm{T}} \right)^{-1} \otimes \mathbf{I} \right) (\mathbf{X}_T \otimes \mathbf{I}) \operatorname{vec}(\mathbf{Z}_T)                                                              \\
+                                         & = \left( \left( \mathbf{X}_T \mathbf{X}_T^{\mathrm{T}} \right)^{-1} \mathbf{X}_T \otimes \mathbf{I} \right) \operatorname{vec}(\mathbf{Z}_T)                                                                                   \\
+    \end{split}
+\]
+再次利用\cref{cor:kronecker-vec}，可得
+\[
+    \mathbf{H}_T = \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} \left( \mathbf{X}_T \mathbf{X}_T^{\mathrm{T}} \right)^{-1}.
+\]
+
+注意到，随着观测次数 \( T \) 的增加，矩阵 \( \mathbf{X}_T \) 的规模不断增大，从而导致计算复杂度迅速提升。另一方面，目标的运动状态也可能随时间变化，因此没有必要始终依赖全部历史观测数据来估计观测矩阵 \( \mathbf{H}_T \)。为此，可以采用递推的方式来更新观测矩阵 \( \mathbf{H}_T \)，即递推最小均方（Recursive Least Mean Square, RLMS）算法。
+
+RLMS 在每次获得新的观测数据后，直接利用新数据来更新 \( \mathbf{H}_T \)，而不是再次求解完整的优化问题。并引入遗忘因子 \( \lambda \in (0,1] \)，以减小对较早观测数据的依赖。具体而言，在时刻 \( T \) 时，优化问题可表述为
+\[
+    \min_{\mathbf{H}_T} \ \sum_{t=1}^{T} \lambda^{T-t} \big\| \mathbf{H}_T\bm{x}_t - \bm{z}_t \big\|^2.
+\]
+
+同样可以将上述问题转化为矩阵形式：
+\[
+    \min_{\mathbf{H}_T} \ \big\| \mathbf{H}_T \mathbf{X}_T - \mathbf{Z}_T\big\|_{\mathrm{F}}^2,
+\]
+其中，
+\[
+    \mathbf{X}_T = \begin{bmatrix} \sqrt{\lambda}^{T-1}\bm{x}_1 & \sqrt{\lambda}^{T-2}\bm{x}_2 & \cdots & \bm{x}_T \end{bmatrix} \in \mathbb{R}^{M \times T},
+\]
+\[
+    \mathbf{Z}_T = \begin{bmatrix} \sqrt{\lambda}^{T-1}\bm{z}_1 & \sqrt{\lambda}^{T-2}\bm{z}_2 & \cdots & \bm{z}_T \end{bmatrix} \in \mathbb{R}^{N \times T}.
+\]
+与普通最小二乘相同，\( T \)时刻该问题的解析解为
+\[
+    \mathbf{H}_T = \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} \left( \mathbf{X}_T \mathbf{X}_T ^{\mathrm{T}} \right)^{-1},
+\]
+而\( T + 1 \)时刻的解为
+\[
+    \mathbf{H}_{T+1} = \mathbf{Z}_{T+1} \mathbf{X}_{T+1}^{\mathrm{T}} \left( \mathbf{X}_{T+1} \mathbf{X}_{T+1} ^{\mathrm{T}} \right)^{-1}.
+\]
+
+注意到，矩阵\( \mathbf{X}_T \)和\( \mathbf{X}_{T+1} \)之间，矩阵\( \mathbf{Z}_T \)和\( \mathbf{Z}_{T+1} \)之间, 存在如下关系：
+\[
+    \mathbf{X}_{T+1} = \begin{bmatrix} \sqrt{\lambda} \mathbf{X}_T & \bm{x}_{T+1} \end{bmatrix}, \quad  \mathbf{Z}_{T+1} = \begin{bmatrix} \sqrt{\lambda} \mathbf{Z}_T & \bm{z}_{T+1} \end{bmatrix}.
+\]
+因此，\( \mathbf{Z}_{T+1} \mathbf{X}_{T+1}^\mathrm{T} \)可以写成如下的形式：
+\[
+    \mathbf{Z}_{T+1} \mathbf{X}_{T+1}^\mathrm{T} = \begin{bmatrix} \sqrt{\lambda} \mathbf{Z}_T & \bm{z}_{T+1} \end{bmatrix} \begin{bmatrix}
+        \sqrt{\lambda} \mathbf{X}_T^\mathrm{T} \\
+        \bm{x}_{T+1}^\mathrm{T}
+    \end{bmatrix} = \lambda \mathbf{Z}_T \mathbf{X}_T^\mathrm{T} + \bm{z}_{T+1}\bm{x}_{T+1}^\mathrm{T}.
+\]
+类似地，\( \mathbf{X}_{T+1}  \mathbf{X}_{T+1}^\mathrm{T} \)可以写成如下的形式：
+\[
+    \mathbf{X}_{T+1}  \mathbf{X}_{T+1}^\mathrm{T} = \begin{bmatrix} \sqrt{\lambda} \mathbf{X}_T & \bm{x}_{T+1} \end{bmatrix} \begin{bmatrix}
+        \sqrt{\lambda} \mathbf{X}_T^\mathrm{T} \\
+        \bm{x}_{T+1}^\mathrm{T}
+    \end{bmatrix} = \lambda \mathbf{X}_T \mathbf{X}_T^\mathrm{T} + \bm{x}_{T+1}\bm{x}_{T+1}^\mathrm{T}.
+\]
+方便起见，记\( \mathbf{X}_T \mathbf{X}_T^\mathrm{T} = \mathbf{\Sigma}_T \)，\( \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} = \mathbf{\Gamma}_T \)，则进一步利用伍德伯里矩阵恒等式（\cref{cor:woodbury-matrix-identity}），可得
+\[
+    \begin{split}
+        \left( \mathbf{\Sigma}_{T+1} \right)^{-1} & = \left( \lambda \mathbf{\Sigma}_T + \bm{x}_{T+1}\bm{x}_{T+1}^\mathrm{T} \right)^{-1}                                                                                                                                        \\
+                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \frac{\mathbf{\Sigma}_T^{-1} \bm{x_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1}}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}} \right) \\
+                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{w}_T^{\mathrm{T}} \right),                                                                                                     \\
+    \end{split}
+\]
+其中\( \bm{w}_{T+1} \)为增益向量，有如下表达式：
+\[
+    \bm{w}_{T+1} = \frac{\mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}.
+\]
+则\( \mathbf{H}_T \)可以表示为
+\[
+    \mathbf{H}_T = \mathbf{\Gamma}_T \mathbf{\Sigma}_T^{-1},
+\]
+而\( \mathbf{H}_{T+1} \)可以表示为
+\[
+    \begin{split}
+        \mathbf{H}_{T+1} & = \mathbf{\Gamma}_{T+1} \mathbf{\Sigma}_{T+1}^{-1} = (\lambda \mathbf{\Gamma}_T + \bm{z}_{T+1}\bm{x}_{T+1}^\mathrm{T}) \mathbf{\Sigma}_{T+1}^{-1} \\
+                         & = \lambda \mathbf{\Gamma}_T \mathbf{\Sigma}_{T+1}^{-1} + \bm{z}_{T+1}\bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T+1}^{-1}                           \\
+    \end{split}
+\]
+
+注意到
+\[
+    \lambda \mathbf{\Gamma}_T \mathbf{\Sigma}_{T+1}^{-1} = \mathbf{\Gamma}_T \left(  \mathbf{\Sigma}_T^{-1} -  \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{w}_T^{\mathrm{T}} \right) = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{w}_T^{\mathrm{T}},
+\]
+而
+\[
+    \begin{split}
+        \mathbf{\Sigma}_{T + 1}^{-1} \bm{x}_{T+1} & = \frac{1}{\lambda} \left(  \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1} - \frac{\mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} }{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}} \right) \\
+                                                  & = \frac{ \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}} = \bm{w}_T,
+    \end{split}
+\]
+因此，\( \mathbf{H}_{T+1} \)可以进一步简化为
+\[
+    \mathbf{H}_{T+1} = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{w}_T^{\mathrm{T}}  + \bm{z}_{T+1} \bm{w}_T^{\mathrm{T}} = \mathbf{H}_T + (\bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1}) \bm{w}_T^{\mathrm{T}}.
+\]
+有趣的是，\( \bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1} \)可以看作是，在时刻\( T + 1 \)时，使用上一时刻的观测矩阵\( \mathbf{H}_T \)对新观测数据进行预测时所产生的预测误差。记\( \bm{e}_k = \bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1} \)，则最终的递推更新公式为
+\[
+    \mathbf{H}_{T+1} = \mathbf{H}_T + \bm{e}_k \bm{w}_T^{\mathrm{T}}.
+\]
+由此可见，整个递推过程可理解为：在每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与增益向量对观测矩阵进行修正，从而实现动态更新。当\(  \lambda = 1 \) 时，该递推公式退化为经典的最小均方（LMS）算法，可见二者本质上均遵循``先预测、后修正''的思想。
+
+\begin{example}
+
+\end{example}
+
+\subsection{卡尔曼滤波}
+
+\section{数据关联}
 \subsection{联合概率数据关联（JPDA）}
 \subsection{多假设跟踪（MHT）}
-\section{多传感器数据融合}
-\subsection{集中式与分布式融合架构}
-\subsection{加权最小二乘与信息滤波}
-\subsection{协方差交叉融合}

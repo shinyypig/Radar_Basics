@@ -236,6 +236,127 @@
     从\cref{fig_basic_kkt_eg_1}可以看到，此时的点并不满足极值条件，目标函数的梯度（蓝色箭头）和约束函数的梯度（红色箭头）并不共线，这意味着沿着黄色箭头的方向，目标函数仍然是可以继续下降的，因此该点并不是极值点。而在极值点处，如\cref{fig_basic_kkt_eg_2}所示，目标函数的梯度和约束函数的梯度是共线的，这意味着在该点处，想要进一步降低目标函数值，必然会影响等式约束的成立，因此该点是极值点。
 \end{solution}
 
+\section{分块矩阵求逆公式}
+\begin{theorem}\label{thm:block-matrix-inverse}
+    给定分块矩阵
+    \[
+        \begin{bmatrix}
+            \mathbf{A} & \mathbf{B} \\
+            \mathbf{C} & \mathbf{D}
+        \end{bmatrix},
+    \]
+    若\( \mathbf{A} \)和\( \mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B} \)均为可逆矩阵，则有
+    \[
+        \begin{bmatrix}
+            \mathbf{A} & \mathbf{B} \\
+            \mathbf{C} & \mathbf{D}
+        \end{bmatrix}^{-1} = \begin{bmatrix}
+            \mathbf{A}^{-1} + \mathbf{A}^{-1}\mathbf{B}(\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})^{-1}\mathbf{C}\mathbf{A}^{-1} & -\mathbf{A}^{-1}\mathbf{B}(\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})^{-1} \\
+            -(\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})^{-1}\mathbf{C}\mathbf{A}^{-1}                                           & (\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})^{-1}
+        \end{bmatrix}.
+    \]
+\end{theorem}
+\begin{proof}
+    不妨假设对应的逆矩阵为
+    \[
+        \mathbf{M}^{-1} = \begin{bmatrix}
+            \mathbf{E} & \mathbf{F} \\
+            \mathbf{G} & \mathbf{H}
+        \end{bmatrix}.
+    \]
+    则有
+    \[
+        \begin{bmatrix}
+            \mathbf{A} & \mathbf{B} \\
+            \mathbf{C} & \mathbf{D}
+        \end{bmatrix}
+        \begin{bmatrix}
+            \mathbf{E} & \mathbf{F} \\
+            \mathbf{G} & \mathbf{H}
+        \end{bmatrix}
+        = \begin{bmatrix}
+            \mathbf{I} & \mathbf{0} \\
+            \mathbf{0} & \mathbf{I}
+        \end{bmatrix}.
+    \]
+    逐块展开，可得
+    \[
+        \begin{cases}
+            \mathbf{A}\mathbf{E} + \mathbf{B}\mathbf{G} = \mathbf{I}, \\
+            \mathbf{A}\mathbf{F} + \mathbf{B}\mathbf{H} = \mathbf{0}, \\
+            \mathbf{C}\mathbf{E} + \mathbf{D}\mathbf{G} = \mathbf{0}, \\
+            \mathbf{C}\mathbf{F} + \mathbf{D}\mathbf{H} = \mathbf{I}.
+        \end{cases}
+    \]
+
+    根据第一式，可得
+    \[
+        \mathbf{E} = \mathbf{A}^{-1} - \mathbf{A}^{-1}\mathbf{B}\mathbf{G},
+    \]
+    将其带入第三式，可得
+    \[
+        \mathbf{C}(\mathbf{A}^{-1} - \mathbf{A}^{-1}\mathbf{B}\mathbf{G}) + \mathbf{D}\mathbf{G} = \mathbf{0},
+    \]
+    即
+    \[
+        (\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})\mathbf{G} = -\mathbf{C}\mathbf{A}^{-1},
+    \]
+    因此
+    \begin{equation}
+        \mathbf{G} = - (\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})^{-1}\mathbf{C}\mathbf{A}^{-1}.
+    \end{equation}
+    将其代入第一式，可得
+    \begin{equation}
+        \mathbf{E} = \mathbf{A}^{-1} + \mathbf{A}^{-1}\mathbf{B}(\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})^{-1}\mathbf{C}\mathbf{A}^{-1}.
+    \end{equation}
+
+    类似地，根据第二式，可得
+    \[
+        \mathbf{F} = -\mathbf{A}^{-1}\mathbf{B}\mathbf{H},
+    \]
+    将其代入第四式，可得
+    \[
+        -\mathbf{C}\mathbf{A}^{-1}\mathbf{B}\mathbf{H} + \mathbf{D}\mathbf{H} = \mathbf{I},
+    \]
+    即
+    \begin{equation}
+        \mathbf{H} = (\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})^{-1}.
+    \end{equation}
+    将其代入第二式，可得
+    \begin{equation}
+        \mathbf{F} = -\mathbf{A}^{-1}\mathbf{B}(\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})^{-1}.
+    \end{equation}
+    综上，即可得到分块矩阵求逆公式.
+\end{proof}
+
+\begin{corollary}\label{cor:woodbury-matrix-identity}
+    伍德伯里矩阵恒等式（Woodbury Matrix Identity）:
+    \[
+        (\mathbf{A} - \mathbf{B}\mathbf{D}^{-1}\mathbf{C})^{-1} = \mathbf{A}^{-1} + \mathbf{A}^{-1}\mathbf{B}(\mathbf{D} - \mathbf{C}\mathbf{A}^{-1}\mathbf{B})^{-1}\mathbf{C}\mathbf{A}^{-1}.
+    \]
+\end{corollary}
+\begin{proof}
+    对于分块矩阵
+    \[
+        \begin{bmatrix}
+            \mathbf{A} & \mathbf{B} \\
+            \mathbf{C} & \mathbf{D}
+        \end{bmatrix},
+    \]
+    若\( \mathbf{D} \)和\( \mathbf{A} - \mathbf{B}\mathbf{D}^{-1}\mathbf{C} \)也为可逆矩阵，则有
+    \[
+        \begin{bmatrix}
+            \mathbf{A} & \mathbf{B} \\
+            \mathbf{C} & \mathbf{D}
+        \end{bmatrix}^{-1} = \begin{bmatrix}
+            (\mathbf{A} - \mathbf{B}\mathbf{D}^{-1}\mathbf{C})^{-1}                           & -(\mathbf{A} - \mathbf{B}\mathbf{D}^{-1}\mathbf{C})^{-1}\mathbf{B}\mathbf{D}^{-1}                                           \\
+            -\mathbf{D}^{-1}\mathbf{C}(\mathbf{A} - \mathbf{B}\mathbf{D}^{-1}\mathbf{C})^{-1} & \mathbf{D}^{-1} + \mathbf{D}^{-1}\mathbf{C}(\mathbf{A} - \mathbf{B}\mathbf{D}^{-1}\mathbf{C})^{-1}\mathbf{B}\mathbf{D}^{-1}
+        \end{bmatrix}.
+    \]
+    该分块矩阵的逆与\cref{thm:block-matrix-inverse}中的结果是等价的，对比两者的左上角块，即可得到伍德伯里矩阵恒等式.
+\end{proof}
+
+
 \chapter{向量范数与矩阵范数}\label{apx.matrix-norm}
 首先给出范数的概念：
 
@@ -395,6 +516,7 @@
           经过简单的验证可知，矩阵的核范数等于矩阵的所有奇异值之和.
 \end{enumerate}
 
+
 \chapter{张量乘法性质}
 
 \begin{property}\label{prop:apx_kron_matmul}
@@ -456,43 +578,43 @@
     其中\( (\cdot)_{ab} \)表示张量的模\( a,b \)展开。
 \end{property}
 \begin{proof}
-记 \(\mathcal{Y}=\mathcal{T}\times_a \mathbf{A}\times_b \mathbf{B}\)。
-按模乘定义（记分量用小写 \(t_{\cdot},a_{\cdot},b_{\cdot}\)），对任意
-\(1\le j\le J,1\le k\le K\) 与其余 \(\bm{i}_{\neg a,b}\) 有
-\[
-  y_{i_1 \dots i_{a-1} j i_{a+1} \dots i_{b-1} k i_{b+1} \dots i_N}
-  =
-  \sum_{r=1}^{I_a}\sum_{s=1}^{I_b}
-  a_{j r} b_{k s}
-  t_{i_1 \dots i_{a-1} r i_{a+1} \dots i_{b-1} s i_{b+1} \dots i_N}.
-\]
-将 \(\mathcal{Y}\)、\(\mathcal{T}\) 分别按模 \((a,b)\) 展开，记
-\(\mathbf{Y}_{ab}\in\mathbb{R}^{JK\times \prod_{n\neq a,b} I_n}\)、\(\mathbf{T}_{ab}\in\mathbb{R}^{I_aI_b\times \prod_{n\neq a,b} I_n}\)。
-取行编码
-\(\pi(j,k)=(k-1)J+j\)、\(\rho(r,s)=(s-1)I_a+r\)，列编码
-\(\gamma(\bm{i}_{\neg a,b})\) 为其余指标的字典序，于是
-\[
-  [\mathbf{Y}_{ab}]_{\pi(j,k),\gamma(\bm{i}_{\neg a,b})}
-  =
-  y_{i_1 \dots i_{a-1} j i_{a+1} \dots i_{b-1} k i_{b+1} \dots i_N}.
-\]
-代入上式分量表达并重写为矩阵索引求和，得
-\[
-\begin{aligned}
-  [\mathbf{Y}_{ab}]_{\pi(j,k),\gamma(\bm{i}_{\neg a,b})}
-  &= \sum_{r=1}^{I_a}\sum_{s=1}^{I_b}
-     a_{j r} b_{k s}
-     t_{i_1 \dots i_{a-1} r i_{a+1} \dots i_{b-1} s i_{b+1} \dots i_N} \\
-  &= \sum_{r=1}^{I_a}\sum_{s=1}^{I_b}
-     \underbrace{b_{k s} a_{j r}}_{=[(\mathbf{B}\otimes\mathbf{A})]_{\pi(j,k),\rho(r,s)}}
-     \underbrace{[\mathbf{T}_{ab}]_{\rho(r,s),\gamma(\bm{i}_{\neg a,b})}}_{\text{模 }(a,b)\text{ 展开}} .
-\end{aligned}
-\]
-上式对所有列索引 \(\gamma(\bm{i}_{\neg a,b})\) 同时成立，故有矩阵等式
-\[
-  \mathbf{Y}_{ab} = (\mathbf{B}\otimes\mathbf{A})\mathbf{T}_{ab}.
-\]
-有限重求和可交换，证明完毕。证毕。
+    记 \(\mathcal{Y}=\mathcal{T}\times_a \mathbf{A}\times_b \mathbf{B}\)。
+    按模乘定义（记分量用小写 \(t_{\cdot},a_{\cdot},b_{\cdot}\)），对任意
+    \(1\le j\le J,1\le k\le K\) 与其余 \(\bm{i}_{\neg a,b}\) 有
+    \[
+        y_{i_1 \dots i_{a-1} j i_{a+1} \dots i_{b-1} k i_{b+1} \dots i_N}
+        =
+        \sum_{r=1}^{I_a}\sum_{s=1}^{I_b}
+        a_{j r} b_{k s}
+        t_{i_1 \dots i_{a-1} r i_{a+1} \dots i_{b-1} s i_{b+1} \dots i_N}.
+    \]
+    将 \(\mathcal{Y}\)、\(\mathcal{T}\) 分别按模 \((a,b)\) 展开，记
+    \(\mathbf{Y}_{ab}\in\mathbb{R}^{JK\times \prod_{n\neq a,b} I_n}\)、\(\mathbf{T}_{ab}\in\mathbb{R}^{I_aI_b\times \prod_{n\neq a,b} I_n}\)。
+    取行编码
+    \(\pi(j,k)=(k-1)J+j\)、\(\rho(r,s)=(s-1)I_a+r\)，列编码
+    \(\gamma(\bm{i}_{\neg a,b})\) 为其余指标的字典序，于是
+    \[
+        [\mathbf{Y}_{ab}]_{\pi(j,k),\gamma(\bm{i}_{\neg a,b})}
+        =
+        y_{i_1 \dots i_{a-1} j i_{a+1} \dots i_{b-1} k i_{b+1} \dots i_N}.
+    \]
+    代入上式分量表达并重写为矩阵索引求和，得
+    \[
+        \begin{aligned}
+            [\mathbf{Y}_{ab}]_{\pi(j,k),\gamma(\bm{i}_{\neg a,b})}
+             & = \sum_{r=1}^{I_a}\sum_{s=1}^{I_b}
+            a_{j r} b_{k s}
+            t_{i_1 \dots i_{a-1} r i_{a+1} \dots i_{b-1} s i_{b+1} \dots i_N} \\
+             & = \sum_{r=1}^{I_a}\sum_{s=1}^{I_b}
+            \underbrace{b_{k s} a_{j r}}_{=[(\mathbf{B}\otimes\mathbf{A})]_{\pi(j,k),\rho(r,s)}}
+            \underbrace{[\mathbf{T}_{ab}]_{\rho(r,s),\gamma(\bm{i}_{\neg a,b})}}_{\text{模 }(a,b)\text{ 展开}} .
+        \end{aligned}
+    \]
+    上式对所有列索引 \(\gamma(\bm{i}_{\neg a,b})\) 同时成立，故有矩阵等式
+    \[
+        \mathbf{Y}_{ab} = (\mathbf{B}\otimes\mathbf{A})\mathbf{T}_{ab}.
+    \]
+    有限重求和可交换，证明完毕。证毕。
 \end{proof}
 
 \begin{corollary}\label{cor:kronecker-kron}
@@ -503,7 +625,7 @@
     其中\( (\cdot)_{1\cdots N} \)表示张量的模\( 1,2,\ldots,N \)展开，通常也被记作\( \operatorname{vec}( \mathcal{T} ) = \mathbf{T}_{1\cdots N} \)，即将张量展平为列向量。
 \end{corollary}
 
-\begin{corollary}
+\begin{corollary}\label{cor:kronecker-vec}
     对于克罗内克积，有如下性质
     \[
         \operatorname{vec}(\mathbf{A} \mathbf{X} \mathbf{B}) = (\mathbf{B}^{\mathrm{T}} \otimes \mathbf{A}) \operatorname{vec}(\mathbf{X}),
