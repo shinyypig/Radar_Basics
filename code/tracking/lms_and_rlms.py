@@ -129,7 +129,6 @@ def kf_cv(X, order=2, dt=1.0, q=1e-3, r=1e-6):
         K = P_pred @ H.T @ np.linalg.inv(S)  # (4,2)
         xk = x_pred + K @ innov  # (4,1)
         Pk = (I4 - K @ H) @ P_pred
-
     return np.array(Xp)
 
 

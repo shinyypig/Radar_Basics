@@ -103,7 +103,7 @@
 \RequirePackage[mathlines]{lineno}
 
 \RequirePackage[chapter]{algorithm}
-\RequirePackage{algorithmic}
+\RequirePackage{algpseudocode}
 
 \RequirePackage{setspace}
 
