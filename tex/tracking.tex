@@ -816,12 +816,135 @@ $$
         1 & 1 & 0 & 1 & 1 \\
         1 & 0 & 1 & 0 & 1 \\
         0 & 1 & 1 & 1 & 0 \\
-    \end{bmatrix} \quad \mathbf{E}_2 =
+    \end{bmatrix}, \quad \mathbf{E}_2 =
     \begin{bmatrix}
         0.00 & 1.63 & 1.46 & 0.54 & 0.89 \\
         1.63 & 0.00 & 0.92 & 0.68 & 1.10 \\
         1.46 & 0.92 & 0.00 & 1.33 & 0.96 \\
         0.54 & 0.68 & 1.33 & 0.00 & 0.73 \\
         0.89 & 1.10 & 0.96 & 0.73 & 0.00 \\
-    \end{bmatrix}
+    \end{bmatrix}.
 $$
+
+在许多实际应用中，图 $\mathcal G$ 往往伴随有以向量形式表示的节点与边的属性。对于这样的属性图（Attribute Graph），我们记$\bm v_i \in \mathbb R^{d_v}$ 为节点 $\mathcal V_i$ 的属性向量，$\bm e_{ii'} \in \mathbb R^{d_e}$ 为边 $\mathcal E_{ii'}$ 的属性向量。与此同时，其邻接矩阵 $\mathbf{E}$ 可以通过某些特定的函数计算得到，例如
+\[
+    \mathbf{E}_{ii'} = \phi(\bm v_i, \bm v_{i'}) \quad \text{或} \quad \mathbf{E}_{ii'} = \phi(\bm e_{ii'}).
+\]
+
+给定两个图 $\mathcal G^1=\{\mathcal V^1, \mathcal E^1\}$ 与 $\mathcal G^2=\{\mathcal V^2, \mathcal E^2\}$，其节点数分别为 $m$ 与 $n$（不妨假设 $m \leq n$），图匹配（Graph Matching, GM）问题旨在寻找一种最优的节点对应关系。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/tracking/graph3.pdf}
+        \caption{}
+        \label{fig_gm_eg_1}
+    \end{subfigure}
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/tracking/graph4.pdf}
+        \caption{}
+        \label{fig_gm_eg_2}
+    \end{subfigure}
+    \caption{图匹配示例}
+    \label{fig_gm_eg}
+\end{figure}
+
+如\cref{fig_gm_eg} 所示的两个图，不难发现它们节点之间的对应关系如下：
+\[
+    \begin{bmatrix}
+        1         & \to & 3 \\
+        2         & \to & 1 \\
+        3         & \to & 2 \\
+        \emptyset & \to & 4
+    \end{bmatrix},
+\]
+其中\( \emptyset \to 4 \)，表明\cref{fig_gm_eg_1}中没有节点与\cref{fig_gm_eg_2}中的节点4对应。为了形式化地描述图匹配问题，我们引入匹配矩阵的概念。具体而言，我们希望构造一个匹配矩阵
+\[
+    \mathbf{P} \in \{0,1\}^{m \times n},
+\]
+其第\( i \)行第\( j \)列元素$p_{ij}=1$，则表示 $\mathcal G^1$ 中的节点 $\mathcal V^1_i$ 与 $\mathcal G^2$ 中的节点 $\mathcal V^2_j$ 相匹配；反之 $p_{ij}=0$。因此，对于\cref{fig_gm_eg} 所示的两个图，其匹配矩阵为
+\[
+    \mathbf{P} =
+    \begin{bmatrix}
+        0 & 0 & 1 & 0 \\
+        1 & 0 & 0 & 0 \\
+        0 & 1 & 0 & 0
+    \end{bmatrix}
+\]
+
+此外，为保证匹配的合理性，矩阵\( \mathbf{P} \)通常需要满足一定的约束条件，记 $\mathbf{P}$ 必然属于集合 $\mathcal{P}$：
+\[
+    \mathcal{P} := \left\{ \mathbf{P} \in \{0,1\}^{m \times n} | \mathbf{P} \mathbf{1}_n = \mathbf{1}_m, \mathbf{P}^{\mathrm{T}} \mathbf{1}_m \leq \mathbf{1}_n \right\}
+\]
+其中 $\mathbf{1}_k$ 表示维度为 $k$ 的全 $1$ 向量。前一个约束确保 $\mathcal G^1$ 中的每个节点都唯一匹配到 $\mathcal G^2$ 中的一个节点，后一个约束则避免多个节点同时映射到 $\mathcal G^2$ 的同一节点。
+
+考虑两个图节点之间的相似性，我们可以定义一个相似性矩阵 $\mathbf{S} \in \mathbb R^{m \times n}$，其元素 $s_{ij}$ 衡量 $\mathcal G^1$ 中节点 $\mathcal V^1_i$ 与 $\mathcal G^2$ 中节点 $\mathcal V^2_j$ 之间的相似度。通常，节点属性越相似，其对应的相似度值也应越大。基于此，我们可以将图匹配问题形式化为以下优化问题：
+\[
+    \begin{cases}
+        \max_{\mathbf{P}} \sum_{i=1}^{m} \sum_{j=1}^{n} p_{ij} s_{ij} \\
+        \text{s.t.} \quad \mathbf{P} \in \mathcal{P}
+    \end{cases}.
+\]
+该问题旨在通过选择合适的匹配矩阵 $\mathbf{P}$，最大化匹配节点之间的总相似度。可以利用一些优化算法（如匈牙利算法、线性规划等）来求解该问题，这类算法比较成熟可直接调用相关库实现。下面，我们介绍一种快速的近似算法——重加权随机游走（Reweighted Random Walks, RRWM）算法。注意到，目标函数可以表示为
+\[
+    \sum_{i=1}^{m} \sum_{j=1}^{n} p_{ij} s_{ij} = \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathrm{vec}(\mathbf{S}),
+\]
+其中，\( \mathrm{vec}(\cdot) \)表示矩阵的向量化操作。又因为\( \mathbf{P} \)是一个二值矩阵，因此目标函数可以进一步表示为如下的二次形式：
+\[
+    \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathrm{diag}(\mathrm{vec}(\mathbf{S})) \mathrm{vec}(\mathbf{P}) = \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathbf{W} \mathrm{vec}(\mathbf{P}),
+\]
+其中，\( \mathbf{W} = \mathrm{diag}(\mathrm{vec}(\mathbf{S})) \)为一个对角矩阵。注意到，在不考虑约束的情况下，目标函数取得最大值时，\( \mathrm{vec}(\mathbf{P}) \)为\( \mathbf{W} \)的最大特征值对应的特征向量。因此，RRWM算法的核心思想是，通过迭代地计算特征向量，并结合约束条件，对特征向量进行重加权与归一化，从而逐步逼近最优解。具体而言，RRWM算法的迭代过程如下：
+\begin{enumerate}
+    \item 初始化：设定初始矩阵 $\mathbf{P}^{(0)} = \frac{1}{mn} \mathbf{1}_{mn}$，迭代次数 $t=0$。
+    \item 迭代计算：计算 $\operatorname{vec}(\mathbf{P}^{(t+1)}) = \mathbf{W} \operatorname{vec}(\mathbf{P}^{(t)})$。
+    \item 重加权与归一化：对 $\mathbf{P}^{(t+1)}$ 的每一行和列进行 Softmax 操作:
+          \[
+              p_{ij}^{(t+1)} = \frac{\exp(p_{ij}^{(t+1)})}{\sum_{k=1}^{n} \exp(p_{ik}^{(t+1)})}, \quad p_{ij}^{(t+1)} = \frac{\exp(p_{ij}^{(t+1)})}{\sum_{k=1}^{m} \exp(p_{kj}^{(t+1)})}
+          \]
+    \item 如果满足收敛条件或达到最大迭代次数，则停止迭代；否则，令 $t = t + 1$，返回步骤2。
+\end{enumerate}
+迭代结束后，得到的匹配矩阵 $\mathbf{P}^{(t)}$ 可以重新构造成匹配矩阵 $\mathbf{P}$，并通过阈值化操作将其转换为二值矩阵，从而得到最终的匹配结果。
+
+上文所构建的图匹配问题只考虑了节点之间的相似性，因此也被称作线性分配问题（Linear Assignment Problem, LAP）。然而，边之间的相似性同样重要。为此，我们可以将图匹配问题扩展为二次分配问题（Quadratic Assignment Problem, QAP），对应的图匹配问题可以表述为如下形式：
+\[
+    \begin{cases}
+        \max_{\mathbf P} & \sum_{i j} p_{i j} k_{i i j j} + \sum_{i i' j j'} k_{i i' j j'} p_{i j} p_{i' j'} \\
+        \text{s.t.}      & \quad \mathbf P \in \mathcal P ,
+    \end{cases}
+\]
+其中，$k_{i i j j}$ 表示节点 $\mathcal V_i^{1}$ 与 $\mathcal V_j^{2}$ 的相似度，$k_{i i' j j'}$ 表示边 $\mathcal E_{i i'}^{1}$ 与 $\mathcal E_{j j'}^{2}$ 的相似度。对于节点而言，只要\( p_{ij} = 1 \)，则对应的节点相似度就会被计入目标函数中。而对于边而言，只有当两个图中的边所连接的节点均被匹配时，其相似度才会被计入目标函数中，即\( p_{ij} = p_{i'j'} = 1 \)时，才会计入边相似度。
+
+方便起见，我们可以构建矩阵 $\mathbf K \in \mathbb R^{m n \times m n}$ ，该矩阵也被称为图 $\mathcal G^{1}$ 与 $\mathcal G^{2}$ 的亲和矩阵（Affinity Matrix）。对于亲和力 $\mathbf K$ 中的元素，有如下定义：
+\[
+    (\mathbf{K})_{m(i-1)+j, m(i'-1)+j'} = k_{i i' j j'}.
+\]
+基于此，我们可以将目标函数重新表示为
+\[
+    \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathbf{K} \mathrm{vec}(\mathbf{P}).
+\]
+该问题仍然可以通过 RRWM 算法进行求解，只需将 $\mathbf W$ 替换为 $\mathbf K$ 即可。
+
+在数据关联问题中，我们可以将预测的目标状态与实际观测值分别构建为两个图，然后通过图匹配算法确定它们之间的对应关系，从而实现数据关联。并且，对于图中的节点，我们可以将其位置、速度等信息作为节点属性，从而计算节点之间的相似度。此外，边的属性可以表示目标之间的相对位置、相对速度等信息，从而计算边之间的相似度。通过这种方式，图匹配方法能够有效地利用目标之间的空间与运动关系，从而提升数据关联的准确性与鲁棒性。
+
+在前文构建的图匹配问题中，仅考虑了节点之间的相似性，因此该问题也被称为线性分配问题（Linear Assignment Problem, LAP）。然而，在实际应用中，边的相似性同样具有重要作用。为此，可以将图匹配问题进一步扩展为二次分配问题（Quadratic Assignment Problem, QAP），其数学形式为
+\[
+    \begin{cases}
+        \max_{\mathbf P} & \sum_{ij} p_{ij} k_{i i j j} \;+\; \sum_{ii'jj'} k_{i i' j j'} \, p_{ij} p_{i'j'} \\
+        \text{s.t.}      & \quad \mathbf P \in \mathcal P ,
+    \end{cases}
+\]
+其中，$k_{i i j j}$ 表示节点 $\mathcal V_i^{1}$ 与 $\mathcal V_j^{2}$ 的相似度；$k_{i i' j j'}$ 表示边 $\mathcal E_{ii'}^{1}$ 与 $\mathcal E_{jj'}^{2}$ 的相似度。具体来说，对于节点而言，当 $p_{ij} = 1$ 时，对应节点的相似度将被计入目标函数；而对于边而言，仅当两条边的端点均被正确匹配时，即 $p_{ij} = p_{i'j'} = 1$，其边相似度才会被计入目标函数。
+
+为便于表述，可以构造一个亲和矩阵（Affinity Matrix） $\mathbf K \in \mathbb R^{mn \times mn}$。其元素定义如下：
+\[
+    (\mathbf K)_{m(i-1)+j,\;m(i'-1)+j'} \;=\; k_{ii'jj'}.
+\]
+在此定义下，目标函数可紧凑地写作
+\[
+    \mathrm{vec}(\mathbf P)^{\mathrm T} \mathbf K \, \mathrm{vec}(\mathbf P).
+\]
+该问题同样可以通过 RRWM 算法进行求解，只需将其中的权重矩阵 $\mathbf W$ 替换为亲和矩阵 $\mathbf K$ 即可。
+
+在数据关联问题中，可以将预测的目标状态与实际观测值分别建模为两幅图，并通过图匹配算法确定它们之间的对应关系，从而实现数据关联。具体而言，节点属性可包含目标的位置、速度等信息，用于计算节点间的相似度；边的属性则可刻画目标之间的相对位置或相对速度，用于计算边之间的相似度。通过这种方式，图匹配方法能够综合利用目标之间的空间与运动关系，从而显著提升数据关联的准确性与鲁棒性。
