@@ -139,7 +139,7 @@
             0.2 & 0.3 & 0.5
         \end{bmatrix},
     \]
-    其中，\( P_{ij} \)表示单位时间内，从城市\( j \)流入到城市\( i \)的人口比例。比如\( P_{11} = 0.5 \)，表明经过单位时间，有50\%的人口仍然留在城市1，\( P_{12} = 0.3 \)表示第2个城市30\%的人口会流动到城市1。请求解以下问题：
+    其中，\( P_{ij} \)表示单位时间内，从城市\( j \)流入到城市\( i \)的人口比例。比如\( P_{11} = 0.5 \)，表明经过单位时间，有50\%的人口仍然留在城市1，\( P_{12} = 0.2 \)表示第2个城市20\%的人口会流动到城市1。请求解以下问题：
     \begin{enumerate}
         \item 假设初始时刻，三个城市的人口都为1000人，请计算经过一个单位时间后，各个城市的人口分布情况。
         \item 请计算经过足够长的时间后，各个城市的人口分布情况。
@@ -227,16 +227,14 @@
 
 \subsection{奇异值分解}
 
-奇异值分解（Singular Value Decomposition, SVD）是线性代数中一个非常重要的矩阵分解工具，被广泛应用于信号处理、统计学、机器学习、图像压缩等领域。
-
-相比于特征分解，奇异值分解可以应用于任意形状的矩阵（包括非方阵），并且不要求矩阵是可逆的，见下方的定理。
+奇异值分解（Singular Value Decomposition, SVD）是线性代数中一个非常重要的矩阵分解工具，被广泛应用于信号处理、统计学、机器学习、图像压缩等领域。相比于特征分解，奇异值分解不要求矩阵是可逆的，可以应用于任意形状的矩阵，具体见下方的定理。
 
 \begin{theorem}
     对于任意的矩阵\( \mathbf{A} \in \mathbb{R}^{m \times n} \)，都存在一个奇异值分解：
     \[
         \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{V}^{\mathrm{T}},
     \]
-    其中，\( \mathbf{U} \in \mathbb{R}^{m \times m} \)是一个正交矩阵，\( \mathbf{V} \in \mathbb{R}^{n \times n} \)是一个正交矩阵，\( \mathbf{S} \in \mathbb{R}^{m \times n} \)是一个对角矩阵，对角线上的元素为\( \mathbf{A} \)的奇异值（singular values）。
+    其中，\( \mathbf{U} \in \mathbb{R}^{m \times m} \)是一个正交矩阵，\( \mathbf{V} \in \mathbb{R}^{n \times n} \)是一个正交矩阵，\( \mathbf{S} \in \mathbb{R}^{m \times n} \)是一个对角矩阵，对角线上的元素为\( \mathbf{A} \)的奇异值（Singular Values）。
 \end{theorem}
 \begin{proof}
     不妨假设\( m \geq n \)，则\( \mathbf{A}^{\mathrm{T}} \mathbf{A} \) 为一个\( n \times n \)的对称矩阵。根据特征分解定理，存在一个正交矩阵\( \mathbf{V} \)和一个对角矩阵\( \mathbf{\Lambda} \)，使得
@@ -248,20 +246,36 @@
         \bm{u}_i = \frac{\mathbf{A} \bm{v}_i}{\|\mathbf{A} \bm{v}_i\|} = \frac{\mathbf{A} \bm{v}_i}{\sqrt{\bm{v}_i^{\mathrm{T}} \mathbf{A}^{\mathrm{T}} \mathbf{A} \bm{v}_i}} = \frac{1}{\lambda_i} \mathbf{A} \bm{v}_i.
     \]
     则有
-    \[
+    \begin{equation}\label{eq:svd_proof1}
         \bm{u}_i^{\mathrm{T}} \mathbf{A} \bm{v}_i = \frac{1}{\lambda_i} \bm{v}_i^{\mathrm{T}} \mathbf{A}^{\mathrm{T}} \mathbf{A} \bm{v}_i = \frac{1}{\lambda_i} \lambda_i^2 = \lambda_i.
-    \]
+    \end{equation}
+    并且，可以验证对于任意的\( i \neq j  \)且\( i, j \leq n \)，都有
+    \begin{equation}\label{eq:svd_proof2}
+        \bm{u}_i^{\mathrm{T}} \mathbf{A} \bm{v}_j = \frac{1}{\lambda_i} \bm{v}_i^{\mathrm{T}} \mathbf{A}^{\mathrm{T}} \mathbf{A} \bm{v}_j = 0.
+    \end{equation}
+    注意到，\( \bm{u}_j = \frac{1}{\lambda_j} \mathbf{A} \bm{v}_j \)，因此还可以得出\( \bm{u}_i \)和\( \bm{u}_j \)是正交的。
 
-    因此，可以构造如下的矩阵
+    不妨构造如下的矩阵
     \[
         \mathbf{U} =
         \begin{bmatrix}
             \bm{u}_1 & \bm{u}_2 & \cdots & \bm{u}_n & \bm{u}_{n+1} & \cdots & \bm{u}_m
         \end{bmatrix} \in \mathbb{R}^{m \times m},
     \]
-    对于其中的列向量，当\( 1 \leq i \leq n \)时，有\( \bm{u}_i = \frac{\mathbf{A} \bm{v}_i}{\|\mathbf{A} \bm{v}_i\|} \)；而当\( n + 1 \leq i \leq m \)时，可以令\( \bm{u}_i \)为\( \mathbf{A} \)的零空间中的任意向量，只需满足构成的矩阵\( \mathbf{U} \)是一个正交矩阵即可。
+    对于其中的列向量，当\( 1 \leq i \leq n \)时，有\( \bm{u}_i = \frac{\mathbf{A} \bm{v}_i}{\|\mathbf{A} \bm{v}_i\|} \)；而当\( n + 1 \leq i \leq m \)时，可以令\( \bm{u}_i \)为\( \mathbf{A} \)的零空间中的任意向量，只需满足构成的矩阵\( \mathbf{U} \)是一个正交矩阵即可。此时，可以验证，对于任意的\( i \neq j  \)且\( i \leq n, j > n\)，都有
+    \begin{equation}\label{eq:svd_proof3}
+        \bm{u}_i^{\mathrm{T}} \mathbf{A} \bm{v}_j = 0.
+    \end{equation}
 
-    对于构造的矩阵\( \mathbf{U} \)，可以验证其满足
+    综上所述，结合\cref{eq:svd_proof1,eq:svd_proof2,eq:svd_proof3}，可以得到
+    \[
+        \bm{u}_i^{\mathrm{T}} \mathbf{A} \bm{v}_j =
+        \begin{cases}
+            \lambda_i, & i = j,    \\
+            0,         & i \neq j.
+        \end{cases}
+    \]
+    因此，对于构造的矩阵\( \mathbf{U} \)，可以验证其满足
     \[
         \mathbf{U}^{\mathrm{T}} \mathbf{A} \mathbf{V} =
         \begin{bmatrix}

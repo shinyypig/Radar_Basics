@@ -2,7 +2,7 @@
 \label{chp1}
 
 \section{雷达的基本概念}
-雷达是英文 Radio Detection and Ranging（Radar）的缩写的英译，即用无线电波的反射信号发现目标并测定其空间位置、移动方向、速度、相对距离以及大概形状的电子设备。作为一种重要的探测手段，雷达被广泛应用于航空与航海导航、军事侦察和预警、气象观测以及太空探索等领域。
+雷达是英文 Radio Detection and Ranging（Radar）的缩写的英译，即用无线电波的反射信号发现目标并测定其空间位置、移动方向、速度、相对距离甚至大概形状的电子设备。作为一种重要的探测手段，雷达被广泛应用于航空与航海导航、军事侦察和预警、气象观测以及太空探索等领域。
 
 严格来说，雷达的研发工作始于20世纪30年代，最初是为了探测敌方飞机和舰船而设计的，但雷达的基本概念却可以追溯到半个多世纪前。在1864年，麦克斯韦（James Clerk Maxwell）提出了电磁波的理论，给出了著名的麦克斯韦方程组，从理论上证明了光是一种特殊的电磁波。该理论的一个延伸是，电磁波也可以像电磁波一样被金属物体反射、被电介质折射。随后赫兹（Heinrich Hertz）在1887年使用波长为66厘米（对应于大约 455MHz）的无线电波成功地实验验证了这一结论，并于1888年发表了相关论文。
 
@@ -28,8 +28,8 @@
     \begin{tikzpicture}
         \tikzset{
             myblock/.style={
-                rectangle, draw, minimum width=2cm, minimum height=1cm, rounded corners, thick
-            }
+                    rectangle, draw, minimum width=2cm, minimum height=1cm, rounded corners, thick
+                }
         }
 
         \node (transmitter) [myblock, fill=c1!60] at (0, 0) {发射机};
@@ -59,7 +59,7 @@
 
 \subsection{工作频率}
 
-雷达的工作频率范围非常广泛，从几千赫兹（kHz）到几百吉赫兹（GHz）不等。工程上将雷达的工作频率划分为多个频率，\cref{tab_chp1_radar_frequency}给出了常见的雷达工作频率范围、对应的波段名称以及主要应用场景和特点。
+雷达的工作频率范围非常广泛，从几兆赫兹（MHz）到几百吉赫兹（GHz）不等。工程上将雷达的工作频率划分为多个频率，\cref{tab_chp1_radar_frequency}给出了常见的雷达工作频率范围、对应的波段名称以及主要应用场景和特点。
 
 \begin{table}[htb!]
     \centering
@@ -118,11 +118,11 @@
                     axis lines=none,
                     legend cell align=left,
                     legend style={
-                        anchor=north east,
-                        font=\tiny,
-                        draw=none,
-                        fill=none
-                    }
+                            anchor=north east,
+                            font=\tiny,
+                            draw=none,
+                            fill=none
+                        }
                 ]
                 \addplot graphics [xmin=-0.5, xmax=0.5, ymin=-0.5, ymax=0.5] {img/radar.png};
                 \addplot graphics [xmin=2.5, xmax=3.5, ymin=0.5, ymax=1.5] {img/target.png};
@@ -151,12 +151,12 @@
                     legend cell align=left,
                     clip=false,
                     legend style={
-                        % anchor=north east,
-                        at={(1.03, 1.5)},
-                        font=\tiny,
-                        draw=none,
-                        fill=none
-                    }
+                            % anchor=north east,
+                            at={(1.03, 1.5)},
+                            font=\tiny,
+                            draw=none,
+                            fill=none
+                        }
                 ]
                 % draw a pulse
                 \addplot[domain=-0.2:0.2, samples=200, thick, color=c1, smooth] {0.5 * (abs(x) < 0.2) * sin(deg(20 * pi * x))};
@@ -198,16 +198,16 @@
         \begin{tikzpicture}
             \draw[thick] (-3, 0) -- (1, 0); % Ground line
             \foreach \i in {-3, -2.6, ..., 0.5} {
-                \draw[] (\i, -0.5) -- (\i+0.5, 0); % Vertical lines
-            }
+                    \draw[] (\i, -0.5) -- (\i+0.5, 0); % Vertical lines
+                }
             \foreach \i in {-2.5, -2.2, -1.9, -1.6} {
-                \draw[thick, -latex] (\i, 3) -- (\i +0.8, 0.6);
-                \draw[thick] (\i, 3) -- (\i+1, 0);
-            }
+                    \draw[thick, -latex] (\i, 3) -- (\i +0.8, 0.6);
+                    \draw[thick] (\i, 3) -- (\i+1, 0);
+                }
             \foreach \i in {-2.5, -2.2, -1.9, -1.6} {
-                \draw[thick, -latex] (\i+1, 0) -- (\i+1.8, 2.4);
-                \draw[thick] (\i+1, 0) -- (\i+2, 3);
-            }
+                    \draw[thick, -latex] (\i+1, 0) -- (\i+1.8, 2.4);
+                    \draw[thick] (\i+1, 0) -- (\i+2, 3);
+                }
         \end{tikzpicture}
         \caption{}
         \label{fig_chp1_reflection_1}
@@ -217,12 +217,12 @@
         \begin{tikzpicture}
             \draw[thick,decorate,decoration={snake,amplitude=0.8mm,segment length=4mm}] (-3, 0) -- (1, 0); % Ground line
             \foreach \i in {-3, -2.6, ..., 0.5} {
-                \draw[] (\i, -0.5) -- (\i+0.4, -0.1); % Vertical lines
-            }
+                    \draw[] (\i, -0.5) -- (\i+0.4, -0.1); % Vertical lines
+                }
 
             \foreach \i in {-2.5, -2.2, -1.9, -1.6} {
-                \draw[thick, -latex] (\i, 3) -- (\i +0.8, 0.6);
-            }
+                    \draw[thick, -latex] (\i, 3) -- (\i +0.8, 0.6);
+                }
             \draw[thick] (-2.5, 3) -- (-2.5+1+0.025, 0-0.075);
             \draw[thick, -latex] (-2.5+1+0.025, 0-0.075) -- (-2.5+1+0.025+0.8, 0-0.075+2.4);
             \draw[thick] (-2.5+1+0.025, 0-0.075) -- (-2.5+1+0.025+1, 0-0.075+3);
@@ -316,7 +316,7 @@
 \begin{figure}[htb!]
     \centering
     \includegraphics[width=.7\textwidth]{./img/intro/atmosphere_duct.tikz}
-    \caption{大气波导示意图}
+    \caption{大气波导示意图（折射率随海拔升高迅速下降）}
     \label{fig_chp1_atmosphere_duct}
 \end{figure}
 
@@ -338,24 +338,23 @@
     \label{eq:free_space_power_density}
 \end{equation*}
 而在此处的接收天线接收到的功率 $P_r$ 则与天线的有效面积 $A_e$ 有关，通常可以表示为：
-\begin{equation*}
+\begin{equation}
     P_r = S A_e = \frac{P_t A_e}{4 \pi r^2}.
     \label{eq:free_space_received_power}
-\end{equation*}
-其中，$A_e$ 是接收天线的有效面积，对于一个各向增益都为1的理想天线，其有效面积可以表示为：
-\begin{equation*}
-    A_e = \frac{\lambda^2}{4 \pi},
+\end{equation}
+其中，$A_e$ 是接收天线的有效面积。对于一个增益为\( G \)的天线，其有效面积可以表示为：
+\begin{equation}
+    A_e = \frac{G \lambda^2}{4 \pi},
     \label{eq:effective_area}
-\end{equation*}
-其中 $\lambda$ 是电磁波的波长。
-将\cref{eq:effective_area}代入\cref{eq:free_space_received_power}，可以得到接收功率与发射功率之间的关系：
+\end{equation}
+其中 $\lambda$ 是电磁波的波长。考虑一个各向增益为1的理想天线（即$G=1$），将\cref{eq:effective_area}代入\cref{eq:free_space_received_power}，可以得到接收功率与发射功率之间的关系：
 \begin{equation}
     L = \frac{P_t}{P_r} = \left( \frac{4 \pi r}{\lambda} \right)^2 = \left( \frac{4 \pi f r}{c} \right)^2.
     \label{eq:free_space_received_power_final}
 \end{equation}
 其中，$L$ 即为自由空间路径损耗。
 
-从\cref{eq:free_space_received_power_final}可以看出，自由空间路径损耗与频率 $f$ 的平方成正比。所以想要进行远距离的探测，通常需要使用低频段的电磁波。但低频段的电磁波分辨率较低，无法提供足够的细节信息。因此，在自动驾驶、无人机等应用中，通常会使用高频的毫米波雷达（如24GHz或77GHz），以获得更高的分辨率和精度。
+从\cref{eq:free_space_received_power_final}可以看出，自由空间路径损耗与频率 $f$ 的平方成正比。所以想要进行远距离的探测，通常需要使用低频段的电磁波。但低频段的电磁波分辨率较低，无法提供足够的细节信息。因此，在自动驾驶、无人机等应用中，通常会使用高频的毫米波雷达（如24GHz或77GHz），以获得更高的分辨率和精度。相应地，这些雷达的探测距离通常较短，一般在几百米以内。
 
 除此以外，电磁波在大气中传播时还会受到大气衰减的影响。大气衰减是指电磁波在大气中传播时，由于大气中的水汽、氧气、二氧化碳等分子对电磁波的吸收和散射\footnote{散射是指当波遇到空间中物体或介质的不均匀性（如界面、粗糙表面、微粒）时，入射波被扰动，产生新的传播方向和能量分布，从而向多方向重新辐射或传播的物理过程。在广义的波动物理概念中，散射包含了反射和折射引发的辐射场。}作用，导致信号强度的衰减。需要注意的是，大气衰减是指相对于自由空间路径损耗的大气导致的额外功率损耗。大气衰减与频率有关，通常在高频段（如微波和毫米波）更为显著。如\cref{fig_chp1_gaspl}所示，随着频率的增加，大气衰减会显著增加，并且湿空气的衰减比干燥空气更为明显。
 
@@ -451,7 +450,7 @@
     r_{\text{max}} = \left( \frac{P_t G_t G_r \lambda^2 \sigma}{(4 \pi)^3 P_{\text{min}}} \right)^{1/4}.
     \label{eq:radar_max_range}
 \end{equation}
-从\cref{eq:radar_max_range}可以看出，雷达的最大探测距离与发射功率 $P_t$、天线增益 $G_t$、接收天线增益 $G_r$、发射信号波长 $\lambda$ 以及目标的雷达截面积 $\sigma$ 成正比，而与接收机的最小接收功率 $P_{\text{min}}$ 成反比。
+从\cref{eq:radar_max_range}可以看出，雷达的最大探测距离与发射功率 $P_t$、发射天线增益 $G_t$、接收天线增益 $G_r$、发射信号波长 $\lambda$ 以及目标的雷达截面积 $\sigma$ 成正比，而与接收机的最小接收功率 $P_{\text{min}}$ 成反比。
 
 雷达方程与自由空间损耗有着密切的联系：显然，电磁波经历了从雷达到目标再从目标到雷达这两步传播过程，其中经历了两次自由空间损耗。如果我们将目标也看作是一个天线，那么目标的雷达截面积 $\sigma$ 则对应了天线的有效面积。因此，根据\cref{eq:radar_effective_area}，我们可以得到目标作为一个天线时的增益为
 \[
@@ -476,11 +475,11 @@
                 axis lines=none,
                 legend cell align=left,
                 legend style={
-                    anchor=north east,
-                    font=\tiny,
-                    draw=none,
-                    fill=none
-                }
+                        anchor=north east,
+                        font=\tiny,
+                        draw=none,
+                        fill=none
+                    }
             ]
             \addplot graphics [xmin=-0.5, xmax=0.5, ymin=-0.5, ymax=0.5] {img/radar.png};
             \addplot graphics [xmin=2.5, xmax=3.5, ymin=0.5, ymax=1.5] {img/target.png};
