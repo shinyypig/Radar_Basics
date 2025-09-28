@@ -1,5 +1,6 @@
 \begin{tikzpicture}
     \begin{axis}[
+            xlabel={时间},
             axis lines=middle,
             xmin=-25,
             xmax=25,

@@ -1,6 +1,6 @@
 \begin{tikzpicture}
     \begin{axis}[
-            xlabel=频率（GHz）, ylabel=损耗（dB）,
+            xlabel=频率（GHz）, ylabel=衰减（dB）,
             ticklabel style={font=\small},
             label style={font=\small},
             grid,

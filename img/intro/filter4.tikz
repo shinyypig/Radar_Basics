@@ -1,9 +1,10 @@
 \begin{tikzpicture}
     \begin{axis}[
+            xlabel={频率},
             axis lines=middle,
             xmin=-25,
             xmax=25,
-            ymin=-0,
+            ymin=-0.2,
             ymax=6,
             xtick=\empty,
             ytick=\empty,
