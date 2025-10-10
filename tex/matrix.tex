@@ -311,18 +311,18 @@
     \end{cases}
     \label{eq:sparse-approximation}
 \end{equation}
-其中\( \|\cdot\|_F \)表示矩阵的Frobenius范数。通过计算\( \mathbf{A} \)的SVD分解，并保留最大的\( k \)个奇异值和对应的奇异向量，可以该优化问题的最优解：
+其中\( \|\cdot\|_F \)表示矩阵的Frobenius范数。通过计算\( \mathbf{A} \)的SVD分解，并保留最大的\( k \)个奇异值和对应的奇异向量，即截断 SVD （Truncated SVD）分解，可以得到该优化问题的最优解：
 \begin{equation}
     \mathbf{B} = \sum_{i=1}^{k} \lambda_i \bm{u}_i \bm{v}_i^{\mathrm{T}},
     \label{eq:sparse-approximation-solution}
 \end{equation}
-其中\( \lambda_i \)是矩阵\( \mathbf{A} \)第\( i \)大的奇异值。具体证明不再展开，请读者自行推导。
+其中\( \lambda_i \)是矩阵\( \mathbf{A} \)第\( i \)大的奇异值。该具体证明不再展开，请读者自行推导。
 
 \begin{example}
     对于如\cref{fig_singular_values}所示的灰度图像，可以将其看作是一个\( 200 \times 300 \)的矩阵，请利用奇异值分解对其进行压缩处理。
     \begin{figure}[htb!]
         \centering
-        \includegraphics[width=.3\textwidth]{./img/matrix/cat_resized.jpg}
+        \includegraphics[width=.3\textwidth]{./img/matrix/cat_g.jpg}
         \caption{原始灰度图像}
         \label{fig_cat_gray}
     \end{figure}
@@ -812,7 +812,7 @@
     \label{fig_tensor}
 \end{figure}
 
-对于$n$ 阶张量 $\mathcal{T}$，其中元素可以用 $n$ 个索引来表示，通常记为 $t_{i_1, i_2, \cdots, i_n}$，其中 $i_k$ 表示第 $k$ 个模的索引。比如，\cref{fig_tensor_idx}所示的3阶张量\( \mathcal{T} \in \mathbb{R}^{4 \times 4 \times 4} \)，其中蓝色立方体对应的元素的索引为\( (3, 4, 2) \)，即 \( t_{3,4,2} \)。
+对于$n$ 阶张量 $\mathcal{T}$，其中元素可以用 $n$ 个索引来表示，通常记为 $t_{i_1i_2 \cdots i_n}$，其中 $i_k$ 表示第 $k$ 个模的索引。比如，\cref{fig_tensor_idx}所示的3阶张量\( \mathcal{T} \in \mathbb{R}^{4 \times 4 \times 4} \)，其中蓝色立方体对应的元素的索引为\( (3, 4, 2) \)，即 \( t_{342} \)。
 
 \begin{figure}[htb!]
     \centering
@@ -821,7 +821,7 @@
     \label{fig_tensor_idx}
 \end{figure}
 
-实际上，张量这种形式的数据结构在实际应用中非常常见，比如一张彩色图像就可以看作是一个3阶张量，这个三阶张量的三个模分别是高度、宽度和颜色通道。\cref{fig_img_tensor_1}展示了一张\( 200 \times 300 \)像素大小的彩色图像，其对应的张量表示为\( \mathcal{T} \in \mathbb{R}^{200 \times 300 \times 3} \)，其中第三个模的三个元素分别对应红色\cref{fig_img_tensor_2}、绿色\cref{fig_img_tensor_3}和蓝色通道\cref{fig_img_tensor_4}。
+实际上，张量这种形式的数据结构在实际应用中非常常见，比如一张彩色图像就可以看作是一个3阶张量，这个三阶张量的三个模分别是高度、宽度和颜色通道。\cref{fig_img_tensor_1}展示了一张\( 200 \times 300 \)像素大小的彩色图像，其对应的张量表示为\( \mathcal{T} \in \mathbb{R}^{200 \times 300 \times 3} \)，其中第三个模的三个索引分别对应红色通道\cref{fig_img_tensor_2}、绿色通道\cref{fig_img_tensor_3}和蓝色通道\cref{fig_img_tensor_4}。
 
 \begin{figure}[htb!]
     \centering

@@ -697,7 +697,7 @@
 \end{proof}
 
 \begin{property}\label{prop:diag-kron}
-    给定\( N \)阶对角张量\( \mathcal{I}_K \in \mathbb{R}^{K \times K \times \cdots \times K} \)，且对角元素都为1。此外，还有\( N \)个矩阵
+    给定\( N \)阶对角张量\( \mathcal{D}_K \in \mathbb{R}^{K \times K \times \cdots \times K} \)，其对角元素为\( \lambda_k \)。此外，还有\( N \)个矩阵
     \[
         \mathbf{X}_n = \begin{bmatrix}
             \bm{x}_{n1} & \bm{x}_{n2} & \cdots & \bm{x}_{nK}
@@ -705,24 +705,23 @@
     \]
     则如下等式成立
     \[
-        \mathcal{I}_K \times_1 \mathbf{X}_1 \times_2 \mathbf{X}_2 \times_3 \cdots \times_N \mathbf{X}_N = \sum_{k=1}^K \bm{x}_{1k} \circ \bm{x}_{2k} \circ \cdots \circ \bm{x}_{Nk},
+        \mathcal{D}_K \times_1 \mathbf{X}_1 \times_2 \mathbf{X}_2 \times_3 \cdots \times_N \mathbf{X}_N = \sum_{k=1}^K \lambda_k \bm{x}_{1k} \circ \bm{x}_{2k} \circ \cdots \circ \bm{x}_{Nk},
     \]
 \end{property}
 \begin{proof}
     根据k模积的定义，有
     \[
-        \left( \mathcal{I}_K \times_1 \mathbf{X}_1 \times_2 \cdots \times_N \mathbf{X}_N \right)_{i_1 \cdots i_N} = \sum_{k_1=1}^{K}\cdots\sum_{k_N=1}^{K} (\mathcal{I}_K)_{k_1\cdots k_N} (\mathbf{X}_1)_{i_1 k_1} \cdots (\mathbf{X}_N)_{i_N k_N}.
+        \left( \mathcal{D}_K \times_1 \mathbf{X}_1 \times_2 \cdots \times_N \mathbf{X}_N \right)_{i_1 \cdots i_N} = \sum_{k_1=1}^{K}\cdots\sum_{k_N=1}^{K} (\mathcal{D}_K)_{k_1\cdots k_N} (\mathbf{X}_1)_{i_1 k_1} \cdots (\mathbf{X}_N)_{i_N k_N}.
     \]
-    又因为当且仅当 $k_1=k_2=\cdots=k_N$ 时，$(\mathcal{I}_K)_{k_1\cdots k_N}=1$，否则为0，所以有
+    又因为当且仅当 $k = k_1=\cdots=k_N$ 时，$(\mathcal{D}_K)_{k_1\cdots k_N}=\lambda_{k}$，否则为0，所以有
     \[
         \begin{split}
-            \left( \mathcal{I}_K \times_1 \mathbf{X}_1 \times_2 \cdots \times_N \mathbf{X}_N \right)_{i_1 \cdots i_N} & = \sum_{k=1}^{K} (\mathbf{X}_1)_{i_1 k} \cdots (\mathbf{X}_N)_{i_N k}                      \\
-                                                                                                                      & = \sum_{k=1}^{K} (\bm{x}_{1k})_{i_1} \cdots (\bm{x}_{Nk})_{i_N}                            \\
-                                                                                                                      & = \sum_{k=1}^K \left( \bm{x}_{1k} \circ \cdots \circ \bm{x}_{Nk} \right)_{i_1 \cdots i_N}.
+              & \left( \mathcal{D}_K \times_1 \mathbf{X}_1 \times_2 \cdots \times_N \mathbf{X}_N \right)_{i_1 \cdots i_N} = \sum_{k=1}^{K} \lambda_k (\mathbf{X}_1)_{i_1 k} \cdots (\mathbf{X}_N)_{i_N k} \\
+            = & \sum_{k=1}^{K} \lambda_k (\bm{x}_{1k})_{i_1} \cdots (\bm{x}_{Nk})_{i_N} = \sum_{k=1}^K \lambda_k \left( \bm{x}_{1k} \circ \cdots \circ \bm{x}_{Nk} \right)_{i_1 \cdots i_N}.
         \end{split}
     \]
     因此，有
     \[
-        \mathcal{I}_K \times_1 \mathbf{X}_1 \times_2 \cdots \times_N \mathbf{X}_N = \sum_{k=1}^K \bm{x}_{1k} \circ \bm{x}_{2k} \circ \cdots \circ \bm{x}_{Nk}.
+        \mathcal{D}_K \times_1 \mathbf{X}_1 \times_2 \cdots \times_N \mathbf{X}_N = \sum_{k=1}^K \lambda_k \bm{x}_{1k} \circ \bm{x}_{2k} \circ \cdots \circ \bm{x}_{Nk}.
     \]
 \end{proof}
