@@ -10,9 +10,18 @@
 
 % \linenumbers
 
+\newif\ifnewpageon
+% \newpageontrue    % 初始启用（相当于正常 \newpage）
+\newpageonfalse % 如果注释掉上行而启用此行，则关闭换页
+\newcommand{\maybeNewPage}{
+    \ifnewpageon
+        \clearpage
+    \fi
+}
+
 \title{雷达信号处理中的矩阵方法}
 \author{朱亮亮}
-% \includeonly{tex/intro.tex}
+% \includeonly{tex/matrix.tex}
 \begin{document}
 \maketitle
 

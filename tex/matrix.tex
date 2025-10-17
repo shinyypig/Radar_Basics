@@ -467,6 +467,8 @@
     \end{figure}
 \end{solution}
 
+\maybeNewPage
+
 \section{矩阵微分}
 
 \subsection{实矩阵微分}
@@ -771,6 +773,8 @@
     \]
 \end{solution}
 
+\maybeNewPage
+
 \section{张量及相关运算}
 
 \subsection{张量的定义}
@@ -1034,6 +1038,8 @@
 
 \end{solution}
 
+\maybeNewPage
+
 \section{常见统计量的矩阵表示}
 
 在概率论中，我们经常会遇到一些常见的统计量，比如均值、方差、协方差等。这些统计量在本课程中也会经常用到。不同的是，本课程中的对象都是采集到的离散数据，对应向量或矩阵而不是随机变量。因此，我们需要提前了解对于向量和矩阵，如何计算这些统计量。
@@ -1175,7 +1181,8 @@
 \[
     \operatorname{Mean}(\mathbf{X} \bm{v}) = \bm{u} \times_1 \bm{v}^{\mathrm{T}}, \quad \operatorname{Var}(\mathbf{X} \bm{v}) = \mathbf{\Sigma} \times_1 \bm{v}^{\mathrm{T}} \times_2 \bm{v}^{\mathrm{T}}.
 \]
-对于数据\( \mathbf{X} \)，我们可以类似地计算高阶协方差张量和数据在任意方向上的投影的统计量，如下
+
+因此，对于数据\( \mathbf{X} \)，我们可以类似地计算其任意的高阶协方差张量（均值为零，方差为一）：
 \[
     \mathcal{S}_k = \frac{1}{n} \sum_{l=1}^n \bm{x}_l^{\circ k},
 \]
