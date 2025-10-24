@@ -933,7 +933,7 @@
     其中\( t_{i_1 i_2 \cdots i_n}, u_{ji_{k}} \)分别为张量\( \mathcal T \)和矩阵\( \mathbf{U} \)对应位置的元素
 \end{definition}
 
-我们知道，矩阵乘以一个向量可以看作是用该向量中的元素对矩阵的各个列向量进行线性组合. 同样地，张量与向量的$k$模积也可以看作用向量中的元素对张量沿着第 $k$ 个维度的切片进行线性组合. 例如，对于一个三阶张量$\mathcal A \in \mathbb {R}^{3 \times 3 \times 4 }$，该张量3模积一个$1\times 4$大小的向量将会得到一个\( 3 \times 3 \)的矩阵，具体操作如\cref{fig.psa.nmod_example}所示. 在这个例子中，线性组合的对象不再是向量，而是张量沿着第三个维度的切片，也就是矩阵.
+我们知道，矩阵乘以一个向量可以看作是用该向量中的元素对矩阵的各个列向量进行线性组合。同样地，张量与向量的$k$模积也可以看作用向量中的元素对张量沿着第 $k$ 个维度的切片进行线性组合。例如，对于一个三阶张量$\mathcal A \in \mathbb {R}^{3 \times 3 \times 4 }$，该张量3模积一个$1\times 4$大小的向量将会得到一个\( 3 \times 3 \)的矩阵，具体操作如\cref{fig.psa.nmod_example}所示。在这个例子中，线性组合的对象不再是向量，而是张量沿着第三个维度的切片，也就是矩阵.
 \begin{figure}[htb!]
     \centering
     \includegraphics[width=.9\textwidth]{./img/matrix/psa_tensor_mod.tikz}
@@ -941,7 +941,7 @@
     \label{fig.psa.nmod_example}
 \end{figure}
 
-类似地，张量与一个矩阵的$k$模积则可以看作是：使用该矩阵的每一行对张量的第$k$个维度的切片进行线性组合得到一个新的切片，然后将这些切片组合成一个新的张量. 例如，对于一个三阶张量$\mathcal A \in \mathbb {R}^{3 \times 3 \times 4 }$，其3模积一个$2\times 4$大小的矩阵会得到一个 \( 3 \times 3 \times 2 \)的张量，具体操作如\cref{fig.psa.nmod_example2}所示。
+类似地，张量与一个矩阵的$k$模积则可以看作是：使用该矩阵的每一行对张量的第$k$个维度的切片进行线性组合得到一个新的切片，然后将这些切片组合成一个新的张量。例如，对于一个三阶张量$\mathcal A \in \mathbb {R}^{3 \times 3 \times 4 }$，其3模积一个$2\times 4$大小的矩阵会得到一个 \( 3 \times 3 \times 2 \)的张量，具体操作如\cref{fig.psa.nmod_example2}所示。
 \begin{figure}[htb!]
     \centering
     \includegraphics[width=.9\textwidth]{./img/matrix/psa_tensor_mod2.tikz}
