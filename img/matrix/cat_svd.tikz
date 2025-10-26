@@ -1,6 +1,6 @@
 \begin{tikzpicture}
     \begin{axis}[
-            ylabel=奇异值大小,
+            ylabel=奇异值大小, xlabel=索引,
             ticklabel style={font=\small},
             label style={font=\small},
             grid, clip=false,

@@ -1,6 +1,6 @@
 \begin{tikzpicture}
     \begin{axis}[
-            xlabel=$ \lambda $,
+            xlabel=索引, ylabel=权重大小,
             xmin = 0, xmax=200,
             ymin = 0,
             ticklabel style={font=\small},
