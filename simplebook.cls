@@ -1439,3 +1439,17 @@
 
 % 设置表格行高
 \renewcommand{\arraystretch}{1.4}
+
+% 放在导言区（\begin{document} 之前）
+\newif\ifnewpageon
+% \newpageontrue
+\newpageonfalse
+\newcommand{\maybeNewPage}{\ifnewpageon\clearpage\fi}
+
+% Use LaTeX2e command hooks (robust, no signature breakage)
+\AddToHook{cmd/chapter/before}{\maybeNewPage}
+\AddToHook{cmd/chapter*/before}{\maybeNewPage}
+\AddToHook{cmd/section/before}{\maybeNewPage}
+\AddToHook{cmd/section*/before}{\maybeNewPage}
+\AddToHook{cmd/subsection/before}{\maybeNewPage}
+\AddToHook{cmd/subsection*/before}{\maybeNewPage}
