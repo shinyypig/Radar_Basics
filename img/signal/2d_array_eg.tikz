@@ -62,9 +62,9 @@
                 } node[right, black] {\tiny $ \bm{l}^{(m, n)} $};
 
             % 方位角（azimuth）标志
-            \node at (axis cs:0.4,0.2,0) {\tiny $\phi_k$};
+            \node[c1] at (axis cs:0.4,0.2,0) {\tiny $\phi_k$};
             % 俯仰角（elevation）标志
-            \node at (axis cs:0.4,0.4,0.8) {\tiny $\theta_k$};
+            \node[c2] at (axis cs:0.4,0.4,0.8) {\tiny $\theta_k$};
 
         \end{axis}
     \end{tikzpicture}
