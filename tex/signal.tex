@@ -16,7 +16,27 @@
     \end{cases}.
 \]
 
-早期雷达结构简单，对应的低频包络表达式为\( p(t) = 1 \)，即发射信号是一个截断的复指数信号，如图3.1(a)所示。是否存在回波信号也通过简单的阈值判断：通常设定一个固定的阈值，当接收到的信号强度超过该阈值时，认为检测到了目标回波，如图3.1(b)所示。因此，当两个目标对应的回波信号之间的时延差小于脉冲宽度时，系统可能会将其误判为同一目标的回波。所以，早期雷达的距离分辨率取决于发射脉冲的宽度，两者之间的关系可以用以下公式表示：
+早期雷达结构简单，对应的低频包络表达式为\( p(t) = 1 \)，即发射信号可以看作是一个截断的复指数信号，如\cref{fig_radar_signal_1_1}所示。是否存在回波信号也通过简单的阈值来判断：设定一个固定的阈值，当接收到的信号强度超过该阈值时，认为检测到了目标回波。如\cref{fig_radar_signal_1_2}所示，当两个目标对应的回波信号之间的时延差小于脉冲宽度时，系统可能会将其误判为同一目标的回波。
+
+\begin{figure}[htb!]
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/signal/demo_radar_signal1.tikz}
+        \caption{}
+        \label{fig_radar_signal_1_1}
+    \end{subfigure}
+    \begin{subfigure}{.45\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{./img/signal/demo_radar_signal2.tikz}
+        \caption{}
+        \label{fig_radar_signal_1_2}
+    \end{subfigure}
+    \caption{单天线雷达发射与接收信号示意图（仅绘制了实部） (a) 发射信号 (b) 接收信号}
+    \label{fig_radar_signal_1}
+\end{figure}
+
+所以，早期雷达的距离分辨率取决于发射脉冲的宽度，两者之间的关系可以用以下公式表示：
 \[
     t_1 = \frac{2R_1}{c}, \qquad t_2 = \frac{2R_2}{c}.
 \]
@@ -40,23 +60,6 @@
 其中，\( c \)为光速，\( T \)为脉冲宽度，\( \Delta R \)为距离分辨率，是指能够分辨的相邻目标的最小距离，\( \Delta R \)的数值越小，代表分辨的能力越强，也就是距离分辨率越高。可以发现，脉冲宽度越小，距离分辨率越高。但是，由于发射功率一定，脉冲宽度变小的同时，发射信号的能量也会相应减少，这可能导致信号的信噪比降低，发射能到达的距离就会变近，从而影响目标的检测性能。换句话说，距离分辨率与目标检测性能之间存在一定的矛盾。
 
 为兼顾距离分辨率与检测性能，现代雷达系统通常在低频包络 $p(t)$ 中引入时间调制，使其具有一定带宽。这样不仅能在保持发射信号能量的前提下提高距离分辨率，还能提升抗干扰能力与目标检测性能。常见的时间调制方式包括线性调频（Linear Frequency Modulation, LFM）、非线性调频（Nonlinear Frequency Modulation, NLFM）以及相位编码（Phase Coding）等，其中线性调频因其实现简单、性能稳定而被广泛采用。
-\begin{figure}[htb!]
-    \centering
-    \begin{subfigure}{.45\textwidth}
-        \centering
-        \includegraphics[width=.9\textwidth]{./img/signal/demo_radar_signal1.tikz}
-        \caption{}
-        \label{fig_radar_signal_1_1}
-    \end{subfigure}
-    \begin{subfigure}{.45\textwidth}
-        \centering
-        \includegraphics[width=.9\textwidth]{./img/signal/demo_radar_signal2.tikz}
-        \caption{}
-        \label{fig_radar_signal_1_2}
-    \end{subfigure}
-    \caption{单天线雷达发射与接收信号示意图（仅绘制了实部） (a) 发射信号 (b) 接收信号}
-    \label{fig_radar_signal_1}
-\end{figure}
 
 线性调频信号的低频包络可表示为
 \[
@@ -218,7 +221,7 @@
          & = \bm{r}_k
         \begin{bmatrix}
             1 & e^{j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
-        \end{bmatrix}                             \\
+        \end{bmatrix}                               \\
          & = \bm{r}_k \bm{a}_{\theta_k}^{\mathrm{T}},
     \end{aligned}
 \]
@@ -407,9 +410,9 @@
 \[
     \begin{split}
         \bm{r}_k^{(p)}(t) & = A_k \text{rect}\left(\frac{t - \frac{2 (R_k - p T_r v_k)}{c}}{T}\right) p\left(t - \frac{2 (R_k - p T_r v_k)}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 (R_k - p T_r v_k)}{c}\right)}   \\
-                       & \approx A_k \text{rect}\left(\frac{t - \frac{2 R_k}{c}}{T}\right) p\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k}{c}\right)} e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}} \\
-                       & = A_k s\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}}                                                                                                              \\
-                       & = r_k(t) e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}},
+                          & \approx A_k \text{rect}\left(\frac{t - \frac{2 R_k}{c}}{T}\right) p\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \left(t - \frac{2 R_k}{c}\right)} e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}} \\
+                          & = A_k s\left(t - \frac{2 R_k}{c}\right) e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}}                                                                                                              \\
+                          & = r_k(t) e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}},
     \end{split}
 \]
 其中，\( r_k(t) \)为第0次发射脉冲对应的接收信号。对比第 0 次，第\( p \)次脉冲的接收信号多了一个相位因子，该因子与\( p \)相关，且包含目标径向速度信息。
@@ -475,8 +478,8 @@
 \]
 进一步，将无模糊速度与无模糊距离相乘，有
 \[
-    |v_k| \cdot R_k \;\leq\;
-    \frac{c}{4 f_c T_r} \cdot \frac{c T_r}{2}
+    |v_k| \cdot R_k \leq
+    \frac{c}{4 f_c T_r} \frac{c T_r}{2}
     = \frac{c^2}{8 f_c}.
 \]
 这表明，无模糊速度与无模糊距离之间存在乘积约束，其上限仅由载波频率 \(f_c\) 决定。换句话说，若希望同时增大可测速度与可测距离，就必须降低载波频率；然而频率降低又会使雷达系统的体积增大，分辨率下降，从而产生新的折中问题。
