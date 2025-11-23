@@ -229,7 +229,7 @@
 \[
     \bm{a}_{\theta_k} =
     \begin{bmatrix}
-        1 & e^{j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}}
+        1 & e^{j 2 \pi f_c \frac{d \sin\theta_k}{c}} & \cdots & e^{j 2 \pi f_c \frac{(M-1) d \sin\theta_k}{c}},
     \end{bmatrix}^{\mathrm{T}}
 \]
 称为\textbf{导向矢量}（Steering Vector），其元素之间的相位关系蕴涵了目标的方位信息。如图\ref{fig_array_angle}所示，当目标位于阵列的正前方时，所有阵元接收到的信号相位相同；当目标偏离阵列的正前方时，不同阵元接收到的信号之间会存在相位差。
@@ -317,7 +317,7 @@
     \label{fig_2d_array_eg}
 \end{figure}
 
-类似于一维阵列，二维阵列中的阵元接收到的信号，相较于位于原点处的参考阵元，会引入额外的时延。根据\cref{fig_2d_array_eg}，又因为信号会被目标同时反射，在发射信号到反射过程不会产生相位差，故在整个过程中，第\( (m,n) \)个阵元仅仅在信号被目标反射到再次接收的过程中，相对\( (0,0) \)阵元接收到的信号减少一个传播路径差，为
+在二维阵列结构中，由于各阵元相对于参考阵元的位置不同，其接收回波会相对于原点阵元引入额外的路径差，从而造成附加时延。根据\cref{fig_2d_array_eg}，又因为信号会被目标同时反射，在发射信号到反射过程不会产生相位差，故在整个过程中，第\( (m,n) \)个阵元仅仅在信号被目标反射到再次接收的过程中，相对\( (0,0) \)阵元接收到的信号减少一个传播路径差，为
 \[
     \Delta d^{(m,n)}_k = \bm{u}_k^{\mathrm{T}} \bm{l}^{(m,n)} = m d_x \sin\theta_k \cos\phi_k + n d_y \sin\theta_k \sin\phi_k.
 \]
@@ -421,7 +421,7 @@
 \[
     \bm{r}_k^{(p)} = \bm{r}_k e^{j 2 \pi f_c \frac{2 p T_r v_k}{c}}.
 \]
-将所有的\( P \)次脉冲接收到的信号向量组合成一个矩阵，可以表示为
+将\( P \)次发射脉冲对应的接收信号向量组合成一个矩阵，可以表示为
 \[
     \begin{split}
         \mathbf{X}_k & = \begin{bmatrix}
@@ -469,10 +469,10 @@
 因此，目标径向速度的可测范围为
 \[
     |v_k| \leq \frac{c}{4 f_c T_r}
-    = \frac{\lambda}{4 T_r}
-    = \frac{\lambda f_r}{4},
+    = \frac{\lambda_c}{4 T_r}
+    = \frac{\lambda_c f_r}{4},
 \]
-其中 \(\lambda = c/f_c\) 为载波波长，\(f_r = 1/T_r\) 为脉冲重复频率（Pulse Repetition Frequency, PRF）。除此之外，多普勒体制的雷达还可能出现距离模糊现象。由于脉冲重复周期为 \(T_r\)，当目标距离 \(R_k\) 大于 \(\tfrac{c T_r}{2}\) 时，其回波信号至少要到下一次脉冲发射之后才能返回接收机，从而导致目标距离无法被正确估计。由此可得，多普勒雷达的无模糊测距范围为
+其中 \(\lambda_c = c/f_c\) 为载波波长，\(f_r = 1/T_r\) 为脉冲重复频率（Pulse Repetition Frequency, PRF）。除此之外，多普勒体制的雷达还可能出现距离模糊现象。由于脉冲重复周期为 \(T_r\)，当目标距离 \(R_k\) 大于 \(\tfrac{c T_r}{2}\) 时，其回波信号至少要到下一次脉冲发射之后才能返回接收机，从而导致目标距离无法被正确估计。由此可得，多普勒雷达的无模糊测距范围为
 \[
     R_k \leq \frac{c T_r}{2} = \frac{c}{2 f_r}.
 \]
