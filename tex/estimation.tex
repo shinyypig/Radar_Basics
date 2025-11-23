@@ -15,7 +15,7 @@
 \[
     \mathbf{X} = \mathbf{R} \mathbf{A}^{\mathrm{T}} \in \mathbb{C}^{L \times M},
 \]
-其中\( \mathbf{R} = \begin{bsmallmatrix} \bm{r}_1 & \bm{r}_2 & \cdots & \bm{r}_K \end{bsmallmatrix} \in \mathbb{C}^{L \times K} \)为目标信号矩阵，\( \mathbf{A} = \begin{bsmallmatrix} \bm{a}_{\omega_1} & \bm{a}_{\omega_2} & \cdots & \bm{a}_{\omega_K} \end{bsmallmatrix} \in \mathbb{C}^{M \times K} \)为阵列流形矩阵（导向矢量矩阵），其列向量为目标的空间或多普勒流形向量，其第\( k \)列通常有如下形式：
+其中\( \mathbf{R} = \begin{bsmallmatrix} \bm{r}_1 & \bm{r}_2 & \cdots & \bm{r}_K \end{bsmallmatrix} \in \mathbb{C}^{L \times K} \)为目标信号矩阵，\( \mathbf{A} = \begin{bsmallmatrix} \bm{a}_{\omega_1} & \bm{a}_{\omega_2} & \cdots & \bm{a}_{\omega_K} \end{bsmallmatrix} \in \mathbb{C}^{M \times K} \)为阵列流形矩阵（导向矩阵），其列向量为目标的空间或多普勒流形向量，其第\( k \)列通常有如下形式：
 \[
     \bm{a}_{\omega_k} = \begin{bmatrix}
         1 & e^{j 2 \pi \omega_k} & \cdots & e^{j 2 \pi (M-1) \omega_k }
@@ -1467,7 +1467,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 
 \section{稀疏表示方法}
 
-给定接收信号矩阵\( \mathbf{X} = \mathbf{R} \mathbf{A}^{\mathrm{T}}  + \mathbf{N} \in \mathbb{C}^{L \times M} \)，其中导向矢量矩阵\( \mathbf{A} \in \mathbb{C}^{M \times K} \)中的列向量的形式已知，为
+给定接收信号矩阵\( \mathbf{X} = \mathbf{R} \mathbf{A}^{\mathrm{T}}  + \mathbf{N} \in \mathbb{C}^{L \times M} \)，其中导向矩阵\( \mathbf{A} \in \mathbb{C}^{M \times K} \)中的列向量的形式已知，为
 \[
     \bm{a}_{\omega_k}
     = \begin{bmatrix}
