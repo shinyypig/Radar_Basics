@@ -1,6 +1,6 @@
 \begin{tikzpicture}
     \begin{axis}[
-            xlabel=时间, ylabel=幅度,
+            xlabel=时间, ylabel=相位,
             ticklabel style={font=\small},
             label style={font=\small},
             ymin=-1.2, ymax=1.2,
