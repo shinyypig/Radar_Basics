@@ -115,7 +115,7 @@
     \begin{split}
         \left( \mathbf{\Sigma}_{T+1} \right)^{-1} & = \left( \lambda \mathbf{\Sigma}_T + \bm{x}_{T+1}\bm{x}_{T+1}^\mathrm{T} \right)^{-1}                                                                                                                                        \\
                                                   & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \frac{\mathbf{\Sigma}_T^{-1} \bm{x_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1}}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}} \right) \\
-                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{w}_T^{\mathrm{T}} \right),                                                                                                     \\
+                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} \right),                                                                                                 \\
     \end{split}
 \]
 其中\( \bm{g}_{T+1} \)为增益向量，有如下表达式：
@@ -136,7 +136,7 @@
 
 注意到
 \[
-    \lambda \mathbf{\Gamma}_T \mathbf{\Sigma}_{T+1}^{-1} = \mathbf{\Gamma}_T \left(  \mathbf{\Sigma}_T^{-1} -  \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_T^{\mathrm{T}} \right) = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_T^{\mathrm{T}},
+    \lambda \mathbf{\Gamma}_T \mathbf{\Sigma}_{T+1}^{-1} = \mathbf{\Gamma}_T \left(  \mathbf{\Sigma}_T^{-1} -  \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} \right) = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}},
 \]
 而
 \[
@@ -148,7 +148,7 @@
 因此，\( \mathbf{H}_{T+1} \)可以进一步简化为
 \[
     \begin{split}
-        \mathbf{H}_{T+1} & = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_T^{\mathrm{T}}  + \bm{z}_{T+1} \bm{g}_T^{\mathrm{T}} = \mathbf{H}_T + (\bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1}) \bm{g}_T^{\mathrm{T}} \\
+        \mathbf{H}_{T+1} & = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}}  + \bm{z}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} = \mathbf{H}_T + (\bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1}) \bm{g}_{T+1}^{\mathrm{T}} \\
                          & = \mathbf{H}_T + \bm{e}_{T+1} \bm{g}_{T+1}^{\mathrm{T}}.
     \end{split}
 \]
