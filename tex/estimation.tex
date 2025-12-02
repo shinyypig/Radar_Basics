@@ -23,9 +23,9 @@
 \]
 其中，参数 $\omega_k$ 的物理意义取决于雷达体制：若为阵列雷达，则 $\omega_k = \frac{d}{\lambda}\sin \theta_k$，与目标的方位角 $\theta_k$ 相关；若为单阵元多脉冲雷达，则 $\omega_k = \frac{2 T_r v_k}{\lambda}$，与目标的径向速度 $v_k$ 相关。
 
-波束形成（Beamforming）是最经典的参数估计方法，其基本思想是通过对接收信号进行加权求和，形成一个指向特定方向的空间滤波器或指定速度的多普勒滤波器，从而增强该方向或速度上的信号分量。对于给定滤波器\( \bm{w}_{\omega} \)，波束形成的输出可以表示为：
+波束形成（Beamforming）是最经典的参数估计方法，其基本思想是通过对接收信号进行加权求和，形成一个指向特定方向的空间滤波器或指定速度的多普勒滤波器，从而增强该方向或速度上的信号分量。对于给定滤波器\( \bm{h}_{\omega} \)，波束形成的输出可以表示为：
 \[
-    \bm{y}_{\omega} = \mathbf{X} \bm{w}_{\omega} \in \mathbb{C}^{L \times 1},
+    \bm{y}_{\omega} = \mathbf{X} \bm{h}_{\omega} \in \mathbb{C}^{L \times 1},
 \]
 可以看作是某个方向或速度上接收到的回波。
 
@@ -41,7 +41,7 @@
 \]
 因此，将滤波器权向量选为与目标流形向量相匹配的形式：
 \[
-    \bm{w}_{\omega} = \frac{1}{M} \overline{\bm{a}}
+    \bm{h}_{\omega} = \frac{1}{M} \overline{\bm{a}}
     = \frac{1}{M} \begin{bmatrix}
         1 & e^{j 2 \pi \omega} & \cdots & e^{j 2 \pi (M-1) \omega}
     \end{bmatrix}^{\mathrm{H}},
@@ -50,7 +50,7 @@
 
 进一步地，通过扫描不同的参数值\( \omega \)，将原始信号投影到不同的方向或速度上，则可以分别获得不同方向或速度上的信号分量。具体而言，对于阵列信号，可以构建如下矩阵：
 \[
-    \mathbf{W} = \frac{1}{M}\begin{bmatrix}
+    \mathbf{H} = \frac{1}{M}\begin{bmatrix}
         1                                                   & 1                                                    & \cdots & 1                                                   \\
         e^{- j 2 \pi \frac{d \sin \theta_1}{\lambda}}       & e^{- j 2 \pi \frac{d \sin \theta_2}{\lambda}}        & \cdots & e^{- j 2 \pi \frac{d \sin \theta_N}{\lambda}}       \\
         \vdots                                              & \vdots                                               & \cdots & \vdots                                              \\
@@ -59,7 +59,7 @@
 \]
 其中，\( \theta_1, \theta_2, \cdots, \theta_N \)为扫描的角度值。对于多脉冲信号，可以构建类似的矩阵：
 \[
-    \mathbf{W} = \frac{1}{M}\begin{bmatrix}
+    \mathbf{H} = \frac{1}{M}\begin{bmatrix}
         1                                             & 1                                             & \cdots & 1                                             \\
         e^{- j 2 \pi \frac{2 T_r v_1}{\lambda}}       & e^{- j 2 \pi \frac{2 T_r v_2}{\lambda}}       & \cdots & e^{- j 2 \pi \frac{2 T_r v_N}{\lambda}}       \\
         \vdots                                        & \vdots                                        & \cdots & \vdots                                        \\
@@ -68,13 +68,13 @@
 \]
 其中，\( v_1, v_2, \cdots, v_N \)为扫描的速度值。对应的波束形成可以表示为如下的矩阵乘法：
 \[
-    \mathbf{Y} = \mathbf{X} \mathbf{W} \in \mathbb{C}^{L \times N}.
+    \mathbf{Y} = \mathbf{X} \mathbf{H} \in \mathbb{C}^{L \times N}.
 \]
 有趣的是，对于多脉冲信号，当所选扫描速度 $v_n$ 满足
 \[
-    \frac{2 T_r v_n}{\lambda} = \frac{n-1}{M}, \quad n = 1, 2, \cdots, N
+    \frac{2 T_r v_n}{\lambda} = \frac{n-1}{M}, \quad n = 1, 2, \cdots, N,
 \]
-时，波束形成矩阵 $\mathbf{W}$ 正好对应于一个 $M \times M$ 的离散傅里叶变换（Discrete Fourier Transform，DFT）矩阵的前 $N$ 行。特别地，当 $M = N$ 时，$\mathbf{W}$ 即为标准的 DFT 矩阵。在这种情况下，波束形成过程等价于对接收信号在参数维度（慢时间维）上进行离散傅里叶变换，从而实现对多普勒频率的估计。
+波束形成矩阵 $\mathbf{H}$ 正好对应于一个 $M \times M$ 的离散傅里叶变换（Discrete Fourier Transform，DFT）矩阵的前 $N$ 行。特别地，当 $M = N$ 时，$\mathbf{H}$ 即为标准的 DFT 矩阵。在这种情况下，波束形成过程等价于对接收信号在参数维度（慢时间维）上进行离散傅里叶变换，从而实现对多普勒频率的估计。
 
 此外，根据\cref{apx.conv-corr-mat}中的结论，对 $\mathbf{X}$ 的列向量 $\bm{x}_i$ 进行脉冲压缩同样可以写成矩阵乘法形式：
 \[
@@ -95,7 +95,7 @@
 \]
 由此可见，当同时对接收信号矩阵 $\mathbf{X}$ 的行向量与列向量分别实施波束形成与脉冲压缩时，其结果可统一表示为
 \[
-    \mathbf{Z} = \mathbf{S}^{\mathrm{H}} \mathbf{X}\mathbf{W}.
+    \mathbf{Z} = \mathbf{S}^{\mathrm{H}} \mathbf{X}\mathbf{H}.
 \]
 
 在矩阵 $\mathbf{Z}$ 中，目标表现为显著的峰值，其位置对应目标的距离及其他参数（方位或径向速度）。换言之，波束形成可视为在参数维度上的匹配滤波，即对目标信号执行``参数域脉冲压缩''。结合距离维与参数维的双重脉冲压缩，便可实现目标的定位与参数估计。
@@ -178,7 +178,7 @@
                         ] {./img/estimation/est_3.png};
                 \end{axis}
             \end{tikzpicture}
-            \caption{\( \mathbf{X}\mathbf{W} \)实部}
+            \caption{\( \mathbf{X}\mathbf{H} \)实部}
             \label{fig_compressed_2}
         \end{subfigure}
         \begin{subfigure}{.3\textwidth}
@@ -200,7 +200,7 @@
                         ] {./img/estimation/est_4.png};
                 \end{axis}
             \end{tikzpicture}
-            \caption{\(  \mathbf{S}\mathbf{X}\mathbf{W} \)幅度}
+            \caption{\(  \mathbf{S}\mathbf{X}\mathbf{H} \)幅度}
             \label{fig_compressed_3}
         \end{subfigure}
         \caption{距离维和参数维二重脉冲压缩示意图}
@@ -208,12 +208,12 @@
     \end{figure}
 \end{solution}
 
-在某些情况下，我们可能并不关心目标的距离信息，而仅希望获得其参数信息（如方位或速度）。此时，可以直接利用波束形成后的输出计算参数维度上的功率谱。具体地，对于参数值 $\omega$，对应输出的功率可表示为
+在某些情况下，我们可能并不关心目标的距离信息，而仅希望获得其参数信息（如方位或速度）。此时，可以直接利用波束形成后的输出，来计算参数维度上的功率谱。具体地，对于参数值 $\omega$，对应输出的功率可表示为
 \[
     p_{\omega} = \frac{1}{L}\|\bm{y}_{\omega}\|_2^2
-    = \frac{1}{L}\|\mathbf{X}\bm{w}_{\omega}\|_2^2
-    = \frac{1}{L}\bm{w}_{\omega}^{\mathrm{H}}\mathbf{X}^{\mathrm{H}}\mathbf{X}\bm{w}_{\omega}
-    = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega},
+    = \frac{1}{L}\|\mathbf{X}\bm{h}_{\omega}\|_2^2
+    = \frac{1}{L}\bm{h}_{\omega}^{\mathrm{H}}\mathbf{X}^{\mathrm{H}}\mathbf{X}\bm{h}_{\omega}
+    = \bm{h}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{h}_{\omega},
 \]
 其中，$\mathbf{\Sigma}_{\mathbf{X}} = \frac{1}{L}\mathbf{X}^{\mathrm{H}}\mathbf{X}$ 为接收信号矩阵的协方差矩阵（一般假设接收信号均值为零）。通过对不同参数值 $\omega$ 进行扫描，即可得到参数维度的功率谱估计，从而实现目标参数的直接估计。
 
@@ -251,9 +251,9 @@
 
 尽管波束形成方法简单直观，但其分辨率和抗干扰能力有限，尤其在目标间距较近或存在强干扰时，性能会显著下降。对于一个特定的参数值\( \omega \)，波束形成的输出可以进一步表示为：
 \[
-    \bm{y}_{\omega} = \mathbf{X} \bm{w}_{\omega} = \sum_{k=1}^{K} \bm{r}_k \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\omega} = \sum_{k=1}^{K} \bm{r}_k \frac{\bm{a}_{\omega_k}^{\mathrm{T}} \overline{\bm{a}}_{\omega}}{M}.
+    \bm{y}_{\omega} = \mathbf{X} \bm{h}_{\omega} = \sum_{k=1}^{K} \bm{r}_k \bm{a}_{\omega_k}^{\mathrm{T}} \bm{h}_{\omega} = \sum_{k=1}^{K} \bm{r}_k \frac{\bm{a}_{\omega_k}^{\mathrm{T}} \overline{\bm{a}}_{\omega}}{M}.
 \]
-从中可以发现，波束形成的输出实际上是各个目标回波信号的加权和，对应的权重为\( \frac{\bm{a}_{\omega_k}^{\mathrm{T}} \overline{\bm{a}}_{\omega}}{M} \)。理想情况下，当目标参数值与滤波器参数值相匹配时，该权重接近1，否则趋于0。但在实际应用中，\( M \)的数值有限，此时即便\( \omega_k \neq \omega \)时，对应的权重也可能较大，导致提取出来的信号中混入了其他目标的成分，从而影响估计精度。
+从中可以发现，波束形成的输出实际上是各个目标回波信号的加权和，对应的权重为\( \frac{\bm{a}_{\omega_k}^{\mathrm{T}} \overline{\bm{a}}_{\omega}}{M} \)。理想情况下，当目标参数值与滤波器参数值相匹配时，该权重接近1，否则趋于0。但在实际应用中，\( M \)的数值有限。此时，即便\( \omega_k \neq \omega \)时，对应的权重也可能较大，导致提取出来的信号中混入了其他目标的成分，从而影响估计精度。
 
 注意到
 \[
@@ -262,7 +262,7 @@
                                                                             & = \frac{1}{M} \frac{\sin(\pi M (\omega_k - \omega))}{\sin(\pi (\omega_k - \omega))} e^{j \pi (M-1)(\omega_k - \omega)}.
     \end{split}
 \]
-可以发现该权重的取值仅和\( M \)以及参数差值\( \omega_k - \omega \)有关。如\cref{fig_weight}所示，随着\( M \)的增大，权重函数的主瓣变窄，旁瓣降低，从而提升了参数分辨能力。
+可以发现该权重的取值仅和\( M \)以及参数差值\( \omega_k - \omega \)有关。如\cref{fig_weight}所示，随着\( M \)的增大，权重函数的主瓣变窄，旁瓣降低，对应的分辨率和也随之提升。
 
 \begin{figure}[htb!]
     \centering
@@ -305,42 +305,42 @@
 \end{figure}
 
 \subsection{和差比幅测角}
-无源相控阵节约了硬件开销，但其无法同时观测多个方向的信号分量，有源相控阵虽然提升了灵活性，但硬件成本大大增加。为此，雷达系统中常采用一种折衷的方案，即和差比幅测角（Sum–Difference Amplitude Comparison）方法。 该方法通过将阵列划分为多个子阵，并对各子阵的输出进行加权组合，从而在一定程度上兼顾了硬件复杂度与参数估计性能。
+无源相控阵节约了硬件开销，但其无法同时观测多个方向的信号分量，有源相控阵虽然提升了灵活性，但硬件成本大大增加。为此，雷达系统中常采用一种折中的方案，即和差比幅测角（Sum–Difference Amplitude Comparison）。 该方法通过将阵列划分为多个子阵，并对各子阵的输出进行加权组合，从而在一定程度上兼顾了硬件复杂度与参数估计性能。
 
 不妨考虑一个均匀线性阵列，其阵元总数为 $2M$，并将其划分为两个子阵，每个子阵包含 $M$ 个阵元。对于给定方位角 $\theta$，和差比幅测角方法构造如下两组滤波器：
 \[
-    \bm{w}_{\text{sum}} = \frac{1}{2M}
+    \bm{h}_{\text{sum}} = \frac{1}{2M}
     \begin{bmatrix}
-        \bm{w}_1 \\
-        \bm{w}_2
-    \end{bmatrix}, \quad  \bm{w}_{\text{diff}} = \frac{1}{2M}
+        \bm{h}_1 \\
+        \bm{h}_2
+    \end{bmatrix}, \quad  \bm{h}_{\text{diff}} = \frac{1}{2M}
     \begin{bmatrix}
-        \bm{w}_1 \\
-        -\bm{w}_2
+        \bm{h}_1 \\
+        -\bm{h}_2
     \end{bmatrix},
 \]
-其中，\( \bm{w}_1 \) 和 \( \bm{w}_2 \) 分别为前\( M \) 个阵元和后\( M \) 个阵元的权向量，有如下形式：
+其中，\( \bm{h}_1 \) 和 \( \bm{h}_2 \) 分别为前\( M \) 个阵元和后\( M \) 个阵元的权向量，有如下形式：
 \[
-    \bm{w}_1 = \begin{bmatrix}
+    \bm{h}_1 = \begin{bmatrix}
         1                                           \\
         e^{- j 2 \pi \frac{d \sin \theta}{\lambda}} \\
         \vdots                                      \\
         e^{- j 2 \pi \frac{(M-1) d \sin \theta}{\lambda}}
     \end{bmatrix}, \quad
-    \bm{w}_2 = \begin{bmatrix}
+    \bm{h}_2 = \begin{bmatrix}
         e^{- j 2 \pi \frac{M d \sin \theta}{\lambda}}     \\
         e^{- j 2 \pi \frac{(M+1) d \sin \theta}{\lambda}} \\
         \vdots                                            \\
         e^{- j 2 \pi \frac{(2M-1) d \sin \theta}{\lambda}}
     \end{bmatrix}.
 \]
-记 $\bm{w}_{\text{sum}}$ 为两个子阵的和波束，$\bm{w}_{\text{diff}}$ 为两个子阵的差波束。对于位于方位角 $\theta_k$ 的目标，其波束形成输出分别为
+记 $\bm{h}_{\text{sum}}$ 为两个子阵的和波束，$\bm{h}_{\text{diff}}$ 为两个子阵的差波束。对于位于方位角 $\theta_k$ 的目标，其波束形成输出分别为
 \[
-    \bm{y}_{\text{sum}} =  \bm{r}_k \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{sum}},
+    \bm{y}_{\text{sum}} =  \bm{r}_k \bm{a}_{\omega_k}^{\mathrm{T}} \bm{h}_{\text{sum}},
     \quad
-    \bm{y}_{\text{diff}} = \bm{r}_k \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{diff}}.
+    \bm{y}_{\text{diff}} = \bm{r}_k \bm{a}_{\omega_k}^{\mathrm{T}} \bm{h}_{\text{diff}}.
 \]
-可以看出，两者在时域波形上保持完全一致，仅在复数比例因子上有所不同，分别为$\bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{sum}}$ 和 $\bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{diff}}$。该比例因子同时包含幅度与相位信息，其比值正是和差比幅测角所利用的参数。
+可以看出，两者在时域波形上保持完全一致，仅在复数比例因子上有所不同，分别为$\bm{a}_{\omega_k}^{\mathrm{T}} \bm{h}_{\text{sum}}$ 和 $\bm{a}_{\omega_k}^{\mathrm{T}} \bm{h}_{\text{diff}}$。该比例因子同时包含幅度与相位信息，其比值正是和差比幅测角所利用的参数。
 
 为了分析这两个幅度的关系，同样将\( \bm{a}_{\omega_k} \) 拆分为两部分：
 \[
@@ -368,31 +368,31 @@
 那么，对于和波束，我们有
 \[
     \begin{split}
-        \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{sum}} & = \frac{1}{2M}\begin{bmatrix}
+        \bm{a}_{\omega_k}^{\mathrm{T}} \bm{h}_{\text{sum}} & = \frac{1}{2M}\begin{bmatrix}
                                                                                \bm{a}_{\omega_k,1}^{\mathrm{T}} & \bm{a}_{\omega_k,2}^{\mathrm{T}}
                                                                            \end{bmatrix}
         \begin{bmatrix}
-            \bm{w}_1 \\
-            \bm{w}_2
+            \bm{h}_1 \\
+            \bm{h}_2
         \end{bmatrix}                                                                                                                                                                                                                                                                                  \\
-                                                           & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1 + \frac{1}{2M} \bm{a}_{\omega_k,2}^{\mathrm{T}} \bm{w}_2                                                                                                                          \\
-                                                           & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1 + \frac{1}{2M} \left( e^{j 2 \pi \frac{M d \sin \theta_k}{\lambda}} \bm{a}_{\omega_k,1}^{\mathrm{T}} \right) \left( e^{-j 2 \pi \frac{M d \sin \theta}{\lambda}} \bm{w}_1 \right) \\
-                                                           & = \frac{1 + e^{j 2\pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda}}}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1.
+                                                           & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{h}_1 + \frac{1}{2M} \bm{a}_{\omega_k,2}^{\mathrm{T}} \bm{h}_2                                                                                                                          \\
+                                                           & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{h}_1 + \frac{1}{2M} \left( e^{j 2 \pi \frac{M d \sin \theta_k}{\lambda}} \bm{a}_{\omega_k,1}^{\mathrm{T}} \right) \left( e^{-j 2 \pi \frac{M d \sin \theta}{\lambda}} \bm{h}_1 \right) \\
+                                                           & = \frac{1 + e^{j 2\pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda}}}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{h}_1.
     \end{split}
 \]
 类似地，对于差波束，有
 \[
     \begin{split}
-        \bm{a}_{\omega_k}^{\mathrm{T}} \bm{w}_{\text{diff}} & = \frac{1}{2M}\begin{bmatrix}
+        \bm{a}_{\omega_k}^{\mathrm{T}} \bm{h}_{\text{diff}} & = \frac{1}{2M}\begin{bmatrix}
                                                                                 \bm{a}_{\omega_k,1}^{\mathrm{T}} & \bm{a}_{\omega_k,2}^{\mathrm{T}}
                                                                             \end{bmatrix}
         \begin{bmatrix}
-            \bm{w}_1 \\
-            -\bm{w}_2
+            \bm{h}_1 \\
+            -\bm{h}_2
         \end{bmatrix}                                                                                                                                                                                                                                                                                     \\
-                                                            & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1 - \frac{1}{2M} \bm{a}_{\omega_k,2}^{\mathrm{T}} \bm{w}_2                                                                                                                            \\
-                                                            & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1 - \frac{1}{2M} \left( e^{j 2 \pi \frac{M d \sin \theta_k}{\lambda}} \bm{a}_{\omega_k,1}^{\mathrm{T}} \right) \left( e^{-j 2 \pi \frac{M d \sin \theta_k}{\lambda}} \bm{w}_1 \right) \\
-                                                            & = = \frac{1 - e^{j 2\pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda}}}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{w}_1.
+                                                            & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{h}_1 - \frac{1}{2M} \bm{a}_{\omega_k,2}^{\mathrm{T}} \bm{h}_2                                                                                                                            \\
+                                                            & = \frac{1}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{h}_1 - \frac{1}{2M} \left( e^{j 2 \pi \frac{M d \sin \theta_k}{\lambda}} \bm{a}_{\omega_k,1}^{\mathrm{T}} \right) \left( e^{-j 2 \pi \frac{M d \sin \theta_k}{\lambda}} \bm{h}_1 \right) \\
+                                                            & = = \frac{1 - e^{j 2\pi \frac{M d (\sin \theta_k - \sin \theta)}{\lambda}}}{2M} \bm{a}_{\omega_k,1}^{\mathrm{T}} \bm{h}_1.
     \end{split}
 \]
 
@@ -456,19 +456,19 @@
 \subsection{最小方差无失真响应}
 经典波束形成方法并未考虑噪声与干扰的统计特性，因此在复杂环境下性能往往受到限制。为此，最小方差无失真响应（Minimum Variance Distortionless Response, MVDR）方法在设计滤波器时引入了噪声与干扰的协方差矩阵，通过优化权向量以最小化输出功率，同时保证对目标信号无失真响应。该方法的发明者为 Jack Capon，因此有时也称为 Capon 算法。
 
-设 \( \bm{w}_{\omega} \) 为待设计的滤波器权向量，则对应的输出为
+设 \( \bm{h}_{\omega} \) 为待设计的滤波器权向量，则对应的输出为
 \[
-    \bm{y}_{\omega} = \mathbf{X} \bm{w}_{\omega}.
+    \bm{y}_{\omega} = \mathbf{X} \bm{h}_{\omega}.
 \]
-直观地，我们希望输出 \(\bm{y}_{\omega}\) 尽可能只包含参数值为 \(\omega\) 的目标信号，同时抑制其他信号与噪声干扰。注意到目标信号对应的导向向量为 \(\bm{a}_{\omega}\)，因此目标分量在输出中的占比与 \(|\bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega}|\) 成正比。由此可构造如下优化问题：
+直观地，我们希望输出 \(\bm{y}_{\omega}\) 尽可能只包含参数值为 \(\omega\) 的目标信号，同时抑制其他信号与噪声干扰。注意到目标信号对应的导向向量为 \(\bm{a}_{\omega}\)，因此目标分量在输出中的占比与 \(|\bm{a}_{\omega}^{\mathrm{T}} \bm{h}_{\omega}|\) 成正比。由此可构造如下优化问题：
 \[
-    \max_{\bm{w}_{\omega}} \frac{|\bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega}|^2}{ \frac{1}{L} \|\bm{y}_{\omega}\|_2^2},
+    \max_{\bm{h}_{\omega}} \frac{|\bm{a}_{\omega}^{\mathrm{T}} \bm{h}_{\omega}|^2}{ \frac{1}{L} \|\bm{y}_{\omega}\|_2^2},
 \]
 即在保证输出功率尽可能小的前提下，使目标信号成分最大化。该问题可转化为如下形式的约束优化问题：
 \[
     \begin{cases}
-        \min_{\bm{w}_{\omega}} \quad & \frac{1}{L} \|\bm{y}_{\omega}\|_2^2               \\
-        \text{s.t.} \quad            & \bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega} = 1,
+        \min_{\bm{h}_{\omega}} \quad & \frac{1}{L} \|\bm{y}_{\omega}\|_2^2               \\
+        \text{s.t.} \quad            & \bm{a}_{\omega}^{\mathrm{T}} \bm{h}_{\omega} = 1,
     \end{cases}
 \]
 其中约束条件保证了对目标信号的无失真响应。
@@ -480,29 +480,29 @@
 则目标函数可重写为
 \[
     \frac{1}{L} \|\bm{y}_{\omega}\|_2^2
-    = \frac{1}{L} \bm{w}_{\omega}^{\mathrm{H}} \mathbf{X}^{\mathrm{H}} \mathbf{X} \bm{w}_{\omega}
-    = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega}.
+    = \frac{1}{L} \bm{h}_{\omega}^{\mathrm{H}} \mathbf{X}^{\mathrm{H}} \mathbf{X} \bm{h}_{\omega}
+    = \bm{h}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{h}_{\omega}.
 \]
 利用拉格朗日乘子法可得该优化问题的闭式解为
 \[
-    \bm{w}_{\omega}
+    \bm{h}_{\omega}
     = \frac{\mathbf{\Sigma}_{\mathbf{X}}^{-1} \overline{\bm{a}}_{\omega}}
     {\overline{\bm{a}}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}}^{-1} \overline{\bm{a}}_{\omega}}.
 \]
 
 遍历所有参数值 \(\omega\)，即可构造滤波器组矩阵
 \[
-    \mathbf{W} = \begin{bmatrix} \bm{w}_{\omega_1} & \bm{w}_{\omega_2} & \cdots \end{bmatrix},
+    \mathbf{H} = \begin{bmatrix} \bm{w}_{\omega_1} & \bm{w}_{\omega_2} & \cdots \end{bmatrix},
 \]
 并由此得到波束形成的输出矩阵
 \[
-    \mathbf{Y} = \mathbf{X} \mathbf{W}.
+    \mathbf{Y} = \mathbf{X} \mathbf{H}.
 \]
 与经典波束形成类似，可通过计算各列向量的功率来获得参数维度的功率谱：
 \[
     p_{\omega}
     = \frac{1}{L} \|\bm{y}_{\omega}\|_2^2
-    = \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega}
+    = \bm{h}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{h}_{\omega}
     = \frac{1}{\overline{\bm{a}}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}}^{-1} \overline{\bm{a}}_{\omega}}.
 \]
 
@@ -624,15 +624,15 @@
 在实际应用中，由于接收信号的样本数量有限，协方差矩阵的估计往往不够准确，甚至可能不可逆。为缓解这一问题，可以借鉴岭回归（Ridge Regression）的思想，在目标函数中加入权重向量的范数惩罚项，从而得到如下优化模型：
 \[
     \begin{aligned}
-        \min_{\bm{w}_{\omega}} \quad &
-        \bm{w}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{w}_{\omega}
-        + \delta \|\bm{w}_{\omega}\|_2^2                                                 \\
-        \text{s.t.} \quad            & \bm{a}_{\omega}^{\mathrm{T}} \bm{w}_{\omega} = 1,
+        \min_{\bm{h}_{\omega}} \quad &
+        \bm{h}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{h}_{\omega}
+        + \delta \|\bm{h}_{\omega}\|_2^2                                                 \\
+        \text{s.t.} \quad            & \bm{a}_{\omega}^{\mathrm{T}} \bm{h}_{\omega} = 1,
     \end{aligned}
 \]
 其中 \(\delta > 0\) 为正则化参数。利用拉格朗日乘子法，可得其闭式解为
 \[
-    \bm{w}_{\omega}
+    \bm{h}_{\omega}
     = \frac{(\mathbf{\Sigma}_{\mathbf{X}} + \delta \mathbf{I})^{-1} \,\overline{\bm{a}}_{\omega}}
     {\overline{\bm{a}}_{\omega}^{\mathrm{H}} (\mathbf{\Sigma}_{\mathbf{X}} + \delta \mathbf{I})^{-1} \,\overline{\bm{a}}_{\omega}}.
 \]
@@ -1076,9 +1076,9 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 注意到，Capon 与 MUSIC 的谱函数可统一表示为
 \[
     p_{\omega} = \frac{1}{\overline{\bm{a}}_{\omega}^{\mathrm{H}}
-        \mathbf{W}\,\overline{\bm{a}}_{\omega}},
+        \mathbf{\Sigma}\,\overline{\bm{a}}_{\omega}},
 \]
-其中 Capon 方法对应 \(\mathbf{W} = \mathbf{\Sigma}_{\mathbf{X}}^{-1}\)，即对信号与噪声赋予与功率成反比的加权；而 MUSIC 方法对应 \(\mathbf{W} = \mathbf{U}_n \mathbf{U}_n^{\mathrm{H}}\)，是噪声子空间的投影矩阵，其权重仅取 \(0/1\)，本质上是一种非线性划分。正是这种权重结构的差异，使得 MUSIC 能够实现比 Capon 更高的分辨率。
+其中 Capon 方法对应 \(\mathbf{\Sigma} = \mathbf{\Sigma}_{\mathbf{X}}^{-1}\)，即对信号与噪声赋予与功率成反比的加权；而 MUSIC 方法对应 \(\mathbf{\Sigma} = \mathbf{U}_n \mathbf{U}_n^{\mathrm{H}}\)，是噪声子空间的投影矩阵，其权重仅取 \(0/1\)，本质上是一种非线性划分。正是这种权重结构的差异，使得 MUSIC 能够实现比 Capon 更高的分辨率。
 
 \subsection{ESPRIT方法}
 注意到CBF、Capon与MUSIC方法均需要对参数空间进行遍历，当对参数的估计精度要求较高时，计算量会显著增加。而Estimation of Signal Parameters via Rotational Invariance Techniques （ESPRIT）方法则通过巧妙地构造两个具有平移关系的子阵列，利用其旋转不变性来实现对参数的直接估计，从而避免了参数空间的遍历。
@@ -1630,9 +1630,9 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 
 在经典波束形成（CBF）方法中，若同时对接收信号矩阵 \( \mathbf{X} \) 的行向量与列向量分别实施波束形成与脉冲压缩，则其输出可统一表示为
 \[
-    \mathbf{Z} = \mathbf{S}^{\mathrm{H}} \mathbf{X} \mathbf{W},
+    \mathbf{Z} = \mathbf{S}^{\mathrm{H}} \mathbf{X} \mathbf{H},
 \]
-其中\( \mathbf{S}  \)为匹配滤波矩阵，\( \mathbf{W} \)为``波束形成''矩阵。这一形式自然引出一个问题：是否存在 CBF 的推广，使其能够同时作用于接收信号张量 \( \mathcal{X} \) 的多个维度，实现所谓的“多维脉冲压缩”，并使目标在结果中表现为清晰的峰值。
+其中\( \mathbf{S}  \)为匹配滤波矩阵，\( \mathbf{H} \)为``波束形成''矩阵。这一形式自然引出一个问题：是否存在 CBF 的推广，使其能够同时作用于接收信号张量 \( \mathcal{X} \) 的多个维度，实现所谓的“多维脉冲压缩”，并使目标在结果中表现为清晰的峰值。
 
 答案是肯定的。具体而言，除了匹配滤波矩阵\( \mathbf{S} \)之外，还需要分别构建如下两个``波束形成''矩阵：
 \[
