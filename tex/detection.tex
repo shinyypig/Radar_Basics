@@ -83,12 +83,12 @@
     \[
         \mu_s = \operatorname{E}[A s_k + n] = A s_k,
     \]
-    其中\( s_k \)为参考信号的第\( k \)个采样点， \( n \) 为噪声项。注意到，对于线性调频信号而言，归一化后的参考向量\( \bm{s} \in \mathbb{C}^{W \times 1} \)中的元素\( s_k \)的模值均为\( \frac{1}{\sqrt{W}} \)。因此，根据信噪比的定义\footnote{本书中，信噪比均采用偏转系数（Deflection Coefficient）定义，即\( SNR = \frac{|\mu_s - \mu_n|^2}{\sigma_n^2} \)，其中\( \mu_s \) 和 \( \mu_n \) 分别为目标和噪声的均值，\( \sigma_n^2 \) 为噪声的方差。当噪声均值为零时，偏转系数与经典信噪比形式一致。}，可以得到原始回波信号的信噪比为
+    其中\( s_k \)为参考信号的第\( k \)个采样点， \( n \) 为噪声项。注意到，对于线性调频信号而言，归一化后的参考向量\( \bm{s} \in \mathbb{C}^{W \times 1} \)中的元素\( s_k \)的模值均为\( \frac{1}{\sqrt{W}} \)\footnote{注意到，在未归一化之前，\( \bm{s}\) 为一个复指数序列：\(\begin{bmatrix}1 & e^{j\omega} & \cdots & e^{j\omega (W-1)} \end{bmatrix}^{\mathrm{T}}  \)}。因此，根据信噪比的定义\footnote{本书中，信噪比均采用偏转系数（Deflection Coefficient）定义，即 SNR\(  = \frac{|\mu_s - \mu_n|^2}{\sigma_n^2} \)，其中\( \mu_s \) 和 \( \mu_n \) 分别为目标和噪声的均值，\( \sigma_n^2 \) 为噪声的方差。当噪声均值为零时，偏转系数与经典信噪比形式一致。}，可以得到原始回波信号的信噪比为
     \[
         \mathrm{SNR}_{a} = \frac{(\mu_s - \mu_n)^2}{\sigma^2_n} = \frac{|A s_k - 0|^2}{\sigma^2_n} = \frac{|A|^2}{\sigma^2_n W}.
     \]
 
-    不妨令向量\( \bm{x}_i = A \bm{s} + \bm{n}_i \)对应了目标的回波信号，其中\(\bm{n}_i\) 为噪声向量。那么脉压后，目标对应的尖值取值的均值为
+    不妨令向量\( \bm{x}_i = A \bm{s} + \bm{n}_i \)对应了目标的回波信号，其中\(\bm{n}_i\) 为噪声向量。那么脉压后，目标对应的峰值的均值为
     \[
         \mu'_s = \operatorname{E}[\bm{s}^{\mathrm{H}} \bm{x}_i] = \operatorname{E}[\bm{s}^{\mathrm{H}} (A \bm{s} + \bm{n}_i)] = A \bm{s}^{\mathrm{H}} \bm{s} + \operatorname{E}[\bm{s}^{\mathrm{H}} \bm{n}_i] = A.
     \]
@@ -274,7 +274,7 @@
 \]
 同样，因为\( |w_p|^2 \)之间互相独立，所以噪声的方差为
 \[
-    \operatorname{Var}[w_{\mathrm{nci}}] = \operatorname{Var}\left[ \frac{1}{P} \sum_{p=1}^P |w_p|^2\right] = \frac{1}{P^2}\sum_{p=1}^P \operatorname{Var}\left[ |w_p|^2\right] = \frac{\sigma^4}{P}.
+    \operatorname{Var}[w_{\mathrm{nci}}] = \operatorname{Var}\left[ \frac{1}{P} \sum_{p=1}^P |w_p|^2\right] = \frac{1}{P^2}\sum_{p=1}^P \operatorname{Var}\left[ |w_p|^2\right] = \frac{\sigma^4_n}{P}.
 \]
 由此可得非相干积累后的信噪比为
 \[
@@ -400,13 +400,13 @@
     \begin{subfigure}{.4\textwidth}
         \centering
         \includegraphics[width=.9\textwidth]{./img/detection/roc_2.tikz}
-        \caption{\( \mu_s - \mu_n = 2, \sigma = 1 \)}
+        \caption{\( \mu_s - \mu_n = 2, \sigma = 0.5 \)}
         \label{fig_dect_prob_2_1}
     \end{subfigure}
     \begin{subfigure}{.4\textwidth}
         \centering
         \includegraphics[width=.9\textwidth]{./img/detection/roc_3.tikz}
-        \caption{\( \mu_s - \mu_n = 1, \sigma = 0.5 \)}
+        \caption{\( \mu_s - \mu_n = 1, \sigma = 1 \)}
         \label{fig_dect_prob_2_2}
     \end{subfigure}
     \caption{不同均值差和方差下的二元假设检验概率密度函数}
@@ -581,7 +581,7 @@
 \[
     P_{fa}(\alpha) = \frac{\left(\frac{N}{\sigma^2}\right)^{N}}{\Gamma(N)} \frac{\Gamma(N)}{\left(\frac{N+\alpha}{\sigma^2}\right)^{N}} = \left(1+\frac{\alpha}{N}\right)^{-N}.
 \]
-若预设虚警率为 \( \hat{P}_{fa} \)，则可解出比例系数为
+若预设虚警率为 \( \hat{P}_{fa} \)，则比例系数为
 \[
     \hat{\alpha} = N\left(\hat{P}_{fa}^{-1/N}-1\right).
 \]
@@ -595,9 +595,9 @@
 \[
     \cdots, X_{i-1},\, X_i,\, X_{i+1}, \cdots ,
 \]
-其中 \(X_i\) 为待检测样本（Cell Under Test, CUT）。最常见的 CFAR 算法是基于滑动窗口的单元平均恒虚警率检测（Cell Averaging CFAR, CA-CFAR）。该方法通过在 CUT 周围选取训练单元估计背景噪声功率，从而自适应调整检测门限。
+其中 \(X_i\) 为待检测样本（Cell Under Test, CUT）。最常见的 CFAR 算法是基于滑动窗口的单元平均恒虚警率检测（Cell Averaging CFAR, CA-CFAR）。该方法通过在 CUT 周围选取训练单元来估计背景噪声功率，并自适应调整检测门限。
 
-设滑动窗口长度为 \(2N+1\)，保护单元长度为 \(2G+1\)（其中 \(G<N\)）。则 CUT 左右两侧各有 \(N-G\) 个训练单元。训练单元的均值估计为
+设滑动窗口长度为 \(2N+1\)，其中包含一个待检测单元，\( 2G \)个保护单元，以及分布在保护单元两侧的\( 2(N-G) \)个训练单元（各N-G个）。则训练单元的均值估计为
 \[
     \overline{X}_i = \frac{1}{2(N-G)}
     \left( \sum_{j=i-N}^{\,i-G-1} X_j \;+\; \sum_{j=i+G+1}^{\,i+N} X_j \right).
