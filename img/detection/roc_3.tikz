@@ -9,10 +9,10 @@
         ]
 
         % 第一条曲线 (加 name path=A)
-        \addplot[name path=a, domain=-6:6, samples=200, thick, c1] {exp(-(x + 0.5)^2*2)/sqrt(2*pi)*2};
+        \addplot[name path=a, domain=-6:6, samples=200, thick, c1] {exp(-(x + 0.5)^2/2)/sqrt(2*pi)*2};
 
         % 第二条曲线 (加 name path=B)
-        \addplot[name path=b, domain=-6:6, samples=200, thick, c2] {exp(-(x-0.5)^2*2)/sqrt(2*pi)*2};
+        \addplot[name path=b, domain=-6:6, samples=200, thick, c2] {exp(-(x-0.5)^2/2)/sqrt(2*pi)*2};
 
         % % % 基准线 (x 轴右侧部分)
         % \path[name path=xaxis] (axis cs:1.5,0) -- (axis cs:6,0);
