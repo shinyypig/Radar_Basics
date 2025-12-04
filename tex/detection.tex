@@ -1,7 +1,7 @@
 \chapter{雷达信号检测}
 在雷达系统中，目标检测是由接收信号处理走向目标识别的关键环节。其核心任务是从含有噪声、杂波与多径效应的复杂回波中，可靠地区分目标与干扰。为了提升检测性能，雷达信号处理往往需要经过脉冲压缩以提高距离分辨率，通过脉冲积累增强信噪比，最终在统计意义下实现目标检测。
 
-本章将依次介绍：首先讨论脉冲压缩原理及其在提高雷达分辨率中的作用；随后分析非相干积累与相干积累两类脉冲积累方法的特点与适用场景；最后重点研究目标检测的统计理论，包括虚警率、检测率、门限选择与恒虚警率（CFAR）检测等经典方法。
+本章将依次介绍：首先讨论脉冲压缩原理及其在提高雷达分辨率中的作用；随后分析相干积累与非相干积累两类脉冲积累方法的特点与适用场景；最后重点研究目标检测的统计理论，包括虚警率、检测率、门限选择与恒虚警率（CFAR）检测等经典方法。
 
 \section{脉冲压缩}
 如\cref{sec_radar_signal_model}所述，早期雷达系统往往难以兼顾距离分辨率与目标检测性能。为保持较高距离分辨率的同时提升检测效能，现代雷达通常在低频包络中引入时间调制以拓展信号带宽，从而增强系统的抗干扰能力与目标检测能力。以线性调频信号为例，其回波信号的实部如\cref{fig_chirp_eg}所示。在实际应用中，由于噪声等因素的存在，往往难以直接确定回波脉冲的上升沿；此外，若仅依靠上升沿来估计脉冲时延，也无法有效解决距离分辨率与检测性能之间的固有矛盾。
@@ -26,7 +26,7 @@
         x_W    & x_{W+1} & \cdots & x_L
     \end{bmatrix} \in \mathbb{C}^{W \times (L-W+1)},
 \]
-其中矩阵\( \mathbf{X} \)的第\( i \)列记为\( \bm{x}_i \in \mathbb{C}^{W \times 1} \)。显然，我们只需要一一对比所有的\( \bm{x}_i \)与\( \bm{s} \)的相似性，如果相似度比较高，那么就可以认为在该位置存在回波信号，自然就能确定对应的时延了。最常见的衡量相似度的指标是余弦相似度（Cosine Similarity），其定义如下：
+其中矩阵\( \mathbf{X} \)的第\( i \)列记为\( \bm{x}_i \in \mathbb{C}^{W \times 1} \)。显然，我们只需要一一对比所有的\( \bm{x}_i \)与\( \bm{s} \)的相似性，若相似度满足预设条件，则可判定该位置存在目标回波，进而通过该位置索引计算对应的信号时延。最常见的衡量相似度的指标是余弦相似度（Cosine Similarity），其定义如下：
 \begin{definition}
     设有两个向量\( \bm{a}, \bm{b} \in \mathbb{C}^{n \times 1} \)，则它们的余弦相似度有如下计算公式
     \[
@@ -59,7 +59,7 @@
     \bm{y}^{\mathrm{T}} = \bm{s}^{\mathrm{H}} \mathbf{X} \rightarrow \bm{y} = \mathbf{X}^{\mathrm{T}} \overline{\bm{s}}.
 \]
 
-由\cref{apx.conv-corr-mat}可知，该形式实质上对应一次相关运算，即将原始回波信号与参考向量进行相关处理。进一步地，相关运算可以等价地转化为卷积运算，而卷积又可视为一个有限冲激响应（Finite Impulse Response, FIR）滤波器，其滤波器系数正是参考信号的共轭翻转序列。因此，该处理过程通常被称为\emph{匹配滤波}。方便起见，我们直接称\( \bm{s} \)为匹配滤波器的滤波器系数。
+由\cref{apx.conv-corr-mat}可知，该形式实质上对应一次相关运算，即将原始回波信号与参考向量进行相关处理。进一步地，相关运算可以等价地转化为卷积运算，而卷积又可视为一个有限冲激响应（Finite Impulse Response, FIR）滤波器，其滤波器系数正是参考信号的共轭翻转序列。因此，该处理过程通常被称为\emph{匹配滤波}。为方便起见，我们直接称\( \bm{s} \)为匹配滤波器的滤波器系数。
 
 \begin{example}\label{eg_pc}
     对\cref{fig_pc_eg1}中的接收信号进行匹配滤波处理。
@@ -79,16 +79,31 @@
         \label{fig_pc_eg2}
     \end{figure}
 
-    令\( A \)为回波对应的幅度与相位信息，并假设噪声的均值\( \mu_n \)为零，方差为\( \sigma_n^2 \)，则对于回波处的采样点，其均值为
+    从上述实例可以看出，匹配滤波器能有效抑制噪声。下面我们从噪声的统计特性出发，定量分析匹配滤波器如何实现输出信噪比最大化。令\( A \)为回波对应的幅度与相位信息，并假设噪声的均值\( \mu_n \)为零，方差为\( \sigma_n^2 \)，则对于回波处的采样点，其均值为
     \[
         \mu_s = \operatorname{E}[A s_k + n] = A s_k,
     \]
-    其中\( s_k \)为参考信号的第\( k \)个采样点， \( n \) 为噪声项。注意到，对于线性调频信号而言，归一化后的参考向量\( \bm{s} \in \mathbb{C}^{W \times 1} \)中的元素\( s_k \)的模值均为\( \frac{1}{\sqrt{W}} \)\footnote{注意到，在未归一化之前，\( \bm{s}\) 为一个复指数序列：\(\begin{bmatrix}1 & e^{j\omega} & \cdots & e^{j\omega (W-1)} \end{bmatrix}^{\mathrm{T}}  \)}。因此，根据信噪比的定义\footnote{本书中，信噪比均采用偏转系数（Deflection Coefficient）定义，即 SNR\(  = \frac{|\mu_s - \mu_n|^2}{\sigma_n^2} \)，其中\( \mu_s \) 和 \( \mu_n \) 分别为目标和噪声的均值，\( \sigma_n^2 \) 为噪声的方差。当噪声均值为零时，偏转系数与经典信噪比形式一致。}，可以得到原始回波信号的信噪比为
+    其中\( s_k \)为参考信号的第\( k \)个采样点， \( n \) 为噪声项。注意到，对于线性调频信号而言，归一化后的参考向量\( \bm{s} \in \mathbb{C}^{W \times 1} \)中的元素\( s_k \)的模值均为\( \frac{1}{\sqrt{W}} \)\footnote{注意到，在未归一化之前，\( \bm{s}\) 为一个复指数序列：\(\begin{bmatrix}1 & e^{j\omega} & \cdots & e^{j\omega (W-1)} \end{bmatrix}^{\mathrm{T}}  \)}。下面给出归一化后每个样点模值为 \( \frac{1}{\sqrt{W}} \) 的简洁推导：
+    \[
+        s_k = A e^{j\phi_k},\qquad |s_k|=A,\qquad
+        s^{\mathrm{H}}s = \sum_{k=1}^W |s_k|^2 = W A^2,\qquad
+        \|s\|_2 = \sqrt{W}\,A.
+    \]
+    对向量归一化得
+    \[
+        	ilde{\bm{s}} = \frac{\bm{s}}{\|\bm{s}\|_2},\qquad
+        	ilde{s}_k = \frac{A e^{j\phi_k}}{\sqrt{W}\,A} = \frac{e^{j\phi_k}}{\sqrt{W}},
+    \]
+    因此
+    \[
+        |\tilde{s}_k| = \frac{1}{\sqrt{W}}.
+    \]
+    （若原始幅度取 \(A=1\)，则直接有归一化后的每个样点模为 $1/\sqrt{W}$。）因此，根据信噪比的定义\footnote{本书中，信噪比均采用偏转系数（Deflection Coefficient）定义，即 SNR\(  = \frac{|\mu_s - \mu_n|^2}{\sigma_n^2} \)，其中\( \mu_s \) 和 \( \mu_n \) 分别为目标和噪声的均值，\( \sigma_n^2 \) 为噪声的方差。当噪声均值为零时，偏转系数与经典信噪比形式一致。}，可以得到原始回波信号的信噪比为
     \[
         \mathrm{SNR}_{a} = \frac{(\mu_s - \mu_n)^2}{\sigma^2_n} = \frac{|A s_k - 0|^2}{\sigma^2_n} = \frac{|A|^2}{\sigma^2_n W}.
     \]
 
-    不妨令向量\( \bm{x}_i = A \bm{s} + \bm{n}_i \)对应目标的回波信号，其中\(\bm{n}_i\) 为噪声向量。那么脉压后，目标对应的峰值的均值为
+    不妨令向量\( \bm{x}_i = A \bm{s} + \bm{n}_i \)对应目标的回波信号，其中\(\bm{n}_i\) 为噪声向量。那么脉压后，目标对应的尖峰值的均值为
     \[
         \mu'_s = \operatorname{E}[\bm{s}^{\mathrm{H}} \bm{x}_i] = \operatorname{E}[\bm{s}^{\mathrm{H}} (A \bm{s} + \bm{n}_i)] = A \bm{s}^{\mathrm{H}} \bm{s} + \operatorname{E}[\bm{s}^{\mathrm{H}} \bm{n}_i] = A.
     \]
@@ -110,7 +125,7 @@
     \]
 \end{solution}
 
-既然脉冲压缩本质上是对原始回波信号的一种滤波，而其对应的滤波器系数通常取为参考信号所对应的向量，那么一个自然的问题是：最优的滤波系数是否必然就是参考信号向量？不妨将期望的滤波器系数记为 \( \bm{w} \)。显然，理想的滤波器应在凸显目标回波信号的同时，尽可能抑制非目标分量，例如噪声、干扰和杂波等。基于这一考虑，可以建立如下的优化模型：
+既然脉冲压缩本质上是对原始回波信号的一种滤波，并且其对应的滤波器系数通常取为参考信号所对应的向量，那么一个自然的问题是：最优的滤波系数是否必然就是参考信号向量？不妨将期望的滤波器系数记为 \( \bm{w} \)。显然，理想的滤波器应在凸显目标回波信号的同时，尽可能抑制非目标分量，例如噪声、干扰和杂波等。基于这一考虑，可以建立如下的优化模型：
 \[
     \begin{cases}
         \min\limits_{\bm{w}} \left\| \bm{w}^{\mathrm{H}} \mathbf{X} \right\|^2 \\[6pt]
@@ -119,7 +134,7 @@
 \]
 其中，目标函数刻画了滤波器输出的总能量，约束条件保证了参考信号方向上的响应被固定为 1。这样，滤波器在保持对目标信号敏感的同时，能够最大程度地抑制非目标分量的输出。利用\cref{apx.lagrange-multiplier}介绍的拉格朗日乘数法，可以获得该优化问题的解析解。首先，构建拉格朗日函数
 \[
-    \mathcal{L}(\bm{w}, \lambda) = \frac{1}{2}\left\| \bm{w}^{\mathrm{H}} \mathbf{X} \right\|^2 - \lambda \left( \bm{s}^{\mathrm{H}} \bm{w} - 1 \right) = \frac{1}{2} \bm{w}^{\mathrm{H}} \mathbf{X} \mathbf{X}^{\mathrm{H}} \bm{w} - \lambda \left( \bm{s}^{\mathrm{H}} \bm{w} - 1 \right).
+    \mathcal{L}(\bm{w}, \lambda) = \frac{1}{2}\left\| \bm{w}^{\mathrm{H}} \mathbf{X} \right\|^2 - \lambda \left( \bm{w}^{\mathrm{H}} \bm{s} - 1 \right) = \frac{1}{2} \bm{w}^{\mathrm{H}} \mathbf{X} \mathbf{X}^{\mathrm{H}} \bm{w} - \lambda \left( \bm{w}^{\mathrm{H}} \bm{s} - 1 \right).
 \]
 对\( \bm{w} \)和\( \lambda \)分别求导，并令其为0，得到方程组
 \[
@@ -131,8 +146,8 @@
 联立上述方程组，得到
 \[
     \begin{cases}
-        \lambda = \frac{1}{\bm{s}^{\mathrm{H}} \mathbf{X} \mathbf{X}^{\mathrm{H}} \bm{s}} \\
-        \bm{w} = \frac{\mathbf{X} \mathbf{X}^{\mathrm{H}} \bm{s}}{\bm{s}^{\mathrm{H}} \mathbf{X} \mathbf{X}^{\mathrm{H}} \bm{s}}
+        \lambda = \frac{1}{\bm{s}^{\mathrm{H}} (\mathbf{X} \mathbf{X}^{\mathrm{H}})^{-1} \bm{s}} \\
+        \bm{w} = \frac{(\mathbf{X} \mathbf{X}^{\mathrm{H}})^{-1} \bm{s}}{\bm{s}^{\mathrm{H}} (\mathbf{X} \mathbf{X}^{\mathrm{H}})^{-1} \bm{s}}
     \end{cases}.
 \]
 从中可以看出，最优的滤波器系数 \( \bm{w} \) 并不等于参考信号 \( \bm{s} \)。但注意到，当我们假设信号中只存在高斯白噪声时，数据的协方差矩阵可近似为对角矩阵\( \frac{1}{L-W+1} \mathbf{X} \mathbf{X}^{\mathrm{H}} \approx \sigma^2_n \mathbf{I} \)，其中\( \mathbf{I} \)为单位矩阵。此时，最优的滤波器系数 \( \bm{w} \) 近似为
@@ -241,7 +256,7 @@
 \[
     \operatorname{E}[w_{\mathrm{ci}}] = \frac{1}{P} \sum_{p=1}^P \operatorname{E}[w_p] e^{-j \varphi_p} = 0.
 \]
-由于各个噪声项相互独立，因此其方差为
+由于各个噪声项相互独立，因此\(w_{\mathrm{ci}}\)的方差为
 \[
     \operatorname{Var}[w_{\mathrm{ci}}] =\operatorname{Var}\left[\frac{1}{P}\sum_{p=1}^P w_p e^{-j \varphi_p} \right] = \frac{1}{P^2}\sum_{p=1}^P \operatorname{Var}[w_p] = \frac{\sigma^2_n}{P}.
 \]
@@ -252,7 +267,7 @@
 
 这表明，当有\( P \)个脉冲时，通过相干积累可以将信噪比提升至原来的\( P \)倍。但相干积累要求能够精确地对齐各个脉冲的相位，这在实际应用中可能会难以实现。此时，可以考虑非相干积累的方法，其思想是直接对回波的模值平方取平均，即
 \[
-    y_{\mathrm{nci}} = \frac{1}{P} \sum_{p=1}^P |y_p|^2 = \frac{1}{P} \sum_{p=1}^P \left| A e^{j \varphi_p} + n_p \right|^2.
+    y\prime_{\mathrm{nci}} = \frac{1}{P} \sum_{p=1}^P |y_p|^2 = \frac{1}{P} \sum_{p=1}^P \left| A e^{j \varphi_p} + n_p \right|^2.
 \]
 对应的噪声输出为
 \[
@@ -278,7 +293,7 @@
 \]
 由此可得非相干积累后的信噪比为
 \[
-    \mathrm{SNR}_{\mathrm{nci}} = \frac{\left||A|^2 + \sigma^2_n - \sigma^2_n\right|^2}{\frac{\sigma^4_n}{P}} = \frac{P |A|^4}{\sigma^4_n}.
+    \mathrm{SNR}'_{\mathrm{nci}} = \frac{\left||A|^2 + \sigma^2_n - \sigma^2_n\right|^2}{\frac{\sigma^4_n}{P}} = \frac{P |A|^4}{\sigma^4_n}.
 \]
 注意到，非相干积累的输出实质上是各脉冲回波幅度平方的累加，因此在定义信噪比时，通常再取平方根作为最终结果：
 \[
@@ -292,7 +307,7 @@
 
 综上所述，相干积累的增益为 \( P \) 倍，而非相干积累的增益仅为 \(\sqrt{P}\) 倍。前者理论增益更大，但在实现上对相位同步的依赖更为苛刻；后者实现简单，因而在工程上被广泛采用。
 
-\cref{fig_ci_eg}展示了 10 个脉冲和 100 个脉冲积累的结果。可以看到，相干积累能够有效抑制噪声，使目标更加突出；而非相干积累虽然同样降低了噪声的方差，但会同时抬高噪声的均值。当脉冲数量增加时，脉冲积累的效果愈发明显。总体而言，相较于单个脉冲，这两种积累方式均能显著削弱噪声干扰，从而凸显目标回波。
+\cref{fig_ci_eg}展示了 10 个脉冲和 100 个脉冲积累的结果。可以看到，相干积累能够有效抑制噪声，使目标更加突出；非相干积累虽然能降低噪声的方差，但会抬高噪声的均值，导致信噪比提升有限。当脉冲数量增加时，脉冲积累的效果愈发明显。总体而言，相较于单个脉冲，这两种积累方式均能显著削弱噪声干扰，从而凸显目标回波。
 
 \begin{figure}[htb!]
     \centering
@@ -314,7 +329,7 @@
 
 \section{目标检测}
 
-在完成脉冲压缩与脉冲积累后，雷达系统需要对处理后的信号进行目标检测，以区分目标回波与噪声或杂波。目标检测通常被建模为一个二选一的假设检验问题，即在给定观测数据的情况下，判断该数据的来源是仅含噪声的环境（记作\( H_0 \)）还是包含目标回波与噪声 / 杂波的混合环境（记作 \( H_1 \)）。基于统计决策理论，可以设计各种检测算法以优化检测性能。
+在完成脉冲压缩与脉冲积累后，雷达系统需要对处理后的信号进行目标检测，以区分目标回波、噪声或杂波。目标检测的核心是信号存在性判定，通常建模为二元假设检验问题，即在给定观测数据的情况下，判断该数据的来源是仅含噪声的环境（记作\( H_0 \)）还是包含目标回波与噪声 / 杂波的混合环境（记作 \( H_1 \)）。基于统计决策理论，可以设计各种检测算法以优化检测性能。
 
 \subsection{门限选择与检测性能}
 在介绍检测算法之前，有必要先定义一些关键指标，以便更好地评估检测性能。对于二元假设检验问题，我们可以将检测结果分为四类：
@@ -458,7 +473,7 @@
     \label{fig_roc_curves}
 \end{figure}
 
-在信噪比固定的情况下，该如何选择最优的检测门限呢？一种常见的方法是令总体检测准确率（Accuracy）\( P_{tp} + P_{tn} \)最大化。不妨令检测门限为\( \gamma \)，则有检测准确率为
+在信噪比固定的情况下，该如何选择最优的检测门限呢？一种常见的方法是令总体检测准确率（Accuracy）\( P_{tp} + P_{tn} \)最大化。不妨令检测门限为\( \gamma \)，则检测准确率为
 \[
     a(\gamma) = P_{tp}(\gamma) + P_{tn}(\gamma) =  P_{0} \int_{-\infty}^{\gamma} p_{0}(x) dx + P_{1} \int_{\gamma}^{\infty} p_{1}(x) dx,
 \]
@@ -554,7 +569,6 @@
     P_{fa}(\alpha \mid \overline{X}) = P(X_0 > \alpha \overline{X} \mid \overline{X})
     = e^{-\tfrac{\alpha \overline{X}}{\sigma^2}}.
 \]
-
 注意到 \( \overline{X} \) 是若干独立指数分布的均值，因此其服从均值为 \( \sigma^2 \) 的伽马分布，即
 \[
     \overline{X} \sim \mathrm{Gamma}\!\left(N, \tfrac{N}{\sigma^2}\right),
@@ -595,7 +609,7 @@
 \[
     \cdots, X_{i-1},\, X_i,\, X_{i+1}, \cdots ,
 \]
-其中 \(X_i\) 为待检测样本（Cell Under Test, CUT）。最常见的 CFAR 算法是基于滑动窗口的单元平均恒虚警率检测（Cell Averaging CFAR, CA-CFAR）。该方法通过在 CUT 周围选取训练单元来估计背景噪声功率，并自适应调整检测门限。
+其中 \(X_i\) 为待检测样本（Cell Under Test, CUT）。最常见的 CFAR 算法是基于滑动窗口的单元平均恒虚警率检测（Cell Averaging CFAR, CA-CFAR）。该方法通过在CUT周围选取训练单元并估计背景噪声功率，并自适应调整检测门限。
 
 设滑动窗口总长度为 \(2N+1\)（含1个待检测单元CUT、\(2G+1\)个保护单元、2(\(N-G\))个训练单元），其中保护单元（\(G<N\)）用于避免目标主瓣/旁瓣能量干扰噪声估计，训练单元分布在CUT 左右两侧（各有 \(N-G\) 个）。训练单元的均值估计为
 \[
