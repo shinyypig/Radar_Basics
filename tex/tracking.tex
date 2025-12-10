@@ -17,13 +17,13 @@
 \]
 其中，\( \mathbf{H}_T \) 表示利用前 \( T \) 次观测数据估计得到的观测矩阵。
 
-记
+为便于表达，定义数据矩阵
 \[
     \mathbf{X}_T = \begin{bmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_T \end{bmatrix} \in \mathbb{R}^{M \times T},
     \quad
-    \mathbf{Z}_T = \begin{bmatrix} \bm{z}_1 & \bm{z}_2 & \cdots & \bm{z}_T \end{bmatrix} \in \mathbb{R}^{N \times T},
+    \mathbf{Z}_T = \begin{bmatrix} \bm{z}_1 & \bm{z}_2 & \cdots & \bm{z}_T \end{bmatrix} \in \mathbb{R}^{N \times T}.
 \]
-则上述优化问题可进一步简化为（方便起见，常数项\( \frac{1}{T} \) 被省略）
+则上述优化问题可进一步简化为（其中常数因子\( \frac{1}{T} \) 已省略）
 \[
     \min_{\mathbf{H}} \big\| \mathbf{H}_T \mathbf{X}_T - \mathbf{Z}_T \big\|_{\mathrm{F}}^2.
 \]
@@ -48,8 +48,9 @@
 \[
     \mathbf{H}_T = \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} \left( \mathbf{X}_T \mathbf{X}_T^{\mathrm{T}} \right)^{-1}.
 \]
+注意到，随着观测次数 \(T\) 的增加，观测矩阵 \(\mathbf{X}_T\) 的规模不断增大，从而导致计算复杂度迅速提升。另一方面，目标的运动状态也可能随时间发生变化，因此没有必要始终依赖全部历史观测数据来估计观测矩阵 \(\mathbf{H}_T\)。基于此，可以考虑采用迭代方式对观测矩阵进行逐步更新。
 
-注意到，随着观测次数 \(T\) 的增加，观测矩阵 \(\mathbf{X}_T\) 的规模不断增大，从而导致计算复杂度迅速提升。另一方面，目标的运动状态也可能随时间发生变化，因此没有必要始终依赖全部历史观测数据来估计观测矩阵 \(\mathbf{H}_T\)。基于此，可以考虑采用递推方式对观测矩阵进行逐步更新。假设在时刻 \(T\) 已经得到了估计矩阵 \(\mathbf{H}_{T}\)，当引入第 \(T+1\) 次观测后，仅利用该次观测来修正已有估计。相应的优化问题为
+假设在时刻 \(T\) 已经得到了估计矩阵 \(\mathbf{H}_{T}\)，当引入第 \(T+1\) 次观测后，仅利用该次观测来修正已有估计。相应的优化问题为
 \[
     \min_{\mathbf{H}_{T}} \ \big\| \mathbf{H}_{T} \bm{x}_{T+1} - \bm{z}_{T+1} \big\|^2.
 \]
@@ -57,32 +58,32 @@
 \[
     \nabla_{\mathbf{H}_{T}} = 2\big(\mathbf{H}_{T} \bm{x}_{T+1} - \bm{z}_{T+1}\big)\bm{x}_{T+1}^{\mathrm{T}}.
 \]
-其中，\(\mathbf{H}_{T}\bm{x}_{T+1}-\bm{z}_{T+1}\) 即为利用当前估计矩阵对最新观测进行预测时所产生的误差。记作
-\[
-    \bm{e}_{T+1} = \mathbf{H}_{T}\bm{x}_{T+1} - \bm{z}_{T+1},
-\]
-则可采用梯度下降法更新观测矩阵：
+其中，\(\mathbf{H}_{T}\bm{x}_{T+1}-\bm{z}_{T+1}\) 即为利用当前估计矩阵对最新观测进行预测时所产生的误差。记\( \bm{e}_{T+1} = \bm{z}_{T+1} - \mathbf{H}_{T}\bm{x}_{T+1}\)，则可采用梯度下降法更新观测矩阵。对应的更新公式为
 \[
     \mathbf{H}_{T+1} = \mathbf{H}_{T} + \mu\, \bm{e}_{T+1}\bm{x}_{T+1}^{\mathrm{T}},
 \]
 其中 \(\mu > 0\) 为步长参数。这种利用随机梯度下降（Stochastic Gradient Descent, SGD）的进行更新方法被称为最小均方（Least Mean Square, LMS）算法。可以发现其核心思想在于：每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与当前观测对观测矩阵进行修正，从而实现动态更新。
 
-在实际应用中，步长参数 \(\mu\) 的选取对算法的收敛性与稳定性具有重要影响。若 \(\mu\) 过大，可能导致算法发散；若 \(\mu\) 过小，则收敛速度较慢。而递推最小均方（Recursive Least Mean Square, RLMS）算法，一方面通过引入遗忘因子\( \lambda \in (0,1] \)来减小对早期观测数据的依赖，另一方面通过巧妙地利用伍德伯里矩阵恒等式（Woodbury Matrix Identity, 见\cref{cor:woodbury-matrix-identity}）来高效地更新估计矩阵，无需选取步长参数，从而提升了算法的性能与鲁棒性。具体而言，在时刻 \( T \) 时，优化问题可表述为
+\subsection{递推最小均方滤波}
+
+在实际应用中，步长参数 \(\mu\) 的选取对算法的收敛性与稳定性具有重要影响。若 \(\mu\) 过大，可能导致算法发散；若 \(\mu\) 过小，则收敛速度较慢。而递推最小均方（Recursive Least Mean Square, RLMS）算法，一方面通过引入遗忘因子\( \lambda \in (0,1] \)来减小对早期观测数据的依赖，另一方面通过巧妙地利用伍德伯里矩阵恒等式（Woodbury Matrix Identity, 见\cref{cor:woodbury-matrix-identity}）来高效地更新估计矩阵，无需选取步长参数，从而提升了算法的性能与鲁棒性。
+
+具体而言，在时刻 \( T \) 时，优化问题可表示为
 \[
     \min_{\mathbf{H}_T} \ \sum_{t=1}^{T} \lambda^{T-t} \big\| \mathbf{H}_T\bm{x}_t - \bm{z}_t \big\|^2.
 \]
-
 同样可以将上述问题转化为矩阵形式：
 \[
     \min_{\mathbf{H}_T} \ \big\| \mathbf{H}_T \mathbf{X}_T - \mathbf{Z}_T\big\|_{\mathrm{F}}^2,
 \]
-其中，
+其中
 \[
     \mathbf{X}_T = \begin{bmatrix} \sqrt{\lambda}^{T-1}\bm{x}_1 & \sqrt{\lambda}^{T-2}\bm{x}_2 & \cdots & \bm{x}_T \end{bmatrix} \in \mathbb{R}^{M \times T},
 \]
 \[
     \mathbf{Z}_T = \begin{bmatrix} \sqrt{\lambda}^{T-1}\bm{z}_1 & \sqrt{\lambda}^{T-2}\bm{z}_2 & \cdots & \bm{z}_T \end{bmatrix} \in \mathbb{R}^{N \times T}.
 \]
+
 与普通最小二乘相同，\( T \)时刻该问题的解析解为
 \[
     \mathbf{H}_T = \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} \left( \mathbf{X}_T \mathbf{X}_T ^{\mathrm{T}} \right)^{-1},
@@ -110,48 +111,45 @@
         \bm{x}_{T+1}^\mathrm{T}
     \end{bmatrix} = \lambda \mathbf{X}_T \mathbf{X}_T^\mathrm{T} + \bm{x}_{T+1}\bm{x}_{T+1}^\mathrm{T}.
 \]
+
 方便起见，记\( \mathbf{X}_T \mathbf{X}_T^\mathrm{T} = \mathbf{\Sigma}_T \)，\( \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} = \mathbf{\Gamma}_T \)，则进一步利用伍德伯里矩阵恒等式（\cref{cor:woodbury-matrix-identity}），可得
 \[
     \begin{split}
-        \left( \mathbf{\Sigma}_{T+1} \right)^{-1} & = \left( \lambda \mathbf{\Sigma}_T + \bm{x}_{T+1}\bm{x}_{T+1}^\mathrm{T} \right)^{-1}                                                                                                                                        \\
-                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \frac{\mathbf{\Sigma}_T^{-1} \bm{x_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1}}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}} \right) \\
-                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} \right),                                                                                                 \\
+        \left( \mathbf{\Sigma}_{T+1} \right)^{-1} & = \left( \lambda \mathbf{\Sigma}_T + \bm{x}_{T+1}\bm{x}_{T+1}^\mathrm{T} \right)^{-1}  = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \frac{\mathbf{\Sigma}_T^{-1} \bm{x}_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}} \right) \\
+                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} \right),                                                                                                                                                                                        \\
     \end{split}
 \]
-其中\( \bm{g}_{T+1} \)为增益向量，有如下表达式：
+其中\( \bm{g}_{T+1} \)被称作增益向量，有如下表达式：
 \[
     \bm{g}_{T+1} = \frac{\mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}.
 \]
-则\( \mathbf{H}_T \)可以表示为
-\[
-    \mathbf{H}_T = \mathbf{\Gamma}_T \mathbf{\Sigma}_T^{-1},
-\]
-而\( \mathbf{H}_{T+1} \)可以表示为
+注意到，\( \mathbf{H}_{T+1} \)可以表示为
 \[
     \begin{split}
         \mathbf{H}_{T+1} & = \mathbf{\Gamma}_{T+1} \mathbf{\Sigma}_{T+1}^{-1} = (\lambda \mathbf{\Gamma}_T + \bm{z}_{T+1}\bm{x}_{T+1}^\mathrm{T}) \mathbf{\Sigma}_{T+1}^{-1} \\
                          & = \lambda \mathbf{\Gamma}_T \mathbf{\Sigma}_{T+1}^{-1} + \bm{z}_{T+1}\bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T+1}^{-1}                           \\
     \end{split}
 \]
-
-注意到
+其中，第一项可进一步化简为
 \[
     \lambda \mathbf{\Gamma}_T \mathbf{\Sigma}_{T+1}^{-1} = \mathbf{\Gamma}_T \left(  \mathbf{\Sigma}_T^{-1} -  \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} \right) = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}},
 \]
-而
+而第二项则可化简为
 \[
     \begin{split}
-        \mathbf{\Sigma}_{T + 1}^{-1} \bm{x}_{T+1} & = \frac{1}{\lambda} \left(  \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1} - \frac{\mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} }{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}} \right) \\
-                                                  & = \frac{ \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}} = \bm{g}_{T+1},
+        \bm{z}_{T+1}\bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T+1}^{-1} & = \frac{\bm{z}_{T+1}}{\lambda} \left( \bm{x}_{T+1}^{\mathrm{T}} \mathbf{\Sigma}_T^{-1}  - \frac{ \bm{x}_{T+1}^{\mathrm{T}} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} }{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}} \right) \\
+                                                                       & = \frac{ \bm{z}_{T+1} \bm{x}_{T+1}^{\mathrm{T}} \mathbf{\Sigma}_T^{-1} }{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}}                                                                                                                                                    \\
+                                                                       & =\bm{z}_{T+1} \bm{g}_{T+1}^{\mathrm{T}}.
     \end{split}
 \]
-因此，\( \mathbf{H}_{T+1} \)可以进一步简化为
+因此，\( \mathbf{H}_{T+1} \)可表示为
 \[
     \begin{split}
         \mathbf{H}_{T+1} & = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}}  + \bm{z}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} = \mathbf{H}_T + (\bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1}) \bm{g}_{T+1}^{\mathrm{T}} \\
                          & = \mathbf{H}_T + \bm{e}_{T+1} \bm{g}_{T+1}^{\mathrm{T}}.
     \end{split}
 \]
+
 综上，递推最小均方（RLMS）算法的更新公式为
 \[
     \begin{cases}
@@ -163,7 +161,7 @@
     \end{cases}
 \]
 
-由此可见，整个递推过程同样可以理解为：在每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与增益向量对观测矩阵进行修正，从而实现动态更新。当\(  \lambda = 1 \) 时，该递推公式退化为经典的最小二乘算法，再结合最小均方滤波算法的迭代公式，可见三者本质上均遵循``先预测、后修正''的思想，区别仅在于增益向量\( \bm{w}_T \)的取值不同。
+由此可见，整个递推过程同样可以理解为：在每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与增益向量对观测矩阵进行修正，从而实现动态更新。当\(  \lambda = 1 \) 时，该递推公式退化为经典的最小二乘算法，再结合最小均方滤波算法的迭代公式，可见三者本质上均遵循``先预测、后修正''的思想，区别仅在于增益向量的取值不同。
 
 \begin{example}
     利用最小二乘（LS）、最小均方（LMS）与递推最小均方（RLMS）算法对目标轨迹进行预测，目标轨迹如\cref{fig_trace_gt}所示。
@@ -528,6 +526,7 @@
 \[
     \mathbf{H}_t = \begin{bmatrix} 1 & 0 \end{bmatrix}.
 \]
+
 由于在实际场景中，目标的控制输入往往不可知，因此通常假设其为零向量，即\( \bm{u}_t = \bm{0} \)。此时，卡尔曼滤波的模型可简化为
 \[
     \begin{cases}
@@ -536,7 +535,7 @@
     \end{cases}.
 \]
 
-与最小均方滤波不同，卡尔曼滤波往往明确了目标的状态向量和观测向量的物理意义。因此观测矩阵和状态转移矩阵通常是已知的或可通过物理建模得到的，而不需要像最小均方滤波那样进行估计。因此，卡尔曼滤波的核心在于利用已有的数据，对过程噪声和观测噪声进行建模，从而提升状态估计的准确性与鲁棒性，但卡尔曼滤波仍然遵循``先预测、后修正''的思想。
+与最小均方滤波不同，卡尔曼滤波通常对系统的状态向量和观测向量具有明确的物理含义。因此，其状态转移矩阵和观测矩阵往往是已知的，或可通过物理机理建模得到，而无需像最小均方滤波那样从数据中进行估计。卡尔曼滤波的核心在于基于已有观测对预测误差和估计误差进行统计建模，从而提升状态估计的精度与鲁棒性。总体来看，其处理流程仍遵循“先预测、后校正”的基本思想。
 
 给定\( T \)时刻的状态向量和观测向量\( \bm{x}_T \in \mathbb{R}^{M \times 1} \)和\( \bm{z}_T \in \mathbb{R}^{N \times 1} \)，与此同时，我们可以利用状态转移模型利用前一时刻状态的估计的状态对当前状态进行预测（方便起见，状态转移矩阵和观测矩阵均去掉下标，用\( \mathbf{F} \)和\( \mathbf{H} \)表示）：
 \[
@@ -562,8 +561,9 @@
 \]
 该问题同样是一个最小二乘问题，其解析解为
 \[
-    \mathbf{K}_T = \left( \bm{x}_T - \hat{\bm{x}}_T \right) \bm{e}_T^{\mathrm{T}} \left( \bm{e}_T \bm{e}_T^{\mathrm{T}} \right)^{-1}
+    \mathbf{K}_T = \left( \bm{x}_T - \hat{\bm{x}}_T \right) \bm{e}_T^{\mathrm{T}} \left( \bm{e}_T \bm{e}_T^{\mathrm{T}} \right)^{-1}.
 \]
+
 注意到预测误差可以表示为
 \[
     \bm{e}_T = \bm{z}_T - \hat{\bm{z}}_T = \mathbf{H} \bm{x}_T + \bm{v}_T - \mathbf{H} \hat{\bm{x}}_T = \mathbf{H} (\bm{x}_T - \hat{\bm{x}}_T) + \bm{v}_T = \mathbf{H} \bm{\epsilon}_T + \bm{v}_T,
@@ -587,17 +587,20 @@
 \[
     \mathbf{S}_T = \mathbb{E}[\bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}}] = \mathbf{F} \mathbb{E}[\bm{\varepsilon}_{T-1} \bm{\varepsilon}_{T-1}^{\mathrm{T}}] \mathbf{F}^{\mathrm{T}} + \mathbb{E}[\bm{w}_T \bm{w}_T^{\mathrm{T}}] = \mathbf{F} \mathbf{P}_{T-1} \mathbf{F}^{\mathrm{T}} + \mathbf{Q},
 \]
-其中，\( \mathbf{P}_{T-1} = \mathbb{E}[\bm{\varepsilon}_{T-1} \bm{\varepsilon}_{T-1}^{\mathrm{T}}] \)为前一时刻的状态估计误差的协方差矩阵，而\( \mathbf{Q} = \mathbb{E}[\bm{w}_T \bm{w}_T^{\mathrm{T}}] \)为过程噪声的协方差矩阵，通常为已知的或可通过实验测量得到。
-
-对于协方差矩阵\( \mathbf{P}_T \)，我们有
+其中，\( \mathbf{P}_{T-1} = \mathbb{E}[\bm{\varepsilon}_{T-1} \bm{\varepsilon}_{T-1}^{\mathrm{T}}] \)为前一时刻的状态估计误差的协方差矩阵，而\( \mathbf{Q} = \mathbb{E}[\bm{w}_T \bm{w}_T^{\mathrm{T}}] \)为过程噪声的协方差矩阵，通常为已知的或可通过实验测量得到。此外，对于状态估计误差\( \bm{\varepsilon}_T \)，我们有
 \[
     \begin{split}
-        \mathbf{P}_T & = \mathbb{E}[\bm{\varepsilon}_T \bm{\varepsilon}_T^{\mathrm{T}}] = \mathbb{E}[(\bm{x}_T - \tilde{\bm{x}}_T)(\bm{x}_T - \tilde{\bm{x}}_T)^{\mathrm{T}}]                                                                           \\
-                     & = \mathbb{E}[(\bm{x}_T - \hat{\bm{x}}_T - \mathbf{K}_T \bm{e}_T)(\bm{x}_T - \hat{\bm{x}}_T - \mathbf{K}_T \bm{e}_T)^{\mathrm{T}}]                                                                                                \\
-                     & = \mathbb{E}[(\bm{\epsilon}_T - \mathbf{K}_T (\mathbf{H} \bm{\epsilon}_T + \bm{v}_T))(\bm{\epsilon}_T - \mathbf{K}_T (\mathbf{H} \bm{\epsilon}_T + \bm{v}_T))^{\mathrm{T}}]                                                      \\
-                     & = \mathbb{E}[(\mathbf{I} - \mathbf{K}_T \mathbf{H}) \bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}} (\mathbf{I} - \mathbf{K}_T \mathbf{H})^{\mathrm{T}} + \mathbf{K}_T \bm{v}_T \bm{v}_T^{\mathrm{T}} \mathbf{K}_T^{\mathrm{T}}]    \\
-                     & = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \mathbf{S}_T (\mathbf{I} - \mathbf{K}_T \mathbf{H})^{\mathrm{T}} + \mathbf{K}_T \mathbf{R}_T \mathbf{K}_T^{\mathrm{T}}                                                                  \\
-                     & = \mathbf{S}_T - \mathbf{K}_T \mathbf{H} \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \mathbf{K}_T^{\mathrm{T}} + \mathbf{K}_T (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T) \mathbf{K}_T^{\mathrm{T}} \\
+        \bm{\varepsilon}_T & = \bm{x}_T - \tilde{\bm{x}}_T = \bm{x}_T - \hat{\bm{x}}_T - \mathbf{K}_T \bm{e}_T \\
+                           & = \bm{\epsilon}_T - \mathbf{K}_T (\mathbf{H} \bm{\epsilon}_T + \bm{v}_T)          \\
+                           & = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \bm{\epsilon}_T - \mathbf{K}_T \bm{v}_T.
+    \end{split}
+\]
+因此，协方差矩阵\( \mathbf{P}_T \)可以表示为
+\[
+    \begin{split}
+        \mathbf{P}_T & = \mathbb{E}[\bm{\varepsilon}_T \bm{\varepsilon}_T^{\mathrm{T}}] = \mathbb{E}[\left( (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \bm{\epsilon}_T - \mathbf{K}_T \bm{v}_T \right) \left( (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \bm{\epsilon}_T - \mathbf{K}_T \bm{v}_T \right)^{\mathrm{T}}] \\
+                     & = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \mathbf{S}_T (\mathbf{I} - \mathbf{K}_T \mathbf{H})^{\mathrm{T}} + \mathbf{K}_T \mathbf{R}_T \mathbf{K}_T^{\mathrm{T}}                                                                                                                         \\
+                     & = \mathbf{S}_T - \mathbf{K}_T \mathbf{H} \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \mathbf{K}_T^{\mathrm{T}} + \mathbf{K}_T (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T) \mathbf{K}_T^{\mathrm{T}}                                                        \\
     \end{split}
 \]
 带入\( \mathbf{K}_T \)的表达式，并进行化简，可得
@@ -606,11 +609,10 @@
         \mathbf{P}_T & = \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T \right)^{-1} \mathbf{H} \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T )^{-1} \mathbf{H} \mathbf{S}_T \\
                      & + \mathbf{S}_T \mathbf{H}^{\mathrm{T}} (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T )^{-1} (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T ) (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T )^{-1} \mathbf{H} \mathbf{S}_T                         \\
                      & = \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T \right)^{-1} \mathbf{H} \mathbf{S}_T                                                                                                                                       \\
-                     & = \mathbf{S}_T - \mathbf{K}_T \mathbf{H} \mathbf{S}_T                                                                                                                                                                                                                                                  \\
-                     & = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \mathbf{S}_T.
+                     & = \mathbf{S}_T - \mathbf{K}_T \mathbf{H} \mathbf{S}_T = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \mathbf{S}_T.
     \end{split}
 \]
-综上，卡尔曼滤波的递推算法如\cref{alg:kalman}所示。
+至此，所有未知量均已用已知量加以表达，卡尔曼滤波的递推过程也随之得以完整刻画。综上，其递推算法如 \cref{alg:kalman} 所示。
 
 \begin{algorithm}[htb!]
     \caption{卡尔曼滤波递推算法}
