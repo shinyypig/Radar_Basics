@@ -1,6 +1,6 @@
 \chapter{目标参数估计}
 
-在完成信号检测之后，雷达系统还需要进一步提取目标的关键参数，例如方位角、距离、多普勒频率以及极化特征等。这些参数的准确估计不仅关系到目标的定位与跟踪精度，也是后续态势感知与目标识别的重要基础。从算法发展的角度来看，目标参数估计大体经历了几个阶段：最初的经典波束形成方法，随后发展到最小方差处理方法，再到子空间方法和稀疏表示方法。近年来，随着多维观测手段的兴起，多域联合估计方法逐渐受到关注。这类方法能够同时利用空间、多普勒甚至极化等多维信息，从而实现更强的参数解耦和更高的估计精度。
+在完成信号检测之后，雷达系统还需要进一步提取目标的关键参数，例如方位角、距离、多普勒频率以及极化特征等。这些参数的准确估计不仅关系到目标的定位与跟踪精度，也是后续态势感知与目标识别的重要基础。从算法发展的角度来看，目标参数估计大体经历了几个阶段：从最初的经典波束形成方法，到最小方差处理方法，再到子空间方法和稀疏表示方法。近年来，随着多维观测手段的兴起，多域联合估计方法逐渐受到关注。这类方法能够同时利用空间、多普勒甚至极化等多维信息，从而实现更强的参数解耦和更高的估计精度。
 
 在\cref{sec_radar_signal_model}中，我们介绍了雷达的接收信号模型。对于一个阵列多普勒雷达系统，其接收信号可以表示为一个张量：
 \[
@@ -208,7 +208,7 @@
     \end{figure}
 \end{solution}
 
-在某些情况下，我们可能并不关心目标的距离信息，而仅希望获得其参数信息（如方位或速度）。此时，可以直接利用波束形成后的输出，来计算参数维度上的功率谱。具体地，对于参数值 $\omega$，对应输出的功率可表示为
+在某些情况下，我们可能并不关心目标的距离信息，而仅希望获得其参数信息（如方位或速度）。此时，可以直接利用波束形成后的输出，来计算参数维度上的功率谱。具体地，对于参数值 $\omega$，对应输出的功率可表示为:
 \[
     p_{\omega} = \frac{1}{L}\|\bm{y}_{\omega}\|_2^2
     = \frac{1}{L}\|\mathbf{X}\bm{h}_{\omega}\|_2^2
@@ -262,7 +262,7 @@
                                                                             & = \frac{1}{M} \frac{\sin(\pi M (\omega_k - \omega))}{\sin(\pi (\omega_k - \omega))} e^{j \pi (M-1)(\omega_k - \omega)}.
     \end{split}
 \]
-可以发现该权重的取值仅和\( M \)以及参数差值\( \omega_k - \omega \)有关。如\cref{fig_weight}所示，随着\( M \)的增大，权重函数的主瓣变窄，旁瓣降低，对应的分辨率和也随之提升。
+可以发现该权重的取值仅和\( M \)以及参数差值\( \omega_k - \omega \)有关。如\cref{fig_weight}所示，随着\( M \)的增大，权重函数的主瓣变窄，旁瓣降低，对应的分辨率也随之提升。
 
 \begin{figure}[htb!]
     \centering
@@ -460,7 +460,7 @@
 \[
     \bm{y}_{\omega} = \mathbf{X} \bm{h}_{\omega}.
 \]
-直观地，我们希望输出 \(\bm{y}_{\omega}\) 尽可能只包含参数值为 \(\omega\) 的目标信号，同时抑制其他信号与噪声干扰。注意到目标信号对应的导向向量为 \(\bm{a}_{\omega}\)，因此目标分量在输出中的占比与 \(|\bm{a}_{\omega}^{\mathrm{T}} \bm{h}_{\omega}|\) 成正比。由此可构造如下优化问题：
+直观上，我们希望输出 \(\bm{y}_{\omega}\) 尽可能只包含参数值为 \(\omega\) 的目标信号，同时抑制其他信号与噪声干扰。注意到目标信号对应的导向向量为 \(\bm{a}_{\omega}\)，因此目标分量在输出中的占比与 \(|\bm{a}_{\omega}^{\mathrm{T}} \bm{h}_{\omega}|\) 成正比。由此可构造如下优化问题：
 \[
     \max_{\bm{h}_{\omega}} \frac{|\bm{a}_{\omega}^{\mathrm{T}} \bm{h}_{\omega}|^2}{ \frac{1}{L} \|\bm{y}_{\omega}\|_2^2},
 \]
@@ -532,7 +532,7 @@
     \end{figure}
 \end{example}
 \begin{solution}
-    二维脉压结果如\cref{fig_compressed}所示。与经典波束形成相比，Capon 方法在参数维度上展现出更高的分辨率，两个目标在参数维上被压缩为更尖锐的脉冲，并且旁瓣水平显著降低，从而提升了目标的可分辨性和检测性能。
+    二维脉压结果如\cref{fig_compressed_capon}所示。与经典波束形成相比，Capon 方法在参数维度上展现出更高的分辨率，两个目标在参数维上被压缩为更尖锐的脉冲，并且旁瓣水平显著降低，从而提升了目标的可分辨性和检测性能。
     \begin{figure}[htb!]
         \centering
         \begin{subfigure}{.4\textwidth}
@@ -623,12 +623,12 @@
 
 在实际应用中，由于接收信号的样本数量有限，协方差矩阵的估计往往不够准确，甚至可能不可逆。为缓解这一问题，可以借鉴岭回归（Ridge Regression）的思想，在目标函数中加入权重向量的范数惩罚项，从而得到如下优化模型：
 \[
-    \begin{aligned}
-        \min_{\bm{h}_{\omega}} \quad &
+    \begin{cases}
+        \min\limits_{\bm{h}_{\omega}} \quad &
         \bm{h}_{\omega}^{\mathrm{H}} \mathbf{\Sigma}_{\mathbf{X}} \bm{h}_{\omega}
         + \delta \|\bm{h}_{\omega}\|_2^2                                                 \\
         \text{s.t.} \quad            & \bm{a}_{\omega}^{\mathrm{T}} \bm{h}_{\omega} = 1,
-    \end{aligned}
+    \end{cases}
 \]
 其中 \(\delta > 0\) 为正则化参数。利用拉格朗日乘子法，可得其闭式解为
 \[
@@ -642,7 +642,7 @@
 \section{子空间方法}
 从滤波的角度来看，经典波束形成与 Capon 算法本质上都是通过设计权向量，对接收信号矩阵进行加权叠加，以实现对特定参数下的目标回波的增强，以及对噪声和干扰的抑制。不同之处在于，Capon 算法利用接收信号的协方差矩阵，在保证无失真响应的同时最小化输出功率，因此在噪声和干扰抑制方面较经典波束形成更为有效。然而，Capon 算法依然受限于“滤波”这一框架：对于白噪声而言，无论滤波器如何设计，其输出噪声功率的下限始终等于噪声本身。因此，即便在高信噪比条件下，Capon 谱的分辨率仍受限于通道数\( M \)，难以满足高精度参数估计的需求。
 
-为突破 Capon 算法的分辨率瓶颈，研究者提出了基于子空间的高分辨率方法。其核心思想不再依赖滤波器权向量的设计，而是通过对接收信号协方差矩阵进行特征分解，将信号与噪声划分到互相正交的子空间中，并利用这种正交性实现参数估计。借助这一几何结构，子空间方法能够获得远超传统滤波框架的分辨能力。典型代表包括 MUSIC 和 ESPRIT 方法，它们利用信号子空间与噪声子空间的正交特性，实现了高分辨率的参数估计。
+为突破 Capon 算法的分辨率限制，研究者提出了基于子空间的高分辨率方法。其核心思想不再依赖滤波器权向量的设计，而是通过对接收信号协方差矩阵进行特征分解，将信号与噪声划分到互相正交的子空间中，并利用这种正交性实现参数估计。借助这一几何结构，子空间方法能够获得远超传统滤波框架的分辨能力。典型代表包括 MUSIC 和 ESPRIT 方法，它们利用信号子空间与噪声子空间的正交特性，实现了高分辨率的参数估计。
 
 \subsection{MUSIC方法}
 考虑含噪接收信号模型
@@ -784,7 +784,7 @@
 % \]
 % 其中，\( \mathbf{U}_{s} \)包含了前\( K \)个最大的特征值对应的特征向量，张成信号子空间；而\( \mathbf{U}_{n} \)包含了剩余的\( M-K \)个特征值对应的特征向量，张成噪声子空间。
 
-Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪声子空间的正交性，实现对目标参数的高分辨率估计。给定一个导向矢量\( \bm{a}_{\omega} \)，如果其对应的参数值\( \omega \)恰好是某个目标的参数值\( \omega_k \)，那么该导向矢量必然位于信号子空间内，因此与噪声子空间正交。反之，如果\( \omega \)不是任何目标的参数值，那么导向矢量\( \bm{a}_{\omega} \)将位于噪声子空间内。
+Multiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪声子空间的正交性，实现对目标参数的高分辨率估计。给定一个导向矢量\( \bm{a}_{\omega} \)，如果其对应的参数值\( \omega \)恰好是某个目标的参数值\( \omega_k \)，那么该导向矢量必然位于信号子空间内，因此与噪声子空间正交。反之，如果\( \omega \)不是任何目标的参数值，那么导向矢量\( \bm{a}_{\omega} \)将位于噪声子空间内。
 
 进一步地，可以通过将该导向矢量投影到噪声子空间来衡量其与噪声子空间的正交程度，即\( \|\mathbf{V}_{n}^{\mathrm{H}} \overline{\bm{a}}_{\omega}\|_2^2\)。如果该值接近于零，则说明\( \bm{a}_{\omega} \)与噪声子空间正交，进而推断出\( \omega \)可能是某个目标的参数值，反之亦然。基于这一思路，MUSIC 方法定义了如下的谱函数：
 \[
@@ -1212,7 +1212,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \]
 其中，\( \tilde{\mathbf{\Lambda}}_1 \in \mathbb{R}^{K \times K} \) 为前 \( K \) 个最大奇异值构成的对角矩阵，\( \tilde{\mathbf{\Lambda}}_2 \in \mathbb{R}^{K \times K} \) 为后 \( K \) 个最小奇异值构成的对角矩阵。于是，矩阵
 \[
-    \tilde{\mathbf{V}} - \tilde{\mathbf{N}} = \tilde{\mathbf{U}}_1 \tilde{\mathbf{\Lambda}}_1 \tilde{\mathbf{V}}_1^{\mathrm{H}}
+    \tilde{\mathbf{V}} - \tilde{\mathbf{N}} = \tilde{\mathbf{U}}_1 \tilde{\mathbf{\Lambda}}_1 \tilde{\mathbf{V}}_1^{\mathrm{H}}.
 \]
 即为 \( \tilde{\mathbf{V}} \) 的最佳秩-\( K \) 近似，而对应的噪声修正为
 \[
@@ -1513,7 +1513,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 其中\( \lambda > 0 \)为权衡参数，当\( \lambda \)较大时，更加注重系数向量的稀疏性，而当\( \lambda \)较小时，更加注重数据拟合的精度。
 
 \begin{example}
-    利用上述稀疏表示方法对\cref{fig_noise_esprit}所示的包含噪声的数据进行进行参数估计。
+    利用上述稀疏表示方法对\cref{fig_noise_esprit}所示的包含噪声的数据进行参数估计。
 \end{example}
 \begin{solution}
     首先构建参数字典，取参数点\( \omega_i \)在区间\( [-0.5, 0.5] \)上均匀分布，共取\( I=200 \)个点。然后利用CVX工具箱求解上述的二阶锥规划问题，取权衡参数为\( \lambda = 3 \)。计算得到的矩阵\( \mathbf{S} \)以及对应的功率谱向量\( \bm{p} \)如\cref{fig_sparse_result}所示。
@@ -1730,9 +1730,9 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 记\( \mathcal{Z}_k = \tilde{\bm{r}}_k \circ \tilde{\bm{a}}_k \circ \tilde{\bm{b}}_k \) ，则张量 \( \mathcal{Z} \) 可视为 \( K \) 个秩一张量的叠加。并且，每个秩一张量 \( \mathcal{Z}_k \) 中的元素有如下表示：
 \[
     (\mathcal{Z}_k)_{ipq} =  \tilde{\bm{r}}_k[i] \cdot \tilde{\bm{a}}_k[p] \cdot \tilde{\bm{b}}_k[q] = \begin{cases}
-        A_k, & i = d_k, p = \nu_k, q = \mu_k \\
-        0,   & \text{其他}
-    \end{cases},
+        A_k, & i = d_k, p = \nu_k, q = \mu_k, \\
+        0,   & \text{其他},
+    \end{cases}
 \]
 这表明每个秩一张量 \( \mathcal{Z}_k \) 仅在位置 \( (d_k, \nu_k, \mu_k) \) 处存在一个峰值，其余位置均为零。由此可见，张量 \( \mathcal{Z} \) 中的每个目标均对应于一个唯一的三维峰值，其坐标分别对应于目标的距离、参数一与参数二。类似地，计算张量 \( \mathcal{Z} \) 沿着第一个维度的功率，即
 \[
@@ -1745,12 +1745,12 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 具体而言，STAP 方法对Capon算法进行拓展，构建了如下的优化模型
 \[
     \begin{cases}
-        \min \quad        & \frac{1}{L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2 \\
-        \text{s.t.} \quad & \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} = 1                                                                       \\
-                          & \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} = 1
-    \end{cases}.
+        \min \quad        & \frac{1}{L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2, \\
+        \text{s.t.} \quad & \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} = 1,                                                                       \\
+                          & \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} = 1,
+    \end{cases}
 \]
-对于向量\( \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{b}_{\mu}^{\mathrm{T}} \in \mathbb{C}^{L \times 1} \)，其可以看作是分别利用两个参数维度的加权向量\( \bm{v}_{\nu} \)与\( \bm{u}_{\mu} \)对张量\( \mathcal{X} \)进行滤波后得到的滤波器输出。与Capon算法类似，该优化问题的目标函数同样为最小化滤波器输出的功率。与此同时，约束条件则确保对参数为 \( \nu \) 和 \( \mu \) 目标信号的响应不受损失。
+对于向量\( \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \in \mathbb{C}^{L \times 1} \)，其可以看作是分别利用两个参数维度的加权向量\( \bm{v}_{\nu} \)与\( \bm{u}_{\mu} \)对张量\( \mathcal{X} \)进行滤波后得到的滤波器输出。与Capon算法类似，该优化问题的目标函数同样为最小化滤波器输出的功率。与此同时，约束条件则确保对参数为 \( \nu \) 和 \( \mu \) 目标信号的响应不受损失。
 
 利用\cref{prop:kronecker-kron}，可以将滤波器的输出功率写成如下的形式：
 \[
@@ -1767,7 +1767,7 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 此时，优化模型可改写为
 \begin{equation}
     \begin{cases}
-        \min \quad        & \bm{w}_{\nu\mu}^{\mathrm{T}} \mathbf{\Sigma}_{23} \bm{w}_{\nu\mu}      \\
+        \min \quad        & \bm{w}_{\nu\mu}^{\mathrm{T}} \mathbf{\Sigma}_{23} \bm{w}_{\nu\mu} ,      \\
         \text{s.t.} \quad & (\bm{a}_{\nu} \otimes \bm{b}_{\mu})^{\mathrm{T}} \bm{w}_{\nu\mu} = 1 ,
     \end{cases}
 \end{equation}
@@ -1784,14 +1784,14 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \]
 然而，该方法并不能确保联合滤波器 \( \bm{w}_{\nu\mu} \) 能够分解为两个独立滤波器的克罗内克积形式，因此算法性能受到一定影响。为此，可以直接求解原始的优化模型，从而分别得到两个滤波器 \( \bm{v}_{\nu} \) 与 \( \bm{u}_{\mu} \)。
 
-尽管无法直接得到该优化问题的解析解，但可以通过交替迭代的方法进行求解。同样，利用拉格朗日乘子法，可以构建如下的拉格朗日函数：
+尽管无法直接得到该优化问题的解析解，但可以通过交替迭代的方法进行求解。此外，利用拉格朗日乘子法，可以构建如下的拉格朗日函数：
 \[
     \mathcal{L}(\bm{v}_{\nu}, \bm{u}_{\mu}, \lambda_1, \lambda_2)
     = \frac{1}{2L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2
     - \lambda_1 \left( \bm{a}^{\mathrm{T}}_{\nu} \bm{v}_{\nu} - 1 \right)
     - \lambda_2 \left( \bm{b}^{\mathrm{T}}_{\mu} \bm{u}_{\mu} - 1 \right).
 \]
-如将\( \mathbf{\Sigma}_{23} \)转换为一个四阶张量\( \mathcal{S} \in \mathbb{C}^{M \times N \times M \times N} \)，则滤波器的输出功率可以进一步表示为
+如将\( \mathbf{\Sigma}_{23} \)转换为一个4阶张量\( \mathcal{S} \in \mathbb{C}^{M \times N \times M \times N} \)，则滤波器的输出功率可以进一步表示为
 \[
     \frac{1}{L} \left\| \mathcal{X} \times_2 \bm{v}_{\nu}^{\mathrm{T}} \times_3 \bm{u}_{\mu}^{\mathrm{T}} \right\|^2 = \mathcal{S} \times_1 \bm{v}_{\nu}^{\mathrm{T}} \times_2 \bm{u}_{\mu}^{\mathrm{T}} \times_3 \bm{v}_{\nu}^{\mathrm{H}} \times_4 \bm{u}_{\mu}^{\mathrm{H}}.
 \]
@@ -1902,11 +1902,11 @@ Mutiple Signal Classification (MUSIC) 方法正是利用了信号子空间与噪
 \]
 其中信号buff可以看作是 \( K \) 个秩一张量的叠加。因此，作为SVD分解的推广，张量CP分解方法同样可以直接对接收数据张量进行处理，从而实现对目标参数的联合估计。对应的优化模型为
 \[
-    \min \quad \left\| \mathcal{X} - \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \right\|_{\mathrm{F}}^2
+    \min \quad \left\| \mathcal{X} - \mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B} \right\|_{\mathrm{F}}^2.
 \]
 方便起见，将待求解的矩阵同样记作\( \mathbf{R} \in \mathbb{C}^{L \times K} \)，\( \mathbf{A} \in \mathbb{C}^{M \times K} \)，\( \mathbf{B} \in \mathbb{C}^{N \times K} \)。该优化问题可以通过交替最小二乘法（Alternating Least Squares, ALS）进行求解。具体而言，固定其中两个矩阵，仅对另一个矩阵进行优化。以优化矩阵 \( \mathbf{R} \) 为例，固定矩阵 \( \mathbf{A} \) 与 \( \mathbf{B} \) 后，根据\cref{prop:apx_kron_kprod}，有
 \[
-    (\mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B})_1 = \mathbf{R} (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_1
+    (\mathcal{I}_K \times_1 \mathbf{R} \times_2 \mathbf{A} \times_3 \mathbf{B})_1 = \mathbf{R} (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_1.
 \]
 其中\( (\mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B})_1 \in \mathbb{C}^{K \times M N} \)表示张量\( \mathcal{I}_K \times_2 \mathbf{A} \times_3 \mathbf{B} \)的模-1展开矩阵。进一步地，利用 \cref{prop:kronecker-kron}，有
 \[
