@@ -25,7 +25,7 @@
 \]
 则上述优化问题可进一步简化为（其中常数因子\( \frac{1}{T} \) 已省略）
 \[
-    \min_{\mathbf{H}} \big\| \mathbf{H}_T \mathbf{X}_T - \mathbf{Z}_T \big\|_{\mathrm{F}}^2.
+    \min_{\mathbf{H}_T} \big\| \mathbf{H}_T \mathbf{X}_T - \mathbf{Z}_T \big\|_{\mathrm{F}}^2.
 \]
 利用克罗内克积的相关性质（\cref{cor:kronecker-vec}）, \( \mathbf{H}_T \mathbf{X}_T \)可以改写为如下的矩阵乘向量的形式：
 \[
@@ -62,7 +62,7 @@
 \[
     \mathbf{H}_{T+1} = \mathbf{H}_{T} + \mu\, \bm{e}_{T+1}\bm{x}_{T+1}^{\mathrm{T}},
 \]
-其中 \(\mu > 0\) 为步长参数。这种利用随机梯度下降（Stochastic Gradient Descent, SGD）进行更新的方法被称为最小均方（Least Mean Square, LMS）算法。可以发现其核心思想在于：每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与当前观测对观测矩阵进行修正，从而实现动态更新。
+其中 \(\mu > 0\) 为步长参数。这种基于随机梯度下降（Stochastic Gradient Descent, SGD）更新的方法被称为最小均方（Least Mean Square, LMS）算法。可以发现其核心思想在于：每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与当前观测对观测矩阵进行修正，从而实现动态更新。
 
 \subsection{递推最小均方滤波}
 
@@ -233,7 +233,7 @@
 \end{example}
 
 \begin{solution}
-    设\( t \)时刻目标的坐标为\( \bm{p}_{t} \)，则可以将历史坐标作为状态向量，而当前坐标作为观测向量，即
+    设\( t \)时刻目标的坐标为\( \bm{p}_{t} \)，则可以将历史坐标作为状态向量，而将当前坐标作为观测向量，即
     \[
         \bm{x}_t = \begin{bmatrix} \bm{p}_{t-1} \\ \vdots \\ \bm{p}_{t-k} \end{bmatrix} \in \mathbb{R}^{2k}, \quad \bm{z}_t = \bm{p}_t \in \mathbb{R}^2,
     \]
@@ -537,7 +537,7 @@
 
 与最小均方滤波不同，卡尔曼滤波通常对系统的状态向量和观测向量具有明确的物理含义。因此，其状态转移矩阵和观测矩阵往往是已知的，或可通过物理机理建模得到，而无需像最小均方滤波那样从数据中进行估计。卡尔曼滤波的核心在于基于已有观测对预测误差和估计误差进行统计建模，从而提升状态估计的精度与鲁棒性。总体来看，其处理流程仍遵循“先预测、后校正”的基本思想。
 
-给定\( T \)时刻的状态向量和观测向量\( \bm{x}_T \in \mathbb{R}^{M \times 1} \)和\( \bm{z}_T \in \mathbb{R}^{N \times 1} \)，与此同时，我们可以利用状态转移模型和前一时刻状态的估计的状态对当前状态进行预测（方便起见，状态转移矩阵和观测矩阵均去掉下标，用\( \mathbf{F} \)和\( \mathbf{H} \)表示）：
+给定\( T \)时刻的状态向量和观测向量\( \bm{x}_T \in \mathbb{R}^{M \times 1} \)和\( \bm{z}_T \in \mathbb{R}^{N \times 1} \)，与此同时，我们可以利用状态转移模型利用前一时刻状态的估计对当前状态进行预测（方便起见，状态转移矩阵和观测矩阵均去掉下标，用\( \mathbf{F} \)和\( \mathbf{H} \)表示）：
 \[
     \hat{\bm{x}}_{T} = \mathbf{F} \tilde{\bm{x}}_{T-1}
 \]
@@ -603,7 +603,7 @@
                      & = \mathbf{S}_T - \mathbf{K}_T \mathbf{H} \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \mathbf{K}_T^{\mathrm{T}} + \mathbf{K}_T (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T) \mathbf{K}_T^{\mathrm{T}}                                                        \\
     \end{split}
 \]
-带入\( \mathbf{K}_T \)的表达式，并进行化简，可得
+代入\( \mathbf{K}_T \)的表达式，并进行化简，可得
 \[
     \begin{split}
         \mathbf{P}_T & = \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T \right)^{-1} \mathbf{H} \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T )^{-1} \mathbf{H} \mathbf{S}_T \\
@@ -780,7 +780,7 @@
 \[
     \sum_{n=1}^{N} \beta_{mn} \leq 1, \quad m = 1,2,\dots,M.
 \]
-该约束表明，对于一个观测\( \bm{z}_T^{(m)} \)，其分配到各目标的概率之和不能超过1，即一个观测值最多只能来源于一个目标。对于 PDA 和 JPDA 算法，增益矩阵的具体迭代过程较为复杂，此处不再展开，读者可参考原始文献 \cite{4046781,BARSHALOM1975451}。
+该约束表明，对于一个观测\( \bm{z}_T^{(m)} \)，其分配到各目标的概率之和不能超过1，也就是说一个观测值最多只能来源于一个目标。对于 PDA 和 JPDA 算法，增益矩阵的具体迭代过程较为复杂，此处不再展开，读者可参考原始文献 \cite{4046781,BARSHALOM1975451}。
 
 为进一步提升跟踪的精度与鲁棒性，多假设跟踪（Multiple Hypothesis Tracking，MHT）算法\cite{1263228}在此基础上引入了“多假设”的思想。MHT 在每一个时间步都会为新的观测生成多种可能的关联假设，并对这些假设进行评分与筛选，逐步保留最有可能的轨迹，从而有效解决目标交叉、遮挡等复杂场景下的跟踪问题。
 
@@ -889,7 +889,7 @@ $$
         \text{s.t.} \quad \mathbf{P} \in \mathcal{P}
     \end{cases}.
 \]
-该问题旨在通过选择合适的匹配矩阵 $\mathbf{P}$，最大化匹配节点之间的总相似度。可以利用一些优化算法（如匈牙利算法、线性规划等）来求解该问题，这类算法比较成熟可直接调用相关库实现。下面，我们介绍一种快速的近似算法——重加权随机游走（Reweighted Random Walks, RRWM）算法。注意到，目标函数可以表示为
+该问题旨在通过选择合适的匹配矩阵 $\mathbf{P}$，最大化匹配节点之间的总相似度。可以利用一些优化算法（如匈牙利算法、线性规划等）来求解该问题，这类算法比较成熟，可直接调用相关库实现。下面，我们介绍一种快速的近似算法——重加权随机游走（Reweighted Random Walks, RRWM）算法。注意到，目标函数可以表示为
 \[
     \sum_{i=1}^{m} \sum_{j=1}^{n} p_{ij} s_{ij} = \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathrm{vec}(\mathbf{S}),
 \]
@@ -897,7 +897,7 @@ $$
 \[
     \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathrm{diag}(\mathrm{vec}(\mathbf{S})) \mathrm{vec}(\mathbf{P}) = \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathbf{W} \mathrm{vec}(\mathbf{P}),
 \]
-其中，\( \mathbf{W} = \mathrm{diag}(\mathrm{vec}(\mathbf{S})) \)为一个对角矩阵。注意到，在不考虑约束的情况下，目标函数取得最大值时，\( \mathrm{vec}(\mathbf{P}) \)为\( \mathbf{W} \)的最大特征值对应的特征向量。因此，RRWM算法的核心思想是，通过迭代地计算特征向量，并结合约束条件，对特征向量进行重加权与归一化，从而逐步逼近最优解。具体而言，RRWM算法的迭代过程如下：
+其中，\( \mathbf{W} = \mathrm{diag}(\mathrm{vec}(\mathbf{S})) \)为一个对角矩阵。注意到，在不考虑约束的情况下，目标函数取得最大值时，\( \mathrm{vec}(\mathbf{P}) \)为\( \mathbf{W} \)的最大特征值对应的特征向量。因此，RRWM算法的核心思想是，通过迭代计算特征向量，并结合约束条件，对特征向量进行重加权与归一化，从而逐步逼近最优解。具体而言，RRWM算法的迭代过程如下：
 \begin{enumerate}
     \item 初始化：设定初始矩阵 $\mathbf{P}^{(0)} = \frac{1}{mn} \mathbf{1}_{mn}$，迭代次数 $t=0$。
     \item 迭代计算：计算 $\operatorname{vec}(\mathbf{P}^{(t+1)}) = \mathbf{W} \operatorname{vec}(\mathbf{P}^{(t)})$。
@@ -916,7 +916,7 @@ $$
         \text{s.t.}      & \quad \mathbf P \in \mathcal P ,
     \end{cases}
 \]
-其中，$k_{i i j j}$ 表示节点 $\mathcal V_i^{1}$ 与 $\mathcal V_j^{2}$ 的相似度，$k_{i i' j j'}$ 表示边 $\mathcal E_{i i'}^{1}$ 与 $\mathcal E_{j j'}^{2}$ 的相似度。对于节点而言，只要\( p_{ij} = 1 \)，则对应的节点相似度就会被计入目标函数中。而对于边而言，只有当两个图中的边所连接的节点均被匹配时，其相似度才会被计入目标函数中，即\( p_{ij} = p_{i'j'} = 1 \)时，才会计入边相似度。
+其中，$k_{i i j j}$ 表示节点 $\mathcal V_i^{1}$ 与 $\mathcal V_j^{2}$ 的相似度，$k_{i i' j j'}$ 表示边 $\mathcal E_{i i'}^{1}$ 与 $\mathcal E_{j j'}^{2}$ 的相似度。对于节点而言，只要\( p_{ij} = 1 \)，对应的节点相似度就会被计入目标函数中。而对于边而言，只有当两个图中的边所连接的节点均被匹配时，其相似度才会被计入目标函数中，即\( p_{ij} = p_{i'j'} = 1 \)时，才会计入边相似度。
 
 方便起见，我们可以构建矩阵 $\mathbf K \in \mathbb R^{m n \times m n}$ ，该矩阵也被称为图 $\mathcal G^{1}$ 与 $\mathcal G^{2}$ 的亲和矩阵（Affinity Matrix）。对于亲和力 $\mathbf K$ 中的元素，有如下定义：
 \[
