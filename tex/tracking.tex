@@ -486,7 +486,7 @@
         \label{fig_trace2}
     \end{figure}
 
-    对于复杂难以预测的轨迹，如\cref{fig_trace_gt_2}所示，直接利用LS算法进行预测效果较差。从\cref{fig_trace2_1}中可以看到，当轨迹出现突变时，LS算法无法及时跟踪。LMS算法收敛速度较慢，因此其预测效果（\cref{fig_trace2_2}）也不理想。而RLMS算法则可以较快地适应轨迹的变化，从而获得较好的预测效果（\cref{fig_trace2_3}）。
+    对于复杂且难以预测的轨迹，如\cref{fig_trace_gt_2}所示，直接利用LS算法进行预测效果较差。从\cref{fig_trace2_1}中可以看到，当轨迹出现突变时，LS算法无法及时跟踪。LMS算法收敛速度较慢，因此其预测效果（\cref{fig_trace2_2}）也不理想。而RLMS算法则可以较快地适应轨迹的变化，从而获得较好的预测效果（\cref{fig_trace2_3}）。
 \end{solution}
 
 \subsection{卡尔曼滤波}
@@ -575,11 +575,11 @@
                      & = \bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}} \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}} \mathbf{H}^{\mathrm{T}} + \bm{v}_T \bm{v}_T^{\mathrm{T}} \right)^{-1} \\
     \end{split}
 \]
-方便起见，记状态预测误差的协方差矩阵为\( \mathbf{S}_T = \mathbb{E}[\bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}}] \)，观测噪声的协方差矩阵为\( \mathbf{R} = \mathbb{E}[\bm{v}_T \bm{v}_T^{\mathrm{T}}] \)，通常为已知的或可通过实验测量得到。则期望的卡尔曼增益矩阵可以表示为
+方便起见，记状态预测误差的协方差矩阵为\( \mathbf{S}_T = \mathbb{E}[\bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}}] \)，观测噪声的协方差矩阵为\( \mathbf{R} = \mathbb{E}[\bm{v}_T \bm{v}_T^{\mathrm{T}}] \)，通常为已知的或可通过实验测量得到的。则期望的卡尔曼增益矩阵可以表示为
 \[
     \mathbf{K}_T = \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R} \right)^{-1}.
 \]
-在该表达式中，矩阵\( \mathbf{S}_T \)是一个未知量，需要对其进行进一步地估计。注意到
+在该表达式中，矩阵\( \mathbf{S}_T \)是一个未知量，需要对其进行进一步的估计。注意到
 \[
     \bm{\epsilon}_T = \bm{x}_T - \hat{\bm{x}}_T = \mathbf{F} \bm{x}_{T-1} + \bm{w}_T - \mathbf{F} \tilde{\bm{x}}_{T-1} = \mathbf{F} \bm{\varepsilon }_{T-1} + \bm{w}_T,
 \]
@@ -620,7 +620,7 @@
     \begin{algorithmic}[1]
         \Require
         状态转移矩阵 $\mathbf{F}$，观测矩阵 $\mathbf{H}$，过程噪声协方差 $\mathbf{Q}$，观测噪声协方差 $\mathbf{R}$；
-        初始状态估计 $\tilde{\bm{x}}_{0}$，初始估计误差协方差 $\mathbf{P}_{0}$
+        初始状态估计 $\tilde{\bm{x}}_{0}$，初始估计误差协方差矩阵 $\mathbf{P}_{0}$
         \Ensure
         每一时刻的状态估计 $\tilde{\bm{x}}_{T}$
         \State \textbf{初始化：} \(\hat{\bm{x}}_{1} = \mathbf{F} \tilde{\bm{x}}_{0}, \quad \mathbf{S}_{1} = \mathbf{F} \mathbf{P}_0 \mathbf{F}^{\mathrm{T}} + \mathbf{Q}, \quad \mathbf{K}_{1} = \mathbf{S}_{1} \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \mathbf{S}_{1} \mathbf{H}^{\mathrm{T}} + \mathbf{R} \right)^{-1}\)
@@ -738,7 +738,7 @@
 \]
 其中，\( \mathbf{K}_T \)为增益矩阵。
 
-然而在实际场景中，由于虚警等原因，可能存在多个观测向量，记为
+然而在实际场景中，受虚警率等因素影响，可能存在多个观测向量，记为
 \[
     \{\bm{z}_T^{(1)}, \bm{z}_T^{(2)}, \dots, \bm{z}_T^{(M)}\},
 \]
