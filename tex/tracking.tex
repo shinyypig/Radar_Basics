@@ -48,7 +48,7 @@
 \[
     \mathbf{H}_T = \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} \left( \mathbf{X}_T \mathbf{X}_T^{\mathrm{T}} \right)^{-1}.
 \]
-注意到，随着观测次数 \(T\) 的增加，观测矩阵 \(\mathbf{X}_T\) 的规模不断增大，从而导致计算复杂度迅速提升。另一方面，目标的运动状态也可能随时间发生变化，因此没有必要始终依赖全部历史观测数据来估计观测矩阵 \(\mathbf{H}_T\)。基于此，可以考虑采用迭代方式对观测矩阵进行逐步更新。
+注意到，随着观测次数 \(T\) 的增加，数据矩阵 \(\mathbf{X}_T\) 的规模不断增大，计算复杂度迅速提升。另一方面，目标的运动状态也可能随时间发生变化，因此没有必要始终依赖全部历史观测数据来估计观测矩阵 \(\mathbf{H}_T\)。基于此，可以考虑采用迭代方式对观测矩阵进行逐步更新。
 
 假设在时刻 \(T\) 已经得到了估计矩阵 \(\mathbf{H}_{T}\)，当引入第 \(T+1\) 次观测后，仅利用该次观测来修正已有估计。相应的优化问题为
 \[
@@ -58,11 +58,11 @@
 \[
     \nabla_{\mathbf{H}_{T}} = 2\big(\mathbf{H}_{T} \bm{x}_{T+1} - \bm{z}_{T+1}\big)\bm{x}_{T+1}^{\mathrm{T}}.
 \]
-其中，\(\mathbf{H}_{T}\bm{x}_{T+1}-\bm{z}_{T+1}\) 即为利用当前估计矩阵对最新观测进行预测时所产生的误差。记\( \bm{e}_{T+1} = \bm{z}_{T+1} - \mathbf{H}_{T}\bm{x}_{T+1}\)，则可采用梯度下降法更新观测矩阵。对应的更新公式为
+其中，\(\mathbf{H}_{T}\bm{x}_{T+1}-\bm{z}_{T+1}\) 为利用当前估计矩阵对最新观测进行预测时所产生的误差。记\( \bm{e}_{T+1} = \bm{z}_{T+1} - \mathbf{H}_{T}\bm{x}_{T+1}\)，则可采用梯度下降法更新观测矩阵。对应的更新公式为
 \[
     \mathbf{H}_{T+1} = \mathbf{H}_{T} + \mu\, \bm{e}_{T+1}\bm{x}_{T+1}^{\mathrm{T}},
 \]
-其中 \(\mu > 0\) 为步长参数。这种基于随机梯度下降（Stochastic Gradient Descent, SGD）更新的方法被称为最小均方（Least Mean Square, LMS）算法。可以发现其核心思想在于：每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与当前观测对观测矩阵进行修正，从而实现动态更新。
+其中 \(\mu > 0\) 为步长参数。这种基于随机梯度下降（Stochastic Gradient Descent, SGD）更新的方法被称为最小均方（Least Mean Square, LMS）算法。可以发现其核心思想在于：每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与当前观测向量对观测矩阵进行修正,从而实现观测矩阵动态更新。
 
 \subsection{递推最小均方滤波}
 
@@ -93,7 +93,7 @@
     \mathbf{H}_{T+1} = \mathbf{Z}_{T+1} \mathbf{X}_{T+1}^{\mathrm{T}} \left( \mathbf{X}_{T+1} \mathbf{X}_{T+1} ^{\mathrm{T}} \right)^{-1}.
 \]
 
-注意到，矩阵\( \mathbf{X}_T \)和\( \mathbf{X}_{T+1} \)之间，矩阵\( \mathbf{Z}_T \)和\( \mathbf{Z}_{T+1} \)之间, 存在如下关系：
+注意到，矩阵\( \mathbf{X}_T \)和\( \mathbf{X}_{T+1} \)，矩阵\( \mathbf{Z}_T \)和\( \mathbf{Z}_{T+1} \)分别存在如下关系：
 \[
     \mathbf{X}_{T+1} = \begin{bmatrix} \sqrt{\lambda} \mathbf{X}_T & \bm{x}_{T+1} \end{bmatrix}, \quad  \mathbf{Z}_{T+1} = \begin{bmatrix} \sqrt{\lambda} \mathbf{Z}_T & \bm{z}_{T+1} \end{bmatrix}.
 \]
@@ -479,10 +479,10 @@
                     \addlegendentry{RLMS预测}
                 \end{axis}
             \end{tikzpicture}
-            \caption{轨迹二预测结果}
+            \caption{}
             \label{fig_trace2_3}
         \end{subfigure}
-        \caption{}
+        \caption{轨迹二预测结果}
         \label{fig_trace2}
     \end{figure}
 
@@ -500,7 +500,7 @@
 \[
     \bm{x}_t = \mathbf{F}_t \bm{x}_{t-1} + \mathbf{B}_t  \bm{u}_t + \bm{w}_t,
 \]
-其中，$\mathbf{F}_t \in \mathbb{R}^{M \times M}$ 为状态转移矩阵，\( \bm{u}_t \in \mathbb{R}^{K \times 1} \) 为控制输入，\( \mathbf{B}_t \in \mathbb{R}^{M \times K} \)为控制矩阵，$\bm{w}_t$ 为过程噪声。简而言之，卡尔曼滤波认为：目标状态一方面受到其前一时刻状态的影响，另一方面受到控制输入的影响，同时还会受到过程噪声的干扰；而观测向量则由当前状态线性映射得到，并受到观测噪声的干扰。
+其中，$\mathbf{F}_t \in \mathbb{R}^{M \times M}$ 为状态转移矩阵，\( \mathbf{B}_t \in \mathbb{R}^{M \times K} \)为控制矩阵，\( \bm{u}_t \in \mathbb{R}^{K \times 1} \) 为控制输入，$\bm{w}_t$ 为过程噪声。简而言之，卡尔曼滤波认为：目标状态取决于前一时刻状态与控制输入，并受过程噪声干扰；而观测向量由当前状态线性映射得到，亦受观测噪声干扰。
 
 比如，对于一个匀加速直线运动的目标，令\( p_t \)为目标在时刻\( t \)的位置，\( v_t \)为目标在时刻\( t \)的速度，且加速度为常数\( a \)。则在时刻\( t \)时，目标的位置可以近似表示为
 \[
@@ -541,15 +541,15 @@
 \[
     \hat{\bm{x}}_{T} = \mathbf{F} \tilde{\bm{x}}_{T-1}
 \]
-再利用观测矩阵对当前状态进行预测：
+再利用观测矩阵对当前状态进行预测，得到观测向量为：
 \[
     \hat{\bm{z}}_{T} = \mathbf{H} \hat{\bm{x}}_{T}.
 \]
-由于观测向量受到观测噪声的影响，因此预测值与实际观测值之间存在误差：
+由于观测向量受到观测噪声的影响，因此预测值与实际观测值之间存在误差，即观测向量的预测误差为：
 \[
     \bm{e}_T = \bm{z}_T - \hat{\bm{z}}_T.
 \]
-遵循``先预测、后修正''的思想，卡尔曼滤波通过结合观测预测误差对状态向量进行修正，对应修正后的状态向量，也即最终的估计为
+遵循``先预测、后修正''的思想，卡尔曼滤波通过观测向量的预测误差对状态向量进行修正，得到修正后的状态向量，也即最终的估计为
 \[
     \tilde{\bm{x}}_T = \hat{\bm{x}}_T + \mathbf{K}_T \bm{e}_T
 \]
@@ -742,7 +742,7 @@
 \[
     \{\bm{z}_T^{(1)}, \bm{z}_T^{(2)}, \dots, \bm{z}_T^{(M)}\},
 \]
-其中，\( M \)为观测的数量。此时，就需要确定这些观测值中，到底哪个才是真正对应目标的观测值。最简单的方法是，选择与预测值距离最近的观测值作为真正的观测值，即
+其中，\( M \)为观测的数量。此时，需确定哪一个观测值源自目标。最简单的方法是，选择与预测值距离最近的观测值作为真正的观测值，即
 \[
     m^* = \arg\min_{j=1,2,\dots,M} \ \|\bm{z}_T^{(j)} - \hat{\bm{z}}_T\|^2,
 \]
@@ -788,7 +788,7 @@
 图匹配（Graph Matching）方法是一类基于图论的多目标跟踪技术，其核心思想是将多目标跟踪问题转化为图匹配问题，并借助图论中的算法与理论加以求解。在展开具体方法之前，有必要先对图（graph）的基本概念进行介绍。
 
 \begin{definition}
-    一个大小为 $n$ 的无向图 $\mathcal G = \{\mathcal V, \mathcal E\}$ 由一个离散的节点集合 $\mathcal V = \{\mathcal V_i\}_{i=1}^{n}$和一个无向边集合 $\mathcal E \subseteq \mathcal V \times \mathcal V$ 定义，满足 $\mathcal E_{ii'} = \mathcal E_{i'i}$。
+    一个大小为 $n$ 的无向图 $\mathcal G = \{\mathcal V, \mathcal E\}$ 由一个离散的节点集合 $\mathcal V = \{\mathcal V_i\}_{i=1}^{n}$和一个无向边集合 $\mathcal E \subseteq \mathcal V \times \mathcal V$ 组成，满足 $\mathcal E_{ii'} = \mathcal E_{i'i}$。
 \end{definition}
 
 \begin{figure}[htb!]
