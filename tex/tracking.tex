@@ -1,9 +1,9 @@
 \chapter{目标跟踪}
 
-目标跟踪（Target Tracking）是雷达信号处理与信息融合中的核心任务，其目标是在连续时间序列的量测数据中，对运动目标的状态进行实时估计与更新，并在存在多目标和杂波干扰的情况下实现可靠的航迹维持。通常而言，目标跟踪面临两个基本问题：其一是状态估计，即在噪声环境下对目标的动力学状态（位置、速度、加速度等隐含量）进行递推估计；其二是数据关联，即在多目标与虚警并存的量测环境中，判断每个观测量应当归属于哪一条目标航迹。本章将围绕这两个关键问题展开，首先介绍状态估计方法，然后讨论数据关联方法，以此构建目标跟踪的基本理论框架。
+目标跟踪（Target Tracking）是雷达信号处理与信息融合中的核心任务。它旨在通过连续时间序列的量测数据，对运动目标状态进行实时估计与更新，并在多目标和杂波干扰下维持可靠航迹。通常而言，目标跟踪面临两个基本问题：其一是状态估计，即在噪声环境下对目标的动力学状态（位置、速度、加速度等隐含量）进行递推估计；其二是数据关联，即在多目标与虚警并存的量测环境中，判断每个观测量应当归属于哪一条目标航迹。本章将围绕这两个关键问题展开，首先介绍状态估计方法，然后讨论数据关联方法，以此构建目标跟踪的基本理论框架。
 
 \section{状态估计}
-在前述目标检测与参数估计的基础上，可以获得目标的多种观测信息，如距离、方位与速度等。然而在实际应用中，这些观测量不可避免地受到噪声与干扰的影响，因而存在偏差与不确定性。为了提升信息的可靠性，需要综合利用历史量测进行处理，实现对观测序列的降噪与平滑，并进一步完成对目标未来状态的预测。这便构成了状态估计问题的核心任务，也是实现高精度目标跟踪的前提。
+在前述目标检测与参数估计的基础上，可以获得目标的多种观测信息，如距离、方位与速度等。然而在实际应用中，这些观测量不可避免地受到噪声与干扰的影响，因而存在偏差与不确定性。为了提升信息的可靠性，需要综合利用历史测量进行处理，实现对观测序列的降噪与平滑，并进一步完成对目标未来状态的预测。这便构成了状态估计问题的核心任务，也是实现高精度目标跟踪的前提。
 
 \subsection{最小均方滤波}
 
@@ -17,15 +17,15 @@
 \]
 其中，\( \mathbf{H}_T \) 表示利用前 \( T \) 次观测数据估计得到的观测矩阵。
 
-记
+为便于表达，定义数据矩阵
 \[
     \mathbf{X}_T = \begin{bmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_T \end{bmatrix} \in \mathbb{R}^{M \times T},
     \quad
-    \mathbf{Z}_T = \begin{bmatrix} \bm{z}_1 & \bm{z}_2 & \cdots & \bm{z}_T \end{bmatrix} \in \mathbb{R}^{N \times T},
+    \mathbf{Z}_T = \begin{bmatrix} \bm{z}_1 & \bm{z}_2 & \cdots & \bm{z}_T \end{bmatrix} \in \mathbb{R}^{N \times T}.
 \]
-则上述优化问题可进一步简化为（方便起见，常数项\( \frac{1}{T} \) 被省略）
+则上述优化问题可进一步简化为（其中常数因子\( \frac{1}{T} \) 已省略）
 \[
-    \min_{\mathbf{H}} \big\| \mathbf{H}_T \mathbf{X}_T - \mathbf{Z}_T \big\|_{\mathrm{F}}^2.
+    \min_{\mathbf{H}_T} \big\| \mathbf{H}_T \mathbf{X}_T - \mathbf{Z}_T \big\|_{\mathrm{F}}^2.
 \]
 利用克罗内克积的相关性质（\cref{cor:kronecker-vec}）, \( \mathbf{H}_T \mathbf{X}_T \)可以改写为如下的矩阵乘向量的形式：
 \[
@@ -48,8 +48,9 @@
 \[
     \mathbf{H}_T = \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} \left( \mathbf{X}_T \mathbf{X}_T^{\mathrm{T}} \right)^{-1}.
 \]
+注意到，随着观测次数 \(T\) 的增加，数据矩阵 \(\mathbf{X}_T\) 的规模不断增大，计算复杂度迅速提升。另一方面，目标的运动状态也可能随时间发生变化，因此没有必要始终依赖全部历史观测数据来估计观测矩阵 \(\mathbf{H}_T\)。基于此，可以考虑采用迭代方式对观测矩阵进行逐步更新。
 
-注意到，随着观测次数 \(T\) 的增加，观测矩阵 \(\mathbf{X}_T\) 的规模不断增大，从而导致计算复杂度迅速提升。另一方面，目标的运动状态也可能随时间发生变化，因此没有必要始终依赖全部历史观测数据来估计观测矩阵 \(\mathbf{H}_T\)。基于此，可以考虑采用递推方式对观测矩阵进行逐步更新。假设在时刻 \(T\) 已经得到了估计矩阵 \(\mathbf{H}_{T}\)，当引入第 \(T+1\) 次观测后，仅利用该次观测来修正已有估计。相应的优化问题为
+假设在时刻 \(T\) 已经得到了估计矩阵 \(\mathbf{H}_{T}\)，当引入第 \(T+1\) 次观测后，仅利用该次观测来修正已有估计。相应的优化问题为
 \[
     \min_{\mathbf{H}_{T}} \ \big\| \mathbf{H}_{T} \bm{x}_{T+1} - \bm{z}_{T+1} \big\|^2.
 \]
@@ -57,32 +58,32 @@
 \[
     \nabla_{\mathbf{H}_{T}} = 2\big(\mathbf{H}_{T} \bm{x}_{T+1} - \bm{z}_{T+1}\big)\bm{x}_{T+1}^{\mathrm{T}}.
 \]
-其中，\(\mathbf{H}_{T}\bm{x}_{T+1}-\bm{z}_{T+1}\) 即为利用当前估计矩阵对最新观测进行预测时所产生的误差。记作
-\[
-    \bm{e}_{T+1} = \mathbf{H}_{T}\bm{x}_{T+1} - \bm{z}_{T+1},
-\]
-则可采用梯度下降法更新观测矩阵：
+其中，\(\mathbf{H}_{T}\bm{x}_{T+1}-\bm{z}_{T+1}\) 为利用当前估计矩阵对最新观测进行预测时所产生的误差。记\( \bm{e}_{T+1} = \bm{z}_{T+1} - \mathbf{H}_{T}\bm{x}_{T+1}\)，则可采用梯度下降法更新观测矩阵。对应的更新公式为
 \[
     \mathbf{H}_{T+1} = \mathbf{H}_{T} + \mu\, \bm{e}_{T+1}\bm{x}_{T+1}^{\mathrm{T}},
 \]
-其中 \(\mu > 0\) 为步长参数。这种利用随机梯度下降（Stochastic Gradient Descent, SGD）的进行更新方法被称为最小均方（Least Mean Square, LMS）算法。可以发现其核心思想在于：每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与当前观测对观测矩阵进行修正，从而实现动态更新。
+其中 \(\mu > 0\) 为步长参数。这种基于随机梯度下降（Stochastic Gradient Descent, SGD）更新的方法被称为最小均方（Least Mean Square, LMS）算法。可以发现其核心思想在于：每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与当前观测向量对观测矩阵进行修正,从而实现观测矩阵动态更新。
 
-在实际应用中，步长参数 \(\mu\) 的选取对算法的收敛性与稳定性具有重要影响。若 \(\mu\) 过大，可能导致算法发散；若 \(\mu\) 过小，则收敛速度较慢。而递推最小均方（Recursive Least Mean Square, RLMS）算法，一方面通过引入遗忘因子\( \lambda \in (0,1] \)来减小对早期观测数据的依赖，另一方面通过巧妙地利用伍德伯里矩阵恒等式（Woodbury Matrix Identity, 见\cref{cor:woodbury-matrix-identity}）来高效地更新估计矩阵，无需选取步长参数，从而提升了算法的性能与鲁棒性。具体而言，在时刻 \( T \) 时，优化问题可表述为
+\subsection{递推最小均方滤波}
+
+在实际应用中，步长参数 \(\mu\) 的选取对算法的收敛性与稳定性具有重要影响。若 \(\mu\) 过大，可能导致算法发散；若 \(\mu\) 过小，则收敛速度较慢。而递推最小均方（Recursive Least Mean Square, RLMS）算法通过两种方式提升性能：其一，引入遗忘因子\( \lambda \in (0,1] \)以减小对早期观测数据的依赖;其二，利用伍德伯里矩阵恒等式（Woodbury Matrix Identity, 见\cref{cor:woodbury-matrix-identity}）高效地更新估计矩阵，避免步长选取。从而，算法鲁棒性得到增强。
+
+具体而言，在时刻 \( T \) 时，优化问题可表示为
 \[
     \min_{\mathbf{H}_T} \ \sum_{t=1}^{T} \lambda^{T-t} \big\| \mathbf{H}_T\bm{x}_t - \bm{z}_t \big\|^2.
 \]
-
 同样可以将上述问题转化为矩阵形式：
 \[
     \min_{\mathbf{H}_T} \ \big\| \mathbf{H}_T \mathbf{X}_T - \mathbf{Z}_T\big\|_{\mathrm{F}}^2,
 \]
-其中，
+其中
 \[
     \mathbf{X}_T = \begin{bmatrix} \sqrt{\lambda}^{T-1}\bm{x}_1 & \sqrt{\lambda}^{T-2}\bm{x}_2 & \cdots & \bm{x}_T \end{bmatrix} \in \mathbb{R}^{M \times T},
 \]
 \[
     \mathbf{Z}_T = \begin{bmatrix} \sqrt{\lambda}^{T-1}\bm{z}_1 & \sqrt{\lambda}^{T-2}\bm{z}_2 & \cdots & \bm{z}_T \end{bmatrix} \in \mathbb{R}^{N \times T}.
 \]
+
 与普通最小二乘相同，\( T \)时刻该问题的解析解为
 \[
     \mathbf{H}_T = \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} \left( \mathbf{X}_T \mathbf{X}_T ^{\mathrm{T}} \right)^{-1},
@@ -92,7 +93,7 @@
     \mathbf{H}_{T+1} = \mathbf{Z}_{T+1} \mathbf{X}_{T+1}^{\mathrm{T}} \left( \mathbf{X}_{T+1} \mathbf{X}_{T+1} ^{\mathrm{T}} \right)^{-1}.
 \]
 
-注意到，矩阵\( \mathbf{X}_T \)和\( \mathbf{X}_{T+1} \)之间，矩阵\( \mathbf{Z}_T \)和\( \mathbf{Z}_{T+1} \)之间, 存在如下关系：
+注意到，矩阵\( \mathbf{X}_T \)和\( \mathbf{X}_{T+1} \)，矩阵\( \mathbf{Z}_T \)和\( \mathbf{Z}_{T+1} \)分别存在如下关系：
 \[
     \mathbf{X}_{T+1} = \begin{bmatrix} \sqrt{\lambda} \mathbf{X}_T & \bm{x}_{T+1} \end{bmatrix}, \quad  \mathbf{Z}_{T+1} = \begin{bmatrix} \sqrt{\lambda} \mathbf{Z}_T & \bm{z}_{T+1} \end{bmatrix}.
 \]
@@ -110,60 +111,57 @@
         \bm{x}_{T+1}^\mathrm{T}
     \end{bmatrix} = \lambda \mathbf{X}_T \mathbf{X}_T^\mathrm{T} + \bm{x}_{T+1}\bm{x}_{T+1}^\mathrm{T}.
 \]
+
 方便起见，记\( \mathbf{X}_T \mathbf{X}_T^\mathrm{T} = \mathbf{\Sigma}_T \)，\( \mathbf{Z}_T \mathbf{X}_T^{\mathrm{T}} = \mathbf{\Gamma}_T \)，则进一步利用伍德伯里矩阵恒等式（\cref{cor:woodbury-matrix-identity}），可得
 \[
     \begin{split}
-        \left( \mathbf{\Sigma}_{T+1} \right)^{-1} & = \left( \lambda \mathbf{\Sigma}_T + \bm{x}_{T+1}\bm{x}_{T+1}^\mathrm{T} \right)^{-1}                                                                                                                                        \\
-                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \frac{\mathbf{\Sigma}_T^{-1} \bm{x_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1}}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}} \right) \\
-                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{w}_T^{\mathrm{T}} \right),                                                                                                     \\
+        \left( \mathbf{\Sigma}_{T+1} \right)^{-1} & = \left( \lambda \mathbf{\Sigma}_T + \bm{x}_{T+1}\bm{x}_{T+1}^\mathrm{T} \right)^{-1}  = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \frac{\mathbf{\Sigma}_T^{-1} \bm{x}_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}} \right) \\
+                                                  & = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} \right),                                                                                                                                                                                        \\
     \end{split}
 \]
-其中\( \bm{g}_{T+1} \)为增益向量，有如下表达式：
+其中\( \bm{g}_{T+1} \)被称作增益向量，有如下表达式：
 \[
     \bm{g}_{T+1} = \frac{\mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}.
 \]
-则\( \mathbf{H}_T \)可以表示为
-\[
-    \mathbf{H}_T = \mathbf{\Gamma}_T \mathbf{\Sigma}_T^{-1},
-\]
-而\( \mathbf{H}_{T+1} \)可以表示为
+注意到，\( \mathbf{H}_{T+1} \)可以表示为
 \[
     \begin{split}
         \mathbf{H}_{T+1} & = \mathbf{\Gamma}_{T+1} \mathbf{\Sigma}_{T+1}^{-1} = (\lambda \mathbf{\Gamma}_T + \bm{z}_{T+1}\bm{x}_{T+1}^\mathrm{T}) \mathbf{\Sigma}_{T+1}^{-1} \\
                          & = \lambda \mathbf{\Gamma}_T \mathbf{\Sigma}_{T+1}^{-1} + \bm{z}_{T+1}\bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T+1}^{-1}                           \\
     \end{split}
 \]
-
-注意到
+其中，第一项可进一步化简为
 \[
-    \lambda \mathbf{\Gamma}_T \mathbf{\Sigma}_{T+1}^{-1} = \mathbf{\Gamma}_T \left(  \mathbf{\Sigma}_T^{-1} -  \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_T^{\mathrm{T}} \right) = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_T^{\mathrm{T}},
+    \lambda \mathbf{\Gamma}_T \mathbf{\Sigma}_{T+1}^{-1} = \mathbf{\Gamma}_T \left(  \mathbf{\Sigma}_T^{-1} -  \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} \right) = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}},
 \]
-而
+而第二项则可化简为
 \[
     \begin{split}
-        \mathbf{\Sigma}_{T + 1}^{-1} \bm{x}_{T+1} & = \frac{1}{\lambda} \left(  \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1} - \frac{\mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} }{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}} \right) \\
-                                                  & = \frac{ \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}} = \bm{g}_{T+1},
+        \bm{z}_{T+1}\bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T+1}^{-1} & = \frac{\bm{z}_{T+1}}{\lambda} \left( \bm{x}_{T+1}^{\mathrm{T}} \mathbf{\Sigma}_T^{-1}  - \frac{ \bm{x}_{T+1}^{\mathrm{T}} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} }{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}} \right) \\
+                                                                       & = \frac{ \bm{z}_{T+1} \bm{x}_{T+1}^{\mathrm{T}} \mathbf{\Sigma}_T^{-1} }{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1}}                                                                                                                                                    \\
+                                                                       & =\bm{z}_{T+1} \bm{g}_{T+1}^{\mathrm{T}}.
     \end{split}
 \]
-因此，\( \mathbf{H}_{T+1} \)可以进一步简化为
+因此，\( \mathbf{H}_{T+1} \)可表示为
 \[
     \begin{split}
-        \mathbf{H}_{T+1} & = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_T^{\mathrm{T}}  + \bm{z}_{T+1} \bm{g}_T^{\mathrm{T}} = \mathbf{H}_T + (\bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1}) \bm{g}_T^{\mathrm{T}} \\
+        \mathbf{H}_{T+1} & = \mathbf{H}_T - \mathbf{H}_T \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}}  + \bm{z}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} = \mathbf{H}_T + (\bm{z}_{T+1} - \mathbf{H}_T \bm{x}_{T+1}) \bm{g}_{T+1}^{\mathrm{T}} \\
                          & = \mathbf{H}_T + \bm{e}_{T+1} \bm{g}_{T+1}^{\mathrm{T}}.
     \end{split}
 \]
+
 综上，递推最小均方（RLMS）算法的更新公式为
 \[
     \begin{cases}
         \text{更新增益向量：}  & \bm{g}_{T+1} = \frac{\mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}}{\lambda + \bm{x}_{T+1}^\mathrm{T} \mathbf{\Sigma}_T^{-1} \bm{x}_{T+1}},                   \\
-        \text{更新协方差矩阵：} & \mathbf{\Sigma}_{T+1}^{-1} = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_T^{\mathrm{T}} \right), \\
+        \text{更新协方差矩阵：} & \mathbf{\Sigma}_{T+1}^{-1} = \frac{1}{\lambda} \left( \mathbf{\Sigma}_T^{-1} - \mathbf{\Sigma}_{T}^{-1} \bm{x}_{T+1} \bm{g}_{T+1}^{\mathrm{T}} \right), \\
         \text{计算预测误差：}  & \bm{e}_{T+1} = \mathbf{H}_{T}\bm{x}_{T+1} - \bm{z}_{T+1},                                                                                           \\
-        \text{更新观测矩阵：}  & \mathbf{H}_{T+1} = \mathbf{H}_T + \bm{e}_{T+1} \bm{g}_{T+1}^{\mathrm{T}}.                                                                           \\
+        \text{更新观测矩阵：}  & \mathbf{H}_{T+1} = \mathbf{H}_T + \bm{e}_{T+1} \bm{g}_{T+1}^{\mathrm{T}},                                                                           \\
         \text{进行预测：}    & \hat{\bm{z}}_{T+1} = \mathbf{H}_{T+1} \bm{x}_{T+1}.                                                                                                 \\
     \end{cases}
 \]
 
-由此可见，整个递推过程同样可以理解为：在每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与增益向量对观测矩阵进行修正，从而实现动态更新。当\(  \lambda = 1 \) 时，该递推公式退化为经典的最小二乘算法，再结合最小均方滤波算法的迭代公式，可见三者本质上均遵循``先预测、后修正''的思想，区别仅在于增益向量\( \bm{w}_T \)的取值不同。
+由此可见，整个递推过程同样可以理解为：在每次引入新观测时，先利用当前观测矩阵进行预测并计算预测误差，随后结合该误差与增益向量对观测矩阵进行修正，从而实现动态更新。当\(  \lambda = 1 \) 时，该递推公式退化为经典的最小二乘算法，再结合最小均方滤波算法的迭代公式，可见三者本质上均遵循``先预测、后修正''的思想，区别仅在于增益向量的取值不同。
 
 \begin{example}
     利用最小二乘（LS）、最小均方（LMS）与递推最小均方（RLMS）算法对目标轨迹进行预测，目标轨迹如\cref{fig_trace_gt}所示。
@@ -235,7 +233,7 @@
 \end{example}
 
 \begin{solution}
-    设\( t \)时刻目标的坐标为\( \bm{p}_{t} \)，则可以将历史坐标作为状态向量，而当前坐标作为观测向量，即
+    设\( t \)时刻目标的坐标为\( \bm{p}_{t} \)，则可以将历史坐标作为状态向量，而将当前坐标作为观测向量，即
     \[
         \bm{x}_t = \begin{bmatrix} \bm{p}_{t-1} \\ \vdots \\ \bm{p}_{t-k} \end{bmatrix} \in \mathbb{R}^{2k}, \quad \bm{z}_t = \bm{p}_t \in \mathbb{R}^2,
     \]
@@ -481,14 +479,14 @@
                     \addlegendentry{RLMS预测}
                 \end{axis}
             \end{tikzpicture}
-            \caption{轨迹二预测结果}
+            \caption{}
             \label{fig_trace2_3}
         \end{subfigure}
-        \caption{}
+        \caption{轨迹二预测结果}
         \label{fig_trace2}
     \end{figure}
 
-    对于复杂难以预测的轨迹，如\cref{fig_trace_gt_2}所示，直接利用LS算法进行预测效果较差。从\cref{fig_trace2_1}中可以看到，当轨迹出现突变时，LS算法无法及时跟踪。LMS算法收敛速度较慢，因此其预测效果（\cref{fig_trace2_2}）也不理想。而RLMS算法则可以较快地适应轨迹的变化，从而获得较好的预测效果（\cref{fig_trace2_3}）。
+    对于复杂且难以预测的轨迹，如\cref{fig_trace_gt_2}所示，直接利用LS算法进行预测效果较差。从\cref{fig_trace2_1}中可以看到，当轨迹出现突变时，LS算法无法及时跟踪。LMS算法收敛速度较慢，因此其预测效果（\cref{fig_trace2_2}）也不理想。而RLMS算法则可以较快地适应轨迹的变化，从而获得较好的预测效果（\cref{fig_trace2_3}）。
 \end{solution}
 
 \subsection{卡尔曼滤波}
@@ -502,7 +500,7 @@
 \[
     \bm{x}_t = \mathbf{F}_t \bm{x}_{t-1} + \mathbf{B}_t  \bm{u}_t + \bm{w}_t,
 \]
-其中，$\mathbf{F}_t \in \mathbb{R}^{M \times M}$ 为状态转移矩阵，\( \bm{u}_t \in \mathbb{R}^{K \times 1} \) 为控制输入，\( \mathbf{B}_t \in \mathbb{R}^{M \times K} \)为控制矩阵，$\bm{w}_t$ 为过程噪声。简而言之，卡尔曼滤波认为：目标状态一方面受到其前一时刻状态的影响，另一方面受到控制输入的影响，同时还会受到过程噪声的干扰；而观测向量则由当前状态线性映射得到，并受到观测噪声的干扰。
+其中，$\mathbf{F}_t \in \mathbb{R}^{M \times M}$ 为状态转移矩阵，\( \mathbf{B}_t \in \mathbb{R}^{M \times K} \)为控制矩阵，\( \bm{u}_t \in \mathbb{R}^{K \times 1} \) 为控制输入，$\bm{w}_t$ 为过程噪声。简而言之，卡尔曼滤波认为：目标状态取决于前一时刻状态与控制输入，并受过程噪声干扰；而观测向量由当前状态线性映射得到，亦受观测噪声干扰。
 
 比如，对于一个匀加速直线运动的目标，令\( p_t \)为目标在时刻\( t \)的位置，\( v_t \)为目标在时刻\( t \)的速度，且加速度为常数\( a \)。则在时刻\( t \)时，目标的位置可以近似表示为
 \[
@@ -520,7 +518,7 @@
 \[
     \mathbf{F}_t = \begin{bmatrix} 1 & \Delta t \\ 0 & 1 \end{bmatrix}, \quad    \mathbf{B}_t = \begin{bmatrix} 0 \\ \Delta t \end{bmatrix}, \quad \bm{u}_t = a.
 \]
-如令观测向量即为目标的位置，则观测方程可表示为
+若令观测向量即为目标的位置，则观测方程可表示为
 \[
     \bm{z}_t = \begin{bmatrix} 1 & 0 \end{bmatrix} \begin{bmatrix} p_t \\ v_t \end{bmatrix},
 \]
@@ -528,6 +526,7 @@
 \[
     \mathbf{H}_t = \begin{bmatrix} 1 & 0 \end{bmatrix}.
 \]
+
 由于在实际场景中，目标的控制输入往往不可知，因此通常假设其为零向量，即\( \bm{u}_t = \bm{0} \)。此时，卡尔曼滤波的模型可简化为
 \[
     \begin{cases}
@@ -536,21 +535,21 @@
     \end{cases}.
 \]
 
-与最小均方滤波不同，卡尔曼滤波往往明确了目标的状态向量和观测向量的物理意义。因此观测矩阵和状态转移矩阵通常是已知的或可通过物理建模得到的，而不需要像最小均方滤波那样进行估计。因此，卡尔曼滤波的核心在于利用已有的数据，对过程噪声和观测噪声进行建模，从而提升状态估计的准确性与鲁棒性，但卡尔曼滤波仍然遵循``先预测、后修正''的思想。
+与最小均方滤波不同，卡尔曼滤波通常对系统的状态向量和观测向量具有明确的物理含义。因此，其状态转移矩阵和观测矩阵往往是已知的，或可通过物理机理建模得到，而无需像最小均方滤波那样从数据中进行估计。卡尔曼滤波的核心在于基于已有观测对预测误差和估计误差进行统计建模，从而提升状态估计的精度与鲁棒性。总体来看，其处理流程仍遵循“先预测、后校正”的基本思想。
 
-给定\( T \)时刻的状态向量和观测向量\( \bm{x}_T \in \mathbb{R}^{M \times 1} \)和\( \bm{z}_T \in \mathbb{R}^{N \times 1} \)，与此同时，我们可以利用状态转移模型利用前一时刻状态的估计的状态对当前状态进行预测（方便起见，状态转移矩阵和观测矩阵均去掉下标，用\( \mathbf{F} \)和\( \mathbf{H} \)表示）：
+给定\( T \)时刻的状态向量和观测向量\( \bm{x}_T \in \mathbb{R}^{M \times 1} \)和\( \bm{z}_T \in \mathbb{R}^{N \times 1} \)，与此同时，我们可以利用状态转移模型利用前一时刻状态的估计对当前状态进行预测（方便起见，状态转移矩阵和观测矩阵均去掉下标，用\( \mathbf{F} \)和\( \mathbf{H} \)表示）：
 \[
     \hat{\bm{x}}_{T} = \mathbf{F} \tilde{\bm{x}}_{T-1}
 \]
-再利用观测矩阵对当前状态进行预测：
+再利用观测矩阵对当前状态进行预测，得到观测向量为：
 \[
     \hat{\bm{z}}_{T} = \mathbf{H} \hat{\bm{x}}_{T}.
 \]
-由于观测向量受到观测噪声的影响，因此预测值与实际观测值之间存在误差：
+由于观测向量受到观测噪声的影响，因此预测值与实际观测值之间存在误差，即观测向量的预测误差为：
 \[
     \bm{e}_T = \bm{z}_T - \hat{\bm{z}}_T.
 \]
-遵循``先预测、后修正''的思想，卡尔曼滤波通过结合观测预测误差对状态向量进行修正，对应修正后的状态向量，也即最终的估计为
+遵循``先预测、后修正''的思想，卡尔曼滤波通过观测向量的预测误差对状态向量进行修正，得到修正后的状态向量，也即最终的估计为
 \[
     \tilde{\bm{x}}_T = \hat{\bm{x}}_T + \mathbf{K}_T \bm{e}_T
 \]
@@ -562,8 +561,9 @@
 \]
 该问题同样是一个最小二乘问题，其解析解为
 \[
-    \mathbf{K}_T = \left( \bm{x}_T - \hat{\bm{x}}_T \right) \bm{e}_T^{\mathrm{T}} \left( \bm{e}_T \bm{e}_T^{\mathrm{T}} \right)^{-1}
+    \mathbf{K}_T = \left( \bm{x}_T - \hat{\bm{x}}_T \right) \bm{e}_T^{\mathrm{T}} \left( \bm{e}_T \bm{e}_T^{\mathrm{T}} \right)^{-1}.
 \]
+
 注意到预测误差可以表示为
 \[
     \bm{e}_T = \bm{z}_T - \hat{\bm{z}}_T = \mathbf{H} \bm{x}_T + \bm{v}_T - \mathbf{H} \hat{\bm{x}}_T = \mathbf{H} (\bm{x}_T - \hat{\bm{x}}_T) + \bm{v}_T = \mathbf{H} \bm{\epsilon}_T + \bm{v}_T,
@@ -575,11 +575,11 @@
                      & = \bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}} \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}} \mathbf{H}^{\mathrm{T}} + \bm{v}_T \bm{v}_T^{\mathrm{T}} \right)^{-1} \\
     \end{split}
 \]
-方便起见，记状态预测误差的协方差矩阵为\( \mathbf{S}_T = \mathbb{E}[\bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}}] \)，观测噪声的协方差矩阵为\( \mathbf{R} = \mathbb{E}[\bm{v}_T \bm{v}_T^{\mathrm{T}}] \)，通常为已知的或可通过实验测量得到。则期望的卡尔曼增益矩阵可以表示为
+方便起见，记状态预测误差的协方差矩阵为\( \mathbf{S}_T = \mathbb{E}[\bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}}] \)，观测噪声的协方差矩阵为\( \mathbf{R} = \mathbb{E}[\bm{v}_T \bm{v}_T^{\mathrm{T}}] \)，通常为已知的或可通过实验测量得到的。则期望的卡尔曼增益矩阵可以表示为
 \[
     \mathbf{K}_T = \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R} \right)^{-1}.
 \]
-在该表达式中，矩阵\( \mathbf{S}_T \)是一个未知量，需要对其进行进一步地估计。注意到
+在该表达式中，矩阵\( \mathbf{S}_T \)是一个未知量，需要对其进行进一步的估计。注意到
 \[
     \bm{\epsilon}_T = \bm{x}_T - \hat{\bm{x}}_T = \mathbf{F} \bm{x}_{T-1} + \bm{w}_T - \mathbf{F} \tilde{\bm{x}}_{T-1} = \mathbf{F} \bm{\varepsilon }_{T-1} + \bm{w}_T,
 \]
@@ -587,30 +587,32 @@
 \[
     \mathbf{S}_T = \mathbb{E}[\bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}}] = \mathbf{F} \mathbb{E}[\bm{\varepsilon}_{T-1} \bm{\varepsilon}_{T-1}^{\mathrm{T}}] \mathbf{F}^{\mathrm{T}} + \mathbb{E}[\bm{w}_T \bm{w}_T^{\mathrm{T}}] = \mathbf{F} \mathbf{P}_{T-1} \mathbf{F}^{\mathrm{T}} + \mathbf{Q},
 \]
-其中，\( \mathbf{P}_{T-1} = \mathbb{E}[\bm{\varepsilon}_{T-1} \bm{\varepsilon}_{T-1}^{\mathrm{T}}] \)为前一时刻的状态估计误差的协方差矩阵，而\( \mathbf{Q} = \mathbb{E}[\bm{w}_T \bm{w}_T^{\mathrm{T}}] \)为过程噪声的协方差矩阵，通常为已知的或可通过实验测量得到。
-
-对于协方差矩阵\( \mathbf{P}_T \)，我们有
+其中，\( \mathbf{P}_{T-1} = \mathbb{E}[\bm{\varepsilon}_{T-1} \bm{\varepsilon}_{T-1}^{\mathrm{T}}] \)为前一时刻的状态估计误差的协方差矩阵，而\( \mathbf{Q} = \mathbb{E}[\bm{w}_T \bm{w}_T^{\mathrm{T}}] \)为过程噪声的协方差矩阵，通常为已知的或可通过实验测量得到。此外，对于状态估计误差\( \bm{\varepsilon}_T \)，我们有
 \[
     \begin{split}
-        \mathbf{P}_T & = \mathbb{E}[\bm{\varepsilon}_T \bm{\varepsilon}_T^{\mathrm{T}}] = \mathbb{E}[(\bm{x}_T - \tilde{\bm{x}}_T)(\bm{x}_T - \tilde{\bm{x}}_T)^{\mathrm{T}}]                                                                           \\
-                     & = \mathbb{E}[(\bm{x}_T - \hat{\bm{x}}_T - \mathbf{K}_T \bm{e}_T)(\bm{x}_T - \hat{\bm{x}}_T - \mathbf{K}_T \bm{e}_T)^{\mathrm{T}}]                                                                                                \\
-                     & = \mathbb{E}[(\bm{\epsilon}_T - \mathbf{K}_T (\mathbf{H} \bm{\epsilon}_T + \bm{v}_T))(\bm{\epsilon}_T - \mathbf{K}_T (\mathbf{H} \bm{\epsilon}_T + \bm{v}_T))^{\mathrm{T}}]                                                      \\
-                     & = \mathbb{E}[(\mathbf{I} - \mathbf{K}_T \mathbf{H}) \bm{\epsilon}_T \bm{\epsilon}_T^{\mathrm{T}} (\mathbf{I} - \mathbf{K}_T \mathbf{H})^{\mathrm{T}} + \mathbf{K}_T \bm{v}_T \bm{v}_T^{\mathrm{T}} \mathbf{K}_T^{\mathrm{T}}]    \\
-                     & = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \mathbf{S}_T (\mathbf{I} - \mathbf{K}_T \mathbf{H})^{\mathrm{T}} + \mathbf{K}_T \mathbf{R}_T \mathbf{K}_T^{\mathrm{T}}                                                                  \\
-                     & = \mathbf{S}_T - \mathbf{K}_T \mathbf{H} \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \mathbf{K}_T^{\mathrm{T}} + \mathbf{K}_T (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T) \mathbf{K}_T^{\mathrm{T}} \\
+        \bm{\varepsilon}_T & = \bm{x}_T - \tilde{\bm{x}}_T = \bm{x}_T - \hat{\bm{x}}_T - \mathbf{K}_T \bm{e}_T \\
+                           & = \bm{\epsilon}_T - \mathbf{K}_T (\mathbf{H} \bm{\epsilon}_T + \bm{v}_T)          \\
+                           & = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \bm{\epsilon}_T - \mathbf{K}_T \bm{v}_T.
     \end{split}
 \]
-带入\( \mathbf{K}_T \)的表达式，并进行化简，可得
+因此，协方差矩阵\( \mathbf{P}_T \)可以表示为
+\[
+    \begin{split}
+        \mathbf{P}_T & = \mathbb{E}[\bm{\varepsilon}_T \bm{\varepsilon}_T^{\mathrm{T}}] = \mathbb{E}[\left( (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \bm{\epsilon}_T - \mathbf{K}_T \bm{v}_T \right) \left( (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \bm{\epsilon}_T - \mathbf{K}_T \bm{v}_T \right)^{\mathrm{T}}] \\
+                     & = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \mathbf{S}_T (\mathbf{I} - \mathbf{K}_T \mathbf{H})^{\mathrm{T}} + \mathbf{K}_T \mathbf{R}_T \mathbf{K}_T^{\mathrm{T}}                                                                                                                         \\
+                     & = \mathbf{S}_T - \mathbf{K}_T \mathbf{H} \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \mathbf{K}_T^{\mathrm{T}} + \mathbf{K}_T (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T) \mathbf{K}_T^{\mathrm{T}}                                                        \\
+    \end{split}
+\]
+代入\( \mathbf{K}_T \)的表达式，并进行化简，可得
 \[
     \begin{split}
         \mathbf{P}_T & = \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T \right)^{-1} \mathbf{H} \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T )^{-1} \mathbf{H} \mathbf{S}_T \\
                      & + \mathbf{S}_T \mathbf{H}^{\mathrm{T}} (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T )^{-1} (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T ) (\mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T )^{-1} \mathbf{H} \mathbf{S}_T                         \\
                      & = \mathbf{S}_T - \mathbf{S}_T \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \mathbf{S}_T \mathbf{H}^{\mathrm{T}} + \mathbf{R}_T \right)^{-1} \mathbf{H} \mathbf{S}_T                                                                                                                                       \\
-                     & = \mathbf{S}_T - \mathbf{K}_T \mathbf{H} \mathbf{S}_T                                                                                                                                                                                                                                                  \\
-                     & = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \mathbf{S}_T.
+                     & = \mathbf{S}_T - \mathbf{K}_T \mathbf{H} \mathbf{S}_T = (\mathbf{I} - \mathbf{K}_T \mathbf{H}) \mathbf{S}_T.
     \end{split}
 \]
-综上，卡尔曼滤波的递推算法如\cref{alg:kalman}所示。
+至此，所有未知量均已用已知量加以表达，卡尔曼滤波的递推过程也随之得以完整刻画。综上，其递推算法如 \cref{alg:kalman} 所示。
 
 \begin{algorithm}[htb!]
     \caption{卡尔曼滤波递推算法}
@@ -618,7 +620,7 @@
     \begin{algorithmic}[1]
         \Require
         状态转移矩阵 $\mathbf{F}$，观测矩阵 $\mathbf{H}$，过程噪声协方差 $\mathbf{Q}$，观测噪声协方差 $\mathbf{R}$；
-        初始状态估计 $\tilde{\bm{x}}_{0}$，初始估计误差协方差 $\mathbf{P}_{0}$
+        初始状态估计 $\tilde{\bm{x}}_{0}$，初始估计误差协方差矩阵 $\mathbf{P}_{0}$
         \Ensure
         每一时刻的状态估计 $\tilde{\bm{x}}_{T}$
         \State \textbf{初始化：} \(\hat{\bm{x}}_{1} = \mathbf{F} \tilde{\bm{x}}_{0}, \quad \mathbf{S}_{1} = \mathbf{F} \mathbf{P}_0 \mathbf{F}^{\mathrm{T}} + \mathbf{Q}, \quad \mathbf{K}_{1} = \mathbf{S}_{1} \mathbf{H}^{\mathrm{T}} \left( \mathbf{H} \mathbf{S}_{1} \mathbf{H}^{\mathrm{T}} + \mathbf{R} \right)^{-1}\)
@@ -728,7 +730,7 @@
 
 \subsection{联合概率数据关联}
 
-联合概率数据关联（Joint Probabilistic Data Association, JPDA）算法是一种经典的数据关联方法，在介绍该算法之前，我们首先介绍一下其单目标的版本，即概率数据关联（Probabilistic Data Association, PDA）算法。
+联合概率数据关联（Joint Probabilistic Data Association, JPDA）算法是一种经典的数据关联方法，在介绍该算法之前，我们首先介绍其单目标的版本，即概率数据关联（Probabilistic Data Association, PDA）算法。
 
 考虑上文所述先预测、再修正的滤波框架。对于\( T \)时刻的观测向量\( \bm{z}_T \)，假设对应的预测为\( \hat{\bm{x}}_T \)。那么修正后的状态估计为
 \[
@@ -736,11 +738,11 @@
 \]
 其中，\( \mathbf{K}_T \)为增益矩阵。
 
-然而在实际场景中，由于虚警等原因，可能存在多个观测向量，记为
+然而在实际场景中，受虚警率等因素影响，可能存在多个观测向量，记为
 \[
     \{\bm{z}_T^{(1)}, \bm{z}_T^{(2)}, \dots, \bm{z}_T^{(M)}\},
 \]
-其中，\( M \)为观测的数量。此时，就需要确定这些观测值中，到底哪个才是真正对应目标的观测值。最简单的方法是，选择与预测值距离最近的观测值作为真正的观测值，即
+其中，\( M \)为观测的数量。此时，需确定哪一个观测值源自目标。最简单的方法是，选择与预测值距离最近的观测值作为真正的观测值，即
 \[
     m^* = \arg\min_{j=1,2,\dots,M} \ \|\bm{z}_T^{(j)} - \hat{\bm{z}}_T\|^2,
 \]
@@ -778,7 +780,7 @@
 \[
     \sum_{n=1}^{N} \beta_{mn} \leq 1, \quad m = 1,2,\dots,M.
 \]
-该约束表明，对于一个观测\( \bm{z}_T^{(m)} \)，其分配到各目标的概率之和不能超过1，也即一个观测值最多只能来源于一个目标。对于 PDA 和 JPDA 算法，增益矩阵的具体迭代过程较为复杂，此处不再展开，读者可参考原始文献 \cite{4046781,BARSHALOM1975451}。
+该约束表明，对于一个观测\( \bm{z}_T^{(m)} \)，其分配到各目标的概率之和不能超过1，也就是说一个观测值最多只能来源于一个目标。对于 PDA 和 JPDA 算法，增益矩阵的具体迭代过程较为复杂，此处不再展开，读者可参考原始文献 \cite{4046781,BARSHALOM1975451}。
 
 为进一步提升跟踪的精度与鲁棒性，多假设跟踪（Multiple Hypothesis Tracking，MHT）算法\cite{1263228}在此基础上引入了“多假设”的思想。MHT 在每一个时间步都会为新的观测生成多种可能的关联假设，并对这些假设进行评分与筛选，逐步保留最有可能的轨迹，从而有效解决目标交叉、遮挡等复杂场景下的跟踪问题。
 
@@ -786,7 +788,7 @@
 图匹配（Graph Matching）方法是一类基于图论的多目标跟踪技术，其核心思想是将多目标跟踪问题转化为图匹配问题，并借助图论中的算法与理论加以求解。在展开具体方法之前，有必要先对图（graph）的基本概念进行介绍。
 
 \begin{definition}
-    一个大小为 $n$ 的无向图 $\mathcal G = \{\mathcal V, \mathcal E\}$ 由一个离散的节点集合 $\mathcal V = \{\mathcal V_i\}_{i=1}^{n}$和一个无向边集合 $\mathcal E \subseteq \mathcal V \times \mathcal V$ 定义，满足 $\mathcal E_{ii'} = \mathcal E_{i'i}$。
+    一个大小为 $n$ 的无向图 $\mathcal G = \{\mathcal V, \mathcal E\}$ 由一个离散的节点集合 $\mathcal V = \{\mathcal V_i\}_{i=1}^{n}$和一个无向边集合 $\mathcal E \subseteq \mathcal V \times \mathcal V$ 组成，满足 $\mathcal E_{ii'} = \mathcal E_{i'i}$。
 \end{definition}
 
 \begin{figure}[htb!]
@@ -807,7 +809,7 @@
     \label{fig_graph_eg}
 \end{figure}
 
-通常，无向图的边集合 $\mathcal E$ 可以用一个对称的矩阵 $\mathbf E \in \mathbb R^{n \times n}$ 表示，其中的元素表示节点之间的连接关系或权重。例如，\cref{fig_graph_eg} 所示的两个图，其边的集合对应的矩阵为
+通常，无向图的边集合 $\mathcal E$ 可以用一个对称的矩阵 $\mathbf E \in \mathbb R^{n \times n}$ 表示，其中的元素表示节点之间的连接关系或权重。例如，\cref{fig_graph_eg} 所示的两个图，其边的集合对应的矩阵分别为
 $$
     \mathbf{E}_1 =
     \begin{bmatrix}
@@ -887,7 +889,7 @@ $$
         \text{s.t.} \quad \mathbf{P} \in \mathcal{P}
     \end{cases}.
 \]
-该问题旨在通过选择合适的匹配矩阵 $\mathbf{P}$，最大化匹配节点之间的总相似度。可以利用一些优化算法（如匈牙利算法、线性规划等）来求解该问题，这类算法比较成熟可直接调用相关库实现。下面，我们介绍一种快速的近似算法——重加权随机游走（Reweighted Random Walks, RRWM）算法。注意到，目标函数可以表示为
+该问题旨在通过选择合适的匹配矩阵 $\mathbf{P}$，最大化匹配节点之间的总相似度。可以利用一些优化算法（如匈牙利算法、线性规划等）来求解该问题，这类算法比较成熟，可直接调用相关库实现。下面，我们介绍一种快速的近似算法——重加权随机游走（Reweighted Random Walks, RRWM）算法。注意到，目标函数可以表示为
 \[
     \sum_{i=1}^{m} \sum_{j=1}^{n} p_{ij} s_{ij} = \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathrm{vec}(\mathbf{S}),
 \]
@@ -895,7 +897,7 @@ $$
 \[
     \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathrm{diag}(\mathrm{vec}(\mathbf{S})) \mathrm{vec}(\mathbf{P}) = \mathrm{vec}(\mathbf{P})^{\mathrm{T}} \mathbf{W} \mathrm{vec}(\mathbf{P}),
 \]
-其中，\( \mathbf{W} = \mathrm{diag}(\mathrm{vec}(\mathbf{S})) \)为一个对角矩阵。注意到，在不考虑约束的情况下，目标函数取得最大值时，\( \mathrm{vec}(\mathbf{P}) \)为\( \mathbf{W} \)的最大特征值对应的特征向量。因此，RRWM算法的核心思想是，通过迭代地计算特征向量，并结合约束条件，对特征向量进行重加权与归一化，从而逐步逼近最优解。具体而言，RRWM算法的迭代过程如下：
+其中，\( \mathbf{W} = \mathrm{diag}(\mathrm{vec}(\mathbf{S})) \)为一个对角矩阵。注意到，在不考虑约束的情况下，目标函数取得最大值时，\( \mathrm{vec}(\mathbf{P}) \)为\( \mathbf{W} \)的最大特征值对应的特征向量。因此，RRWM算法的核心思想是，通过迭代计算特征向量，并结合约束条件，对特征向量进行重加权与归一化，从而逐步逼近最优解。具体而言，RRWM算法的迭代过程如下：
 \begin{enumerate}
     \item 初始化：设定初始矩阵 $\mathbf{P}^{(0)} = \frac{1}{mn} \mathbf{1}_{mn}$，迭代次数 $t=0$。
     \item 迭代计算：计算 $\operatorname{vec}(\mathbf{P}^{(t+1)}) = \mathbf{W} \operatorname{vec}(\mathbf{P}^{(t)})$。
@@ -914,7 +916,7 @@ $$
         \text{s.t.}      & \quad \mathbf P \in \mathcal P ,
     \end{cases}
 \]
-其中，$k_{i i j j}$ 表示节点 $\mathcal V_i^{1}$ 与 $\mathcal V_j^{2}$ 的相似度，$k_{i i' j j'}$ 表示边 $\mathcal E_{i i'}^{1}$ 与 $\mathcal E_{j j'}^{2}$ 的相似度。对于节点而言，只要\( p_{ij} = 1 \)，则对应的节点相似度就会被计入目标函数中。而对于边而言，只有当两个图中的边所连接的节点均被匹配时，其相似度才会被计入目标函数中，即\( p_{ij} = p_{i'j'} = 1 \)时，才会计入边相似度。
+其中，$k_{i i j j}$ 表示节点 $\mathcal V_i^{1}$ 与 $\mathcal V_j^{2}$ 的相似度，$k_{i i' j j'}$ 表示边 $\mathcal E_{i i'}^{1}$ 与 $\mathcal E_{j j'}^{2}$ 的相似度。对于节点而言，只要\( p_{ij} = 1 \)，对应的节点相似度就会被计入目标函数中。而对于边而言，只有当两个图中的边所连接的节点均被匹配时，其相似度才会被计入目标函数中，即\( p_{ij} = p_{i'j'} = 1 \)时，才会计入边相似度。
 
 方便起见，我们可以构建矩阵 $\mathbf K \in \mathbb R^{m n \times m n}$ ，该矩阵也被称为图 $\mathcal G^{1}$ 与 $\mathcal G^{2}$ 的亲和矩阵（Affinity Matrix）。对于亲和力 $\mathbf K$ 中的元素，有如下定义：
 \[
@@ -932,8 +934,8 @@ $$
 \[
     \begin{cases}
         \max_{\mathbf P} & \sum_{ij} p_{ij} k_{i i j j} \;+\; \sum_{ii'jj'} k_{i i' j j'} \, p_{ij} p_{i'j'} \\
-        \text{s.t.}      & \quad \mathbf P \in \mathcal P ,
-    \end{cases}
+        \text{s.t.}      & \quad \mathbf P \in \mathcal P 
+    \end{cases},
 \]
 其中，$k_{i i j j}$ 表示节点 $\mathcal V_i^{1}$ 与 $\mathcal V_j^{2}$ 的相似度；$k_{i i' j j'}$ 表示边 $\mathcal E_{ii'}^{1}$ 与 $\mathcal E_{jj'}^{2}$ 的相似度。具体来说，对于节点而言，当 $p_{ij} = 1$ 时，对应节点的相似度将被计入目标函数；而对于边而言，仅当两条边的端点均被正确匹配时，即 $p_{ij} = p_{i'j'} = 1$，其边相似度才会被计入目标函数。
 
@@ -947,4 +949,4 @@ $$
 \]
 该问题同样可以通过 RRWM 算法进行求解，只需将其中的权重矩阵 $\mathbf W$ 替换为亲和矩阵 $\mathbf K$ 即可。
 
-在数据关联问题中，可以将预测的目标状态与实际观测值分别建模为两幅图，并通过图匹配算法确定它们之间的对应关系，从而实现数据关联。具体而言，节点属性可包含目标的位置、速度等信息，用于计算节点间的相似度；边的属性则可刻画目标之间的相对位置或相对速度，用于计算边之间的相似度。通过这种方式，图匹配方法能够综合利用目标之间的空间与运动关系，从而显著提升数据关联的准确性与鲁棒性。
+在数据关联问题中，我们可以将预测的目标状态与实际观测值分别建模为两幅图，并通过图匹配算法确定它们之间的对应关系，从而实现数据关联。具体而言，节点属性可包含目标的位置、速度等信息，用于计算节点间的相似度；边的属性则可刻画目标之间的相对位置或相对速度，用于计算边之间的相似度。通过这种方式，图匹配方法能够综合利用目标之间的空间与运动关系，从而显著提升数据关联的准确性与鲁棒性。
