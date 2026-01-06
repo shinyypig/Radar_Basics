@@ -627,8 +627,8 @@
 从上面的例子中，我们可以总结出一些经验：
 
 \begin{enumerate}
-    \item 对于一个函数，如果其表达式左侧是某个向量的转置形式​​，那么其关于该向量的导数就是表达式右侧的部分。比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{x}} = \bm{y}\) 和 \( \frac{\partial \bm{x}^{\mathrm{T}} \mathbf{A}}{\partial \bm{x}} = \mathbf{A} \)。
-    \item 对于一个函数，如果其表达式右侧是某个向量​​，那么其关于该向量的导数就是表达式左侧部分的转置。比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{y}} = \bm{x}\) 和 \( \frac{\partial \mathbf{A} \bm{y}}{\partial \bm{y}} = \mathbf{A}^{\mathrm{T}} \)。
+    \item 对于一个函数，如果其表达式左侧是某个向量的转置形式，那么其关于该向量的导数就是表达式右侧的部分。比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{x}} = \bm{y}\) 和 \( \frac{\partial \bm{x}^{\mathrm{T}} \mathbf{A}}{\partial \bm{x}} = \mathbf{A} \)。
+    \item 对于一个函数，如果其表达式右侧是某个向量，那么其关于该向量的导数就是表达式左侧部分的转置。比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{y}} = \bm{x}\) 和 \( \frac{\partial \mathbf{A} \bm{y}}{\partial \bm{y}} = \mathbf{A}^{\mathrm{T}} \)。
 \end{enumerate}
 
 矩阵微分有四个常用的性质：线性、乘积、商和链式法则，具体见\cref{property:matrix-differentiation-properties}。
