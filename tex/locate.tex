@@ -377,7 +377,7 @@
 \]
 设目标位置为\( \bm{x} = \begin{bsmallmatrix} x_1 & x_2 \end{bsmallmatrix}^{\mathrm{T}} \)，第\( i \)个基站的位置为\( \bm{l}_i = \begin{bsmallmatrix} l_{1i} & l_{2i} \end{bsmallmatrix}^{\mathrm{T}} \)，则目标到第\( i \)个基站的距离为
 \[
-    d_i = \left\| \bm{x} - \bm{l}_i \right\| = \sqrt{(\bm{x} - \bm{l}_i)^{\mathrm{T}} (\bm{x} - \bm{l}_i)} = \sqrt{(x_1 - l_{1i})^2 + (x_2 - l_{2i})^2}.
+    d_i = \sqrt{(x_1 - l_{1i})^2 + (x_2 - l_{2i})^2} = \left\| \bm{x} - \bm{l}_i \right\| = \sqrt{(\bm{x} - \bm{l}_i)^{\mathrm{T}} (\bm{x} - \bm{l}_i)}.
 \]
 因此，我们可以构建如下的目标函数：
 \[
@@ -389,8 +389,8 @@
 \[
     \begin{split}
         \frac{\partial f(\bm{x})}{\partial \bm{x}} & =2 \sum_{i=1}^{N} \sum_{j=1}^{N} (d_i - d_j - d_{ij}) \left( \frac{\partial d_i}{\partial \bm{x}} - \frac{\partial d_j}{\partial \bm{x}} - \frac{\partial d_{ij}}{\partial \bm{x}} \right) \\
-                                                   & = \sum_{i=1}^{N} \sum_{j=1}^{N} (d_i - d_j - d_{ij}) \left( \frac{\bm{x} - \bm{l}_i}{d_i} - \frac{\bm{x} - \bm{l}_j}{d_j} \right)                                                          \\
-                                                   & = \sum_{i=1}^{N} \sum_{j=1}^{N} (d_i - d_j - d_{ij}) \left( \bm{x}_i - \bm{x}_j \right),
+                                                   & = 2\sum_{i=1}^{N} \sum_{j=1}^{N} (d_i - d_j - d_{ij}) \left( \frac{\bm{x} - \bm{l}_i}{d_i} - \frac{\bm{x} - \bm{l}_j}{d_j} \right)                                                         \\
+                                                   & = 2\sum_{i=1}^{N} \sum_{j=1}^{N} (d_i - d_j - d_{ij}) \left( \bm{x}_i - \bm{x}_j \right),
     \end{split}
 \]
 其中\( \bm{x}_i =  \frac{\bm{x} - \bm{l}_i}{d_i}\)。因此，我们可以得到如下的迭代公式：
@@ -399,11 +399,14 @@
 \]
 其中\( \eta \)为学习率。
 
-在实践中，学习率的选择非常重要，过大的学习率会导致目标函数震荡，甚至发散；而过小的学习率则会导致收敛速度过慢。为了避免学习率选择不当导致的震荡和发散，我们可以使用牛顿法来求解最优解。牛顿法的基本思想是通过二阶导数来加速收敛速度。对于目标函数为\( f(\bm{x}) \)，其关于\( \bm{x} \)的二阶导数，也即海森（Hessian）矩阵为：
+在实践中，学习率的选择非常重要，过大的学习率会导致目标函数震荡，甚至发散；而过小的学习率则会导致收敛速度过慢。为了避免学习率选择不当导致的震荡和发散，我们可以使用牛顿法来求解最优解。
+
+
+牛顿法的基本思想是通过二阶导数来加速收敛速度。对于目标函数为\( f(\bm{x}) \)，其关于\( \bm{x} \)的二阶导数，也即海森（Hessian）矩阵为：
 \[
     \begin{split}
-        \frac{\partial^2 f(\bm{x})}{\partial \bm{x}^2} & = \frac{\left( \frac{\partial f(\bm{x})}{\partial\bm{x}} \right)^{\mathrm{T}}}{\partial \bm{x}}                                                                                                                                                                         \\
-                                                       & = \sum_{i=1}^{N} \sum_{j=1}^{N} \left(\bm{x}_i - \bm{x}_j\right)^{\mathrm{T}} \left(\bm{x}_i - \bm{x}_j\right) + (d_i - d_j - d_{ij}) \left( \frac{\mathbf{I} - \bm{x}_i \bm{x}_i^{\mathrm{T}}}{d_i}  - \frac{\mathbf{I} - \bm{x}_j \bm{x}_j^{\mathrm{T}}}{d_j}\right).
+        \frac{\partial^2 f(\bm{x})}{\partial \bm{x}^2} & = \frac{\left( \frac{\partial f(\bm{x})}{\partial\bm{x}} \right)^{\mathrm{T}}}{\partial \bm{x}}                                                                                                                                                                          \\
+                                                       & = 2\sum_{i=1}^{N} \sum_{j=1}^{N} \left(\bm{x}_i - \bm{x}_j\right)^{\mathrm{T}} \left(\bm{x}_i - \bm{x}_j\right) + (d_i - d_j - d_{ij}) \left( \frac{\mathbf{I} - \bm{x}_i \bm{x}_i^{\mathrm{T}}}{d_i}  - \frac{\mathbf{I} - \bm{x}_j \bm{x}_j^{\mathrm{T}}}{d_j}\right).
     \end{split}
 \]
 记\( \bm{d}_{\bm{x}} =  \frac{\partial f(\bm{x})}{\partial \bm{x}}\)，\( \mathbf{H}_{\bm{x}} =  \frac{\partial^2 f(\bm{x})}{\partial \bm{x}^2}\)，则牛顿法的迭代公式为

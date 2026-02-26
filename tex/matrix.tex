@@ -1190,6 +1190,53 @@
     S_k(\mathbf{X} \bm{v}) = \mathcal{S}_k \bm{v}^k.
 \]
 
+\section{多元函数的泰勒展开}
+
+泰勒展开是数学分析中的一个重要工具，它可以用来近似函数在某个点附近的行为。对于一个一元函数\( f: \mathbb{R} \to \mathbb{R} \)，其在点 \( x_0 \) 处的泰勒展开可以表示为
+\[
+    f(x) = f(x_0) + \sum_{k=1}^{\infty} \frac{f^{(k)}(x_0)}{k!} (x - x_0)^k,
+\]
+其中，\( f^{(k)}(x_0) \)表示函数\( f \)在点 \( x_0 \) 处的第 \( k \) 阶导数。
+
+对于一个多元函数\( f: \mathbb{R}^n \to \mathbb{R} \)，我们同样可以在某个点 \( \bm{x}_0 \) 处进行泰勒展开。但问题在于一个多元函数的任意阶导数不再是一个标量，而是一个向量、矩阵或者更高阶的张量。因此，我们需要引入张量的概念来表示多元函数的泰勒展开。
+
+具体而言，对于一个多元函数\( f(\bm{x}) \)，其在点 \( \bm{x}_0 \) 处的\( k \)阶导数可以表示为一个\( k \)阶张量，记为\(  \mathcal{T}^{(k)}_{\bm{x}_0}\in  \mathbb{R}^{n \times n \cdots \times n} \)。该张量的第 \( i_1, i_2, \cdots, i_k \) 个元素有如下的表达式：
+\[
+    \left(\mathcal{T}^{(k)}_{\bm{x}_0}\right)_{i_1 i_2 \cdots i_k} = \left.\frac{\partial^k f(\bm{x})}{\partial x_{i_1} \partial x_{i_2} \cdots \partial x_{i_k}}\right|_{\bm{x} = \bm{x}_0}.
+\]
+显然，当\( k = 1 \)时，\( \mathcal{T}^{(1)}_{\bm{x}_0} \)是一个向量，即函数\( f \)在点 \( \bm{x}_0 \) 处的梯度；当\( k = 2 \)时，\( \mathcal{T}^{(2)}_{\bm{x}_0} \)是一个矩阵，即函数\( f \)在点 \( \bm{x}_0 \) 处的\textbf{海森（Hessian）矩阵}；当\( k > 2 \)时，\( \mathcal{T}^{(k)}_{\bm{x}_0} \)则是一个更高阶的张量，反映了函数\( f \)在点 \( \bm{x}_0 \) 处的更高阶的变化信息。方便起见，记\( \Delta \bm{x} = \bm{x} - \bm{x}_0 \)，则函数\( f \)在点 \( \bm{x}_0 \) 处的泰勒展开可以表示为
+\[
+    \begin{split}
+        f(\bm{x}) & = f(\bm{x}_0) + \sum_{k=1}^{\infty} \frac{1}{k!} \mathcal{T}^{(k)}_{\bm{x}_0} \times_1 \Delta \bm{x}^{\mathrm{T}} \times_2 \Delta \bm{x}^{\mathrm{T}} \cdots \times_k \Delta \bm{x}^{\mathrm{T}} \\
+                  & = f(\bm{x}_0) + \sum_{k=1}^{\infty} \frac{\mathcal{T}^{(k)}_{\bm{x}_0}}{k!} \Delta \bm{x}^k,
+    \end{split}
+\]
+
+当我们只考虑函数\( f \)在点 \( \bm{x}_0 \) 处的前两阶信息时，函数\( f \)在点 \( \bm{x}_0 \) 处的二阶泰勒展开可以表示为
+\[
+    f(\bm{x}) \approx f(\bm{x}_0) + \bm{g}^{\mathrm{T}}_{\bm{x}_0} \Delta \bm{x} + \frac{1}{2} \Delta \bm{x}^{\mathrm{T}} \mathbf{H}_{\bm{x}_0} \Delta \bm{x} + o(\|\Delta \bm{x}\|^2),
+\]
+其中，\( \bm{g}_{\bm{x}_0} = \mathcal{T}^{(1)}_{\bm{x}_0} \)为函数\(f\)在点 \( \bm{x}_0 \) 处的梯度，\( \mathbf{H}_{\bm{x}_0} = \mathcal{T}^{(2)}_{\bm{x}_0} \)为函数\(f\)在点 \( \bm{x}_0 \) 处的海森矩阵。函数的泰勒展开在优化算法中有着重要的应用，比如梯度下降法和牛顿法等都可以看作是基于函数的泰勒展开来设计的优化算法。
+
+常见的梯度下降法只利用了函数的梯度信息，比如我们希望最小化函数\( f \)，则在每次迭代中，我们会沿着函数\( f \)在当前点的梯度的反方向进行更新，即
+\[
+    \bm{x}_{t+1} = \bm{x}_t - \eta \bm{g}_{\bm{x}_t},
+\]
+其中，\( \bm{g}_{\bm{x}_t} \)为函数\( f \)在点 \( \bm{x}_t \) 处的梯度，\( \eta \)为学习率。而牛顿法则同时利用了函数的梯度和海森矩阵信息，不需要指定学习率，而是通过求解一个线性方程组来确定更新的步长和方向。具体而言，牛顿法利用函数\( f \)在点 \( \bm{x}_t \) 处的二阶泰勒展开来近似函数\( f \)在点 \( \bm{x} \) 处的值，即
+\[
+    f(\bm{x}) \approx f(\bm{x}_t) + \bm{g}^{\mathrm{T}}_{\bm{x}_t} (\bm{x} - \bm{x}_t) + \frac{1}{2} (\bm{x} - \bm{x}_t)^{\mathrm{T}} \mathbf{H}_{\bm{x}_t} (\bm{x} - \bm{x}_t).
+\]
+对上式中的\( \bm{x} \)求导，可得
+\[
+    \frac{\partial f(\bm{x})}{\partial \bm{x}} \approx \bm{g}_{\bm{x}_t} + \mathbf{H}_{\bm{x}_t} (\bm{x} - \bm{x}_t).
+\]
+对于一个二次函数，其取得极值的必要条件是梯度为零，因此，令上式中的梯度为零，即可得到牛顿法的更新公式
+\[
+    \bm{x}_{t+1} = \bm{x}_t - \mathbf{H}_{\bm{x}_t}^{-1} \bm{g}_{\bm{x}_t}.
+\]
+
+
+
 % 设有矩阵\( \mathbf{X} =
 % \begin{bsmallmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_m
 % \end{bsmallmatrix} \in \mathbb{R}^{n \times m} \)，其中每一列都是一个向量，假设均值为零，那么向量两两之间的协方差可以构成一个协方差矩阵\( \mathbf{\Sigma} \)，其第\( i,j \)个元素为
