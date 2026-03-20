@@ -225,7 +225,7 @@
 
 \subsection{奇异值分解}
 
-奇异值分解（Singular Value Decomposition, SVD）是线性代数中一个非常重要的矩阵分解工具，被广泛应用于信号处理、统计学、机器学习、图像压缩等领域。相比于特征分解，奇异值分解不要求矩阵是可逆的，可以应用于任意形状的矩阵，具体见下方的定理。
+奇异值分解（Singular Value Decomposition, SVD）是线性代数中一个非常重要的矩阵分解工具，被广泛应用于信号处理、统计学、机器学习、图像压缩等领域。相比于特征分解，奇异值分解可以应用于任意大小的矩阵，而不只是局限于方阵，具体见下方的定理。
 
 \begin{theorem}
     对于任意的矩阵\( \mathbf{A} \in \mathbb{R}^{m \times n} \)，都存在一个奇异值分解：
@@ -251,18 +251,18 @@
     \begin{equation}\label{eq:svd_proof2}
         \bm{u}_i^{\mathrm{T}} \mathbf{A} \bm{v}_j = \frac{1}{\lambda_i} \bm{v}_i^{\mathrm{T}} \mathbf{A}^{\mathrm{T}} \mathbf{A} \bm{v}_j = 0.
     \end{equation}
-    注意到，\( \bm{u}_j = \frac{1}{\lambda_j} \mathbf{A} \bm{v}_j \)，因此还可以得出\( \bm{u}_i \)和\( \bm{u}_j \)是正交的。
+    类似地，可以证明\( \bm{u}_i \)和\( \bm{u}_j \)是正交的。
 
-    不妨构造如下的矩阵
+    因此，不妨构造如下的矩阵
     \[
         \mathbf{U} =
         \begin{bmatrix}
             \bm{u}_1 & \bm{u}_2 & \cdots & \bm{u}_n & \bm{u}_{n+1} & \cdots & \bm{u}_m
         \end{bmatrix} \in \mathbb{R}^{m \times m},
     \]
-    对于其中的列向量，当\( 1 \leq i \leq n \)时，有\( \bm{u}_i = \frac{\mathbf{A} \bm{v}_i}{\|\mathbf{A} \bm{v}_i\|} \)；而当\( n + 1 \leq i \leq m \)时，可以令\( \bm{u}_i \)为\( \mathbf{A} \)的零空间中的任意向量，只需满足构成的矩阵\( \mathbf{U} \)是一个正交矩阵即可。此时，可以验证，对于任意的\( i \neq j  \)且\( i \leq n, j > n\)，都有
+    对于其中的列向量，当\( 1 \leq i \leq n \)时，有\( \bm{u}_i = \frac{\mathbf{A} \bm{v}_i}{\|\mathbf{A} \bm{v}_i\|} \)；而当\( n + 1 \leq i \leq m \)时，可以令\( \bm{u}_i \)为\( \mathbf{A} \)的零空间中的任意向量，只需满足构成的矩阵\( \mathbf{U} \)是一个正交矩阵即可。此时，可以验证，对于任意的\( i \neq j  \)且\( i > n, j \leq n\)，同样有
     \begin{equation}\label{eq:svd_proof3}
-        \bm{u}_i^{\mathrm{T}} \mathbf{A} \bm{v}_j = 0.
+        \bm{u}_i^{\mathrm{T}} \mathbf{A} \bm{v}_j = 0,
     \end{equation}
 
     综上所述，结合\cref{eq:svd_proof1,eq:svd_proof2,eq:svd_proof3}，可以得到
@@ -284,6 +284,14 @@
     其中\( \sqrt{\mathbf{\Lambda}} \)是\( \mathbf{\Lambda} \)的开平方，也是一个对角矩阵，其对角线上的元素为\( \lambda_i \)，而\( \mathbf{0} \)是一个\( (m - n) \times n \)的全零矩阵。记该分块矩阵为\( \mathbf{S} \)， 并对上式两边同时左乘\( \mathbf{U} \)，右乘\( \mathbf{V}^{\mathrm{T}} \)，即可得到
     \[
         \mathbf{A} = \mathbf{U} \mathbf{S} \mathbf{V}^{\mathrm{T}}.
+    \]
+
+    同理，当\( m < n \)时，也可以通过类似的步骤得到奇异值分解，其中
+    \[
+        \mathbf{S} =
+        \begin{bmatrix}
+            \sqrt{\mathbf{\Lambda}} & \mathbf{0}
+        \end{bmatrix} \in \mathbb{R}^{m \times n}.
     \]
 \end{proof}
 
@@ -344,7 +352,7 @@
     \]
     其中\( \mathbf{U}_k \in \mathbb{R}^{m \times k} \)是\( \mathbf{U} \)的前\( k \)列，\( \mathbf{S}_k \in \mathbb{R}^{k \times k} \)是\( \mathbf{S} \)的前\( k \)行和前\( k \)列，\( \mathbf{V}_k \in \mathbb{R}^{n \times k} \)是\( \mathbf{V} \)的前\( k \)列。
 
-    通过调整\( k \)的值，可以控制压缩后的图像质量和文件大小，如\cref{fig_compressed_images}所示。可以看到，随着\( k \)的增大，图像质量逐渐提高，当\( k=50 \)时，图像质量已经非常接近原始图像，此时，对应的三个矩阵的元素个数（\( 200 \times 50 + 50 + 300 \times 50 \)）大约只有原始矩阵元素个数（\( 200 \times 300 \)）的41\%。
+    通过调整\( k \)的值，可以控制压缩后的图像质量和文件大小，如\cref{fig_compressed_images}所示。可以看到，随着\( k \)的增大，图像质量逐渐提高，当\( k=50 \)时，图像质量已经非常接近原始图像，此时，对应的三个矩阵的元素个数之和（\( 200 \times 50 + 50 + 300 \times 50 \)）大约只有原始矩阵元素个数（\( 200 \times 300 \)）的41\%。
     \begin{figure}[htb!]
         \centering
         \begin{subfigure}{.3\textwidth}
@@ -371,7 +379,7 @@
 \end{solution}
 
 \subsection{稀疏分解}
-稀疏分解（Sparse Decomposition）是指将一个观测向量表示为一个字典矩阵与一个稀疏系数向量的乘积。具体而言，字典矩阵（Dictionary Matrix）由一组基向量组成，其中每一列（或每一行，取决于具体定义与应用场景）均可视为一个基向量。该矩阵可理解为由若干基础特征模板构成的集合。通过与稀疏系数向量相乘，仅需选择少量的基向量即可近似重构原始数据，从而实现对信号或数据的高效表示与压缩。这种表示方式不仅能够显著降低存储开销，还可有效提升运算效率，在信号处理、模式识别、图像重建等领域具有广泛的应用价值。
+稀疏分解（Sparse Decomposition）是指将一个观测向量表示为一个字典矩阵（Dictionary Matrix）与一个稀疏系数向量的乘积。具体而言，字典矩阵由一组基向量组成，其中每一列（或每一行，取决于具体定义与应用场景）均可视为一个基向量。该矩阵可理解为由若干基础特征模板构成的集合。通过与稀疏系数向量相乘，仅需选择少量的基向量即可近似重构原始数据，从而实现对信号或数据的高效表示与压缩。这种表示方式不仅能够显著降低存储开销，还可有效提升运算效率，在信号处理、模式识别、图像重建等领域具有广泛的应用价值。
 
 稀疏分解对应的优化问题可以表示为
 \begin{equation}
@@ -381,14 +389,7 @@
     \end{cases},
     \label{eq:sparse-decomposition}
 \end{equation}
-其中，\( \bm{y} \in \mathbb{R}^m \)是观测向量，\( \mathbf{D} \in \mathbb{R}^{m \times n} \)是字典矩阵。一般来说，\( n \gg m \)，这意味着方程\( \mathbf{D} \bm{x} = \bm{y} \)可能有多个甚至无穷多个解。而稀疏分解则是希望找到其中最稀疏的那个解，即使得系数向量\( \bm{x} \)的非零元素个数最少。当存在噪声时，等式\( \mathbf{D} \bm{x} = \bm{y} \)可能无法完全满足，此时可以将约束条件改为
-\begin{equation}
-    \begin{cases}
-        \min_{\bm{x}} & \left\| \bm{x} \right\|_0                                     \\
-        \text{s.t.}   & \left\| \bm{y} - \mathbf{D} \bm{x} \right\|_2 \leq \epsilon^2
-    \end{cases}.
-    \label{eq:sparse-decomposition-noisy}
-\end{equation}
+其中，\( \bm{y} \in \mathbb{R}^m \)是观测向量，\( \mathbf{D} \in \mathbb{R}^{m \times n} \)是字典矩阵。一般来说，\( n \gg m \)，这意味着方程\( \mathbf{D} \bm{x} = \bm{y} \)可能有多个甚至无穷多个解。而稀疏分解则是希望找到其中最稀疏的那个解，即使得系数向量\( \bm{x} \)的非零元素个数最少。当存在噪声时，等式\( \mathbf{D} \bm{x} = \bm{y} \)可能无法完全满足，此时可以将约束条件改为\( \left\| \bm{y} - \mathbf{D} \bm{x} \right\|_2 \leq \epsilon \)。
 
 然而，优化问题 \cref{eq:sparse-decomposition} 中的 \( \ell_0 \)-范数是非凸且不连续的，使得该问题属于 NP-hard 问题，难以直接求解。因此，通常采用以下近似方法进行求解：
 
@@ -413,7 +414,7 @@
 
 除了上述方法，稀疏分解还可以采用匹配追踪（Matching Pursuit）、正交匹配追踪（Orthogonal Matching Pursuit, OMP）、迭代阈值法（Iterative Thresholding）等方法进行求解。这些方法在计算效率与重构精度之间提供了多样化的折中方案，可根据具体应用需求灵活选取。
 
-将稀疏分解拓展到矩阵的情形，可以得到\( k \)-SVD（\( k \)-Sparse Singular Value Decomposition）模型。该模型假设矩阵的奇异值分解可以表示为一个稀疏系数向量与字典矩阵的乘积。具体而言，给定一个矩阵 \( \mathbf{Y} \in \mathbb{R}^{m \times n} \)，对应的 \( k \)-SVD 优化问题可以表示为
+将稀疏分解拓展到矩阵的情形，可以得到\( k \)-SVD（\( k \)-Sparse Singular Value Decomposition）模型。该模型假设矩阵的奇异值分解可以表示为一个列稀疏矩阵与字典矩阵的乘积。具体而言，给定一个矩阵 \( \mathbf{Y} \in \mathbb{R}^{m \times n} \)，对应的 \( k \)-SVD 优化问题可以表示为
 \begin{equation}
     \begin{cases}
         \min_{\mathbf{D}, \mathbf{X}} & \left\| \mathbf{Y} - \mathbf{D} \mathbf{X} \right\|_{\mathrm{F}}^2 \\
@@ -433,7 +434,7 @@
     \end{cases},
     \label{eq:rpca}
 \end{equation}
-其中，\( \mathbf{L} \in \mathbb{R}^{m \times n} \)是低秩矩阵，\( \left\| \cdot \right\|_* \)表示核范数，\( \mathbf{S} \in \mathbb{R}^{m \times n} \)是稀疏矩阵，\( \left\| \operatorname{vec}(\cdot)\right\|_1 \)表示将矩阵展开为向量后的 \( \ell_1 \)-范数，即矩阵所有元素的绝对值之和。由于稀疏项的存在，RPCA能够有效提取数据中的异常，同时保留主要的低秩结构。
+其中，\( \mathbf{L} \in \mathbb{R}^{m \times n} \)是低秩矩阵，\( \left\| \cdot \right\|_* \)表示核范数，\( \mathbf{S} \in \mathbb{R}^{m \times n} \)是稀疏矩阵，\( \left\| \operatorname{vec}(\cdot)\right\|_1 \)表示将矩阵展开为向量后的 \( \ell_1 \)-范数。由于稀疏项的存在，RPCA能够有效提取数据中的异常，同时保留主要的低秩结构。
 
 \begin{example}
     请对如\cref{fig_rpca_example}所示的包含椒盐噪声的图像矩阵进行去噪处理。
@@ -627,8 +628,8 @@
 从上面的例子中，我们可以总结出一些经验：
 
 \begin{enumerate}
-    \item 对于一个函数，如果其表达式左侧是某个向量的转置形式​​，那么其关于该向量的导数就是表达式右侧的部分。比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{x}} = \bm{y}\) 和 \( \frac{\partial \bm{x}^{\mathrm{T}} \mathbf{A}}{\partial \bm{x}} = \mathbf{A} \)。
-    \item 对于一个函数，如果其表达式右侧是某个向量​​，那么其关于该向量的导数就是表达式左侧部分的转置。比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{y}} = \bm{x}\) 和 \( \frac{\partial \mathbf{A} \bm{y}}{\partial \bm{y}} = \mathbf{A}^{\mathrm{T}} \)。
+    \item 对于一个函数，如果其表达式左侧是某个向量的转置形式，那么其关于该向量的导数就是表达式右侧的部分。比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{x}} = \bm{y}\) 和 \( \frac{\partial \bm{x}^{\mathrm{T}} \mathbf{A}}{\partial \bm{x}} = \mathbf{A} \)。
+    \item 对于一个函数，如果其表达式右侧是某个向量，那么其关于该向量的导数就是表达式左侧部分的转置。比如\( \frac{\partial \bm{x}^{\mathrm{T}} \bm{y}}{\partial \bm{y}} = \bm{x}\) 和 \( \frac{\partial \mathbf{A} \bm{y}}{\partial \bm{y}} = \mathbf{A}^{\mathrm{T}} \)。
 \end{enumerate}
 
 矩阵微分有四个常用的性质：线性、乘积、商和链式法则，具体见\cref{property:matrix-differentiation-properties}。
@@ -717,7 +718,7 @@
 \begin{solution}
     记\( \bm{z} = \bm{x} + j \bm{y} \)，其中\( \bm{x} \)和\( \bm{y} \)分别是实部和虚部向量，那么目标函数可以展开为
     \[
-        g(\bm{z}) = \bm{z}^{\mathrm{H}} \bm{z} = (\bm{x} - j \bm{y})(\bm{x} + j \bm{y}) = \bm{x}^{\mathrm{T}} \bm{x} + \bm{y}^{\mathrm{T}} \bm{y}.
+        g(\bm{z}) = \bm{z}^{\mathrm{H}} \bm{z} = (\bm{x} - j \bm{y})^{\mathrm{T}} (\bm{x} + j \bm{y}) = \bm{x}^{\mathrm{T}} \bm{x} + \bm{y}^{\mathrm{T}} \bm{y}.
     \]
     因此根据定义有
     \[
@@ -782,7 +783,7 @@
 \[
     \mathcal{T} \in \mathbb{R}^{I_1 \times I_2 \times \cdots \times I_n},
 \]
-其中每个维度称为一个``模''（mode），``模''的值\( I_n \)表示该维度的大小，``模''的个数即为张量的“阶”（order）。
+其中每个维度称为一个``模''（mode），``模''的值\( I_n \)表示该维度的大小，``模''的个数即为张量的``阶''（order）。
 
 \begin{figure}[htb!]
     \centering
@@ -909,26 +910,26 @@
     其中，\( x^{(k)}_{i_k} \)表示向量\( \bm{x}^{(k)} \)的第\( i_k \)个元素。
 \end{definition}
 
-特别地，如果将同一个向量\( \bm{x} \)进行\( n \)次外积，可以得到一个\( n \)阶张量，记作
+与秩一矩阵类似，由外积生成的张量也被称为秩一张量（Rank-1 Tensor）。此外，如果将同一个向量\( \bm{x} \)进行\( n \)次外积，可以得到一个\( n \)阶张量，记作
 \[
     \mathcal{T} = \bm{x} \circ \bm{x} \circ \cdots \circ \bm{x} = \bm{x}^{\circ n}.
 \]
-并且，该张量是一个对称张量，即任意交换\( i_1 i_2 \cdots i_n \)的顺序，其对应的元素不变，比如
+并且，该张量是一个超对称张量，即任意交换\( i_1 i_2 \cdots i_n \)的顺序，其对应的元素不变，比如
 \[
     t_{i_1 i_2 \cdots i_n} = t_{i_n i_{n-1} \cdots i_1} = x_{i_1} x_{i_2} \cdots x_{i_n}.
 \]
 
 而$k$模积同样是最基本的张量运算之一，它可以看作是矩阵乘法的推广，其定义如下。
 \begin{definition}%[$k$ 模积， $k$-mode product]
-    给定张量$\mathcal T \in \mathbb {R}^{I_1 \times I_2 \times \cdots \times I_N }$与矩阵$\mathbf U \in \mathbb {R}^{J \times I_k}$，两者的$k$模积操作可以表示为
+    给定张量$\mathcal T \in \mathbb {R}^{I_1 \times I_2 \times \cdots \times I_N }$与矩阵$\mathbf U \in \mathbb {R}^{J \times I_k}$，两者的$k$模积可以得到一个新的张量，记作
     \begin{equation}
-        \mathcal T \times_{k} \mathbf U \in \mathbb {R}^{I_1 \times \cdots \times I_{k-1} \times J \times I_{k+1}\times \cdots \times I_N },
+        \mathcal{R} = \mathcal T \times_{k} \mathbf U \in \mathbb {R}^{I_1 \times \cdots \times I_{k-1} \times J \times I_{k+1}\times \cdots \times I_N }.
     \end{equation}
-    \( k \)模积结果中的元素具有如下表达式
+    张量\( \mathcal{R} \)中的元素具有如下表达式
     \begin{equation}
-        (\mathcal T \times_{k} \mathbf U )_{i_1\cdots i_{k-1}ji_{k+1}\cdots i_N}=\sum_{i_{k}=1} ^{I_{k}} t_{i_1 \cdots i_{k-1}i_ki_{k+1} \cdots i_N} u_{ji_{k}},
+        r_{i_1\cdots i_{k-1}ji_{k+1}\cdots i_N}=\sum_{i_{k}=1} ^{I_{k}} t_{i_1 \cdots i_{k-1}i_ki_{k+1} \cdots i_N} u_{ji_{k}},
     \end{equation}
-    其中\( t_{i_1 i_2 \cdots i_n}, u_{ji_{k}} \)分别为张量\( \mathcal T \)和矩阵\( \mathbf{U} \)对应位置的元素。
+    其中\( r_{i_1\cdots i_{k-1}ji_{k+1}\cdots i_N}, t_{i_1 \cdots i_{k-1}i_ki_{k+1} \cdots i_N}, u_{ji_{k}} \)分别为张量\( \mathcal{R} \)，张量\( \mathcal T \)和矩阵\( \mathbf{U} \)对应位置的元素。
 \end{definition}
 
 我们知道，矩阵与向量相乘可以看作是用该向量中的元素对矩阵的各个列向量进行线性组合。同样地，张量与向量的$k$模积也可以看作用向量中的元素对张量沿着第 $k$ 个维度的切片进行线性组合。例如，对于一个三阶张量$\mathcal A \in \mathbb {R}^{3 \times 3 \times 4 }$，该张量3模积一个$1\times 4$大小的向量将会得到一个\( 3 \times 3 \)的矩阵，具体操作如\cref{fig.psa.nmod_example}所示。在这个例子中，线性组合的对象不再是向量，而是张量沿着第三个维度的切片，也就是矩阵.
@@ -1099,7 +1100,7 @@
 \begin{equation} \label{eq_mean}
     \overline{x} = \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{1},
 \end{equation}
-其中\( \bm{1} \)为一个全一的向量，其大小与\( \bm{x} \)相同。当均值为零时，方差的矩阵表示如下：
+其中\( \bm{1} \)为一个元素全为一的向量，其大小与\( \bm{x} \)相同。当均值为零时，方差的矩阵表示如下：
 \begin{equation} \label{eq_var}
     \sigma^2 = \frac{1}{n} \bm{x}^{\mathrm{T}} \bm{x}.
 \end{equation}
@@ -1188,6 +1189,53 @@
 \[
     S_k(\mathbf{X} \bm{v}) = \mathcal{S}_k \bm{v}^k.
 \]
+
+\section{多元函数的泰勒展开}
+
+泰勒展开是数学分析中的一个重要工具，它可以用来近似函数在某个点附近的行为。对于一个一元函数\( f: \mathbb{R} \to \mathbb{R} \)，其在点 \( x_0 \) 处的泰勒展开可以表示为
+\[
+    f(x) = f(x_0) + \sum_{k=1}^{\infty} \frac{f^{(k)}(x_0)}{k!} (x - x_0)^k,
+\]
+其中，\( f^{(k)}(x_0) \)表示函数\( f \)在点 \( x_0 \) 处的第 \( k \) 阶导数。
+
+对于一个多元函数\( f: \mathbb{R}^n \to \mathbb{R} \)，我们同样可以在某个点 \( \bm{x}_0 \) 处进行泰勒展开。但问题在于一个多元函数的任意阶导数不再是一个标量，而是一个向量、矩阵或者更高阶的张量。因此，我们需要引入张量的概念来表示多元函数的泰勒展开。
+
+具体而言，对于一个多元函数\( f(\bm{x}) \)，其在点 \( \bm{x}_0 \) 处的\( k \)阶导数可以表示为一个\( k \)阶张量，记为\(  \mathcal{T}^{(k)}_{\bm{x}_0}\in  \mathbb{R}^{n \times n \cdots \times n} \)。该张量的第 \( i_1, i_2, \cdots, i_k \) 个元素有如下的表达式：
+\[
+    \left(\mathcal{T}^{(k)}_{\bm{x}_0}\right)_{i_1 i_2 \cdots i_k} = \left.\frac{\partial^k f(\bm{x})}{\partial x_{i_1} \partial x_{i_2} \cdots \partial x_{i_k}}\right|_{\bm{x} = \bm{x}_0}.
+\]
+显然，当\( k = 1 \)时，\( \mathcal{T}^{(1)}_{\bm{x}_0} \)是一个向量，即函数\( f \)在点 \( \bm{x}_0 \) 处的梯度；当\( k = 2 \)时，\( \mathcal{T}^{(2)}_{\bm{x}_0} \)是一个矩阵，即函数\( f \)在点 \( \bm{x}_0 \) 处的\textbf{海森（Hessian）矩阵}；当\( k > 2 \)时，\( \mathcal{T}^{(k)}_{\bm{x}_0} \)则是一个更高阶的张量，反映了函数\( f \)在点 \( \bm{x}_0 \) 处的更高阶的变化信息。方便起见，记\( \Delta \bm{x} = \bm{x} - \bm{x}_0 \)，则函数\( f \)在点 \( \bm{x}_0 \) 处的泰勒展开可以表示为
+\[
+    \begin{split}
+        f(\bm{x}) & = f(\bm{x}_0) + \sum_{k=1}^{\infty} \frac{1}{k!} \mathcal{T}^{(k)}_{\bm{x}_0} \times_1 \Delta \bm{x}^{\mathrm{T}} \times_2 \Delta \bm{x}^{\mathrm{T}} \cdots \times_k \Delta \bm{x}^{\mathrm{T}} \\
+                  & = f(\bm{x}_0) + \sum_{k=1}^{\infty} \frac{\mathcal{T}^{(k)}_{\bm{x}_0}}{k!} \Delta \bm{x}^k,
+    \end{split}
+\]
+
+当我们只考虑函数\( f \)在点 \( \bm{x}_0 \) 处的前两阶信息时，函数\( f \)在点 \( \bm{x}_0 \) 处的二阶泰勒展开可以表示为
+\[
+    f(\bm{x}) \approx f(\bm{x}_0) + \bm{g}^{\mathrm{T}}_{\bm{x}_0} \Delta \bm{x} + \frac{1}{2} \Delta \bm{x}^{\mathrm{T}} \mathbf{H}_{\bm{x}_0} \Delta \bm{x} + o(\|\Delta \bm{x}\|^2),
+\]
+其中，\( \bm{g}_{\bm{x}_0} = \mathcal{T}^{(1)}_{\bm{x}_0} \)为函数\(f\)在点 \( \bm{x}_0 \) 处的梯度，\( \mathbf{H}_{\bm{x}_0} = \mathcal{T}^{(2)}_{\bm{x}_0} \)为函数\(f\)在点 \( \bm{x}_0 \) 处的海森矩阵。函数的泰勒展开在优化算法中有着重要的应用，比如梯度下降法和牛顿法等都可以看作是基于函数的泰勒展开来设计的优化算法。
+
+常见的梯度下降法只利用了函数的梯度信息，比如我们希望最小化函数\( f \)，则在每次迭代中，我们会沿着函数\( f \)在当前点的梯度的反方向进行更新，即
+\[
+    \bm{x}_{t+1} = \bm{x}_t - \eta \bm{g}_{\bm{x}_t},
+\]
+其中，\( \bm{g}_{\bm{x}_t} \)为函数\( f \)在点 \( \bm{x}_t \) 处的梯度，\( \eta \)为学习率。而牛顿法则同时利用了函数的梯度和海森矩阵信息，不需要指定学习率，而是通过求解一个线性方程组来确定更新的步长和方向。具体而言，牛顿法利用函数\( f \)在点 \( \bm{x}_t \) 处的二阶泰勒展开来近似函数\( f \)在点 \( \bm{x} \) 处的值，即
+\[
+    f(\bm{x}) \approx f(\bm{x}_t) + \bm{g}^{\mathrm{T}}_{\bm{x}_t} (\bm{x} - \bm{x}_t) + \frac{1}{2} (\bm{x} - \bm{x}_t)^{\mathrm{T}} \mathbf{H}_{\bm{x}_t} (\bm{x} - \bm{x}_t).
+\]
+对上式中的\( \bm{x} \)求导，可得
+\[
+    \frac{\partial f(\bm{x})}{\partial \bm{x}} \approx \bm{g}_{\bm{x}_t} + \mathbf{H}_{\bm{x}_t} (\bm{x} - \bm{x}_t).
+\]
+对于一个二次函数，其取得极值的必要条件是梯度为零，因此，令上式中的梯度为零，即可得到牛顿法的更新公式
+\[
+    \bm{x}_{t+1} = \bm{x}_t - \mathbf{H}_{\bm{x}_t}^{-1} \bm{g}_{\bm{x}_t}.
+\]
+
+
 
 % 设有矩阵\( \mathbf{X} =
 % \begin{bsmallmatrix} \bm{x}_1 & \bm{x}_2 & \cdots & \bm{x}_m
