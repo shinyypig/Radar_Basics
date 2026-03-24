@@ -25,6 +25,24 @@ jobs:
         with:
           ref: ${{ github.sha }}
 
+      - name: Add tool paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          for dir in /opt/homebrew/bin /usr/local/bin /usr/bin; do
+            if [ -d "$dir" ]; then
+              echo "$dir" >> "$GITHUB_PATH"
+            fi
+          done
+
+      - name: Verify build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v latexmk
+          command -v xelatex
+          command -v gnuplot
+
       - name: Prepare release metadata
         id: meta
         shell: bash
