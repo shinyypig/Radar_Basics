@@ -1,0 +1,69 @@
+name: Build And Release PDF
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: self-hosted
+    env:
+      DOC_FILE: book.tex
+      OUTPUT_DIR: tmp
+      OUTPUT_PDF: tmp/book.pdf
+      RELEASE_DIR: release
+      RELEASE_PDF: release/雷达信号处理中的矩阵方法.pdf
+      BUILD_SHA: ${{ github.sha }}
+      BRANCH_NAME: ${{ github.ref_name }}
+    steps:
+      - name: Checkout pushed commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Prepare release metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          short_sha="${BUILD_SHA::7}"
+          tag="pdf-${BRANCH_NAME}-${short_sha}"
+          release_name="雷达信号处理中的矩阵方法 ${BRANCH_NAME} ${short_sha}"
+          {
+            printf 'tag=%s\n' "$tag"
+            printf 'release_name=%s\n' "$release_name"
+            printf 'asset_path=%s\n' "$RELEASE_PDF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build PDF
+        shell: bash
+        run: |
+          set -euo pipefail
+          latexmk -pdfxe -interaction=nonstopmode -halt-on-error -file-line-error -outdir="$OUTPUT_DIR" "$DOC_FILE"
+
+      - name: Prepare release asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RELEASE_DIR"
+          cp "$OUTPUT_PDF" "$RELEASE_PDF"
+
+      - name: Publish PDF release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ steps.meta.outputs.release_name }}
+          body: |
+            该 PDF 由 `main` 分支收到新的 push 后自动构建生成。
+
+            Branch: `${{ github.ref_name }}`
+            Commit: `${{ github.sha }}`
+            Compare: ${{ github.event.compare }}
+          files: ${{ steps.meta.outputs.asset_path }}
+          fail_on_unmatched_files: true
+          generate_release_notes: false
