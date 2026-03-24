@@ -449,29 +449,7 @@
 
 \begin{figure}[htb!]
     \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-                view={0}{90},  % 俯视图
-                colormap/viridis,  % 色彩方案
-                contour/labels=false,  % 显示等高线标签
-                ticklabel style={font=\tiny},
-                % label style={font=\tiny},
-                axis equal image,
-                xlabel=$ x_1 $, ylabel=$ x_2 $,
-            ]
-            % 绘制等高线
-            \addplot3[
-                contour gnuplot,  % 使用gnuplot计算等高线
-                contour/number=15,  % 等高线数量
-                mesh/rows=200,  % 数据网格的行数
-                mesh/cols=200,  % 数据网格的列数
-                table/col sep=comma  % CSV分隔符为逗号
-            ] table {./img/locate/fdoa.csv};
-            \draw[c1, fill=c1!60] (axis cs:-1, 0) circle (2pt);
-            \draw[c1, fill=c1!60] (axis cs:1, 0) circle (2pt);
-            \draw[c2, fill=c2!60] (axis cs:0, 2) circle (2pt);
-        \end{axis}
-    \end{tikzpicture}
+    \includegraphics[width=.35\textwidth]{./img/locate/fdoa.pdf}
     \caption{频差定位误差等高线（红色点为目标，蓝色点为观测点，基站自左向右匀速移动）}
     \label{fig_fdoa}
 \end{figure}
